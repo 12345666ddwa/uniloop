@@ -3,202 +3,214 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>UniLoop · Start screen (prototype)</title>
+<title>UniLoop · Start screen v2</title>
 <style>
 /* ============================================================
-   UniLoop 初始界面原型 v1 — 移动优先，8pt 网格
-   规则：页面边距 16 / 卡间距 12 / 区块间距 28 / 触控 ≥44
+   UniLoop 初始界面 v2 — 学 Meetup（筛选=当前值按钮）+ Airbnb（分步搜索）
+   规则：页面边距 16 / 8pt 网格 / 触控 ≥44 / 左边缘统一
    ============================================================ */
 :root{
   --paper:#F7F5EF; --surface:#FFFDF8; --ink:#16211C; --ink2:#3B4A42; --muted:#728078;
-  --line:#E6E2D6; --line2:#D8D3C4; --forest:#1F4A3B; --forest-2:#16362C; --coral:#D8583A;
+  --line:#E6E2D6; --line2:#D8D3C4; --forest:#1F4A3B; --coral:#D8583A; --coral-soft:#FBEDE8;
   --sage:#E9EFE8; --r-card:16px; --r-btn:12px; --r-pill:999px;
   --sh-1:0 1px 2px rgba(22,33,28,.05); --sh-2:0 12px 28px -18px rgba(22,33,28,.28);
   --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
-  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{
-  margin:0; font-family:var(--sans); color:var(--ink); background:#E7E4D9;
-  display:flex; align-items:center; justify-content:center; padding:24px;
-}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:#E7E4D9;display:flex;align-items:center;justify-content:center;padding:24px}
 button{font:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B52;outline-offset:2px}
 
-/* ---------- 手机外壳（桌面演示用；手机上是全屏） ---------- */
-.app{
-  width:390px; height:844px; background:var(--paper); border-radius:40px; overflow:hidden;
-  box-shadow:0 40px 90px -40px rgba(22,33,28,.55), 0 0 0 1px rgba(22,33,28,.06);
-  display:flex; flex-direction:column; position:relative;
-}
-@media (max-width:720px){
-  body{padding:0;background:var(--paper)}
-  .app{width:100%;height:100dvh;border-radius:0;box-shadow:none}
-}
+.app{width:390px;height:844px;background:var(--paper);border-radius:40px;overflow:hidden;
+  box-shadow:0 40px 90px -40px rgba(22,33,28,.55),0 0 0 1px rgba(22,33,28,.06);display:flex;flex-direction:column;position:relative}
+@media (max-width:720px){body{padding:0;background:var(--paper)}.app{width:100%;height:100dvh;border-radius:0;box-shadow:none}}
 
 /* ---------- 顶部 ---------- */
-.top{
-  flex:none; display:flex; align-items:center; gap:12px;
-  padding:calc(14px + env(safe-area-inset-top,0px)) 16px 10px;
-}
-.brand{display:flex;align-items:center;gap:8px;font-weight:750;letter-spacing:-.01em}
+.top{flex:none;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 8px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:750;letter-spacing:-.01em;font-size:15px}
 .brand svg{width:22px;height:22px;color:var(--forest)}
-.top .city{font-size:12px;color:var(--muted);margin-left:2px}
+.top .city{font-size:12px;color:var(--muted)}
 .top .sp{flex:1}
-.avatar{
-  width:44px;height:44px;border-radius:50%;background:var(--forest);color:#fff;
-  display:grid;place-items:center;font-size:12.5px;font-weight:700;border:0
-}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--forest);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700;border:0}
 
-/* ---------- 滚动区 ---------- */
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:104px;-webkit-overflow-scrolling:touch}
 .scroll::-webkit-scrollbar{width:0}
 
-/* ---------- Hero + 搜索 ---------- */
+/* ---------- Hero ---------- */
 .hero{padding:8px 16px 0}
 .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 8px}
-h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1;letter-spacing:-.015em;margin:0 0 14px}
-.search{
-  display:flex;align-items:center;gap:10px;background:var(--surface);
-  border:1px solid var(--line); border-radius:var(--r-pill); padding:0 6px 0 14px; height:56px;
-  box-shadow:var(--sh-2);
-}
-.search svg{width:18px;height:18px;color:var(--muted);flex:none}
-.search input{
-  flex:1;border:0;background:transparent;font-size:15px;color:var(--ink);min-width:0;height:100%
-}
-.search input::placeholder{color:#8C978F}
-.search button{
-  width:44px;height:44px;border-radius:50%;border:0;background:var(--coral);color:#fff;
-  display:grid;place-items:center;flex:none;transition:transform .12s
-}
-.search button:active{transform:scale(.94)}
-.search button svg{width:18px;height:18px;color:#fff}
+h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1;letter-spacing:-.015em;margin:0 0 16px}
 
-.quick{display:flex;gap:8px;overflow-x:auto;padding:16px 16px 0;margin:0 -16px;scrollbar-width:none}
-.quick::-webkit-scrollbar{display:none}
-.chip{
-  flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink2);
-  border-radius:var(--r-pill);padding:0 12px;height:40px;font-size:12.5px;font-weight:600;
-  display:inline-flex;align-items:center;gap:6px
+/* ---------- 4 段式搜索栏（Airbnb 式） ---------- */
+.searchbar{
+  display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-pill);box-shadow:var(--sh-2);height:56px;padding:0 6px 0 4px;gap:2px
 }
-.chip[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:#fff}
-.cats{display:flex;gap:8px;overflow-x:auto;padding:8px 16px 0;margin:0 -16px;scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
+.seg{
+  flex:1;min-width:0;height:44px;border:0;background:transparent;border-radius:var(--r-pill);
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 10px;text-align:left
+}
+.seg:hover{background:#F3F0E6}
+.seg .lbl{font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);line-height:1.2}
+.seg .val{font-size:12.5px;font-weight:650;color:var(--ink);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.seg.dim .val{color:var(--muted);font-weight:550}
+.searchbar .divider{width:1px;height:24px;background:var(--line);flex:none}
+.searchbar .go{
+  width:44px;height:44px;border-radius:50%;border:0;background:var(--coral);color:#fff;display:grid;place-items:center;flex:none
+}
+.searchbar .go svg{width:18px;height:18px}
 
-/* ---------- 区块标题 ---------- */
+/* 搜索推荐（真实热门词） */
+.sugg{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 0;margin:0 -16px;scrollbar-width:none}
+.sugg::-webkit-scrollbar{display:none}
+.sugg button{
+  flex:none;border:1px solid var(--line);background:transparent;color:var(--ink2);border-radius:var(--r-pill);
+  height:40px;padding:0 12px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px
+}
+.sugg button:hover{border-color:var(--forest);color:var(--forest)}
+.sugg .hint{flex:none;font-size:11px;color:var(--muted);display:flex;align-items:center;padding-right:2px}
+
+/* ---------- 筛选：4 个"当前值"按钮（Meetup 式） ---------- */
+.pills{display:flex;gap:8px;padding:14px 16px 4px;overflow-x:auto;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{
+  flex:none;height:44px;padding:0 14px;border-radius:var(--r-pill);border:1px solid var(--line);
+  background:var(--surface);color:var(--ink2);font-size:12.5px;font-weight:650;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap
+}
+.pill[data-active="true"]{background:var(--forest);border-color:var(--forest);color:#fff}
+.pill svg{width:13px;height:13px;opacity:.75}
+
+/* ---------- 区块 ---------- */
 .sec{display:flex;align-items:baseline;justify-content:space-between;padding:24px 16px 8px}
 .sec h2{font-size:18px;margin:0;letter-spacing:-.01em;font-weight:700}
 .sec button{background:none;border:0;color:var(--forest);font-size:12.5px;font-weight:650;min-height:44px;padding:0 0 0 8px;display:inline-flex;align-items:center}
 
-/* ---------- 横向自动滚动 rail ---------- */
-.rail{
-  overflow:hidden;position:relative;
+/* ---------- 横向 rail ---------- */
+.rail{overflow:hidden;position:relative;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);
-          mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);
-}
-.rail-track{display:flex;gap:12px;width:max-content;padding:2px 16px 6px;will-change:transform;animation:marquee 46s linear infinite}
-.rail.rev .rail-track{animation-direction:reverse;animation-duration:54s}
+          mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%)}
+.rail-track{display:flex;gap:12px;width:max-content;padding:2px 16px 6px;will-change:transform;animation:marquee 52s linear infinite}
+.rail.rev .rail-track{animation-direction:reverse;animation-duration:60s}
 .rail:hover .rail-track,.rail:focus-within .rail-track{animation-play-state:paused}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion:reduce){.rail-track{animation:none}}
 
-/* ---------- 活动卡（小卡，148×196，不占大封面） ---------- */
+/* ---------- 卡片 v2（新层级：类别 → 标题 → 时间 → 地点 → 价格/余位） ---------- */
 .card{
-  flex:none;width:148px;background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-card);overflow:hidden;box-shadow:var(--sh-1);
-  display:flex;flex-direction:column;text-align:left;padding:0;transition:transform .15s,box-shadow .15s
+  flex:none;width:160px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
+  overflow:hidden;box-shadow:var(--sh-1);display:flex;flex-direction:column;text-align:left;padding:0;
+  transition:transform .15s,box-shadow .15s
 }
 .card:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
-.card:active{transform:scale(.985)}
-.card .thumb{position:relative;height:96px;background:var(--sage);flex:none}
+.card .thumb{position:relative;height:100px;background:var(--sage);flex:none}
 .card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .card .date{
   position:absolute;left:8px;top:8px;background:rgba(22,33,28,.82);color:#fff;border-radius:8px;
-  padding:3px 6px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;backdrop-filter:blur(4px)
+  padding:3px 6px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase
 }
-.card .save{
-  position:absolute;right:6px;top:6px;width:30px;height:30px;border-radius:50%;
-  border:0;background:rgba(255,253,248,.92);display:grid;place-items:center;color:var(--ink2)
-}
-.card .save svg{width:14px;height:14px}
-.card .body{padding:8px 12px 12px;display:flex;flex-direction:column;gap:4px;min-height:104px}
-.card .title{
-  font-size:13.5px;font-weight:650;line-height:1.28;margin:0;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
-}
-.card .meta{font-size:11.5px;color:var(--muted);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:6px}
-.card .price{font-size:12.5px;font-weight:750;font-variant-numeric:tabular-nums}
-.card .spots{font-size:10.5px;color:var(--muted);white-space:nowrap}
+.card .save{position:absolute;right:6px;top:6px;width:32px;height:32px;border-radius:50%;border:0;
+  background:rgba(255,253,248,.94);display:grid;place-items:center;color:var(--ink2)}
+.card .save svg{width:15px;height:15px}
+.card .body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:3px}
+.card .cat{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.card .title{font-size:14px;font-weight:700;line-height:1.25;margin:1px 0 4px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .when{font-size:11.5px;font-weight:650;color:var(--ink2);display:flex;align-items:center;gap:5px}
+.card .where{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
+.card .when svg,.card .where svg{width:11px;height:11px;opacity:.55;flex:none}
+.card .foot{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:6px}
+.card .price{font-size:13px;font-weight:750;font-variant-numeric:tabular-nums}
+.card .seats{font-size:10.5px;font-weight:700;color:var(--muted)}
+.card .seats.low{color:var(--coral);background:var(--coral-soft);padding:2px 6px;border-radius:6px}
 
 /* ---------- 校区行 ---------- */
 .campuses{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 16px 8px}
-.campus{
-  border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 4px;
-  display:flex;flex-direction:column;align-items:center;gap:6px;height:74px;justify-content:center
-}
+.campus{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 4px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;height:74px;justify-content:center}
 .campus img{height:22px;max-width:100%;object-fit:contain}
-.campus span{font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.campus span{font-size:9.5px;color:var(--muted);font-weight:600}
 
-/* ---------- 结果模式 ---------- */
+/* ---------- 结果列表 ---------- */
 .results{padding:16px 16px 0}
-.results .head{display:flex;align-items:center;justify-content:space-between;margin:4px 0 10px}
+.results .head{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}
 .results .count{font-size:13px;color:var(--muted)}
-.results .clear{background:none;border:0;color:var(--forest);font-weight:650;font-size:13px;padding:8px 0}
+.results .clear{background:none;border:0;color:var(--forest);font-weight:650;font-size:13px;padding:10px 0}
 .rows{display:flex;flex-direction:column;gap:10px}
-.row{
-  display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);
-  border-radius:14px;padding:12px;text-align:left;box-shadow:var(--sh-1)
-}
-.row .rhumb{width:72px;height:72px;border-radius:12px;overflow:hidden;flex:none;background:var(--sage)}
+.row{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:12px;text-align:left;box-shadow:var(--sh-1)}
+.row .rhumb{width:84px;height:84px;border-radius:12px;overflow:hidden;flex:none;background:var(--sage)}
 .row .rhumb img{width:100%;height:100%;object-fit:cover}
 .row .rmain{flex:1;min-width:0}
-.row .rtitle{font-size:14px;font-weight:650;line-height:1.3;margin:0 0 3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row .rcat{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.row .rtitle{font-size:14.5px;font-weight:700;line-height:1.28;margin:2px 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .row .rmeta{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row .rfoot{display:flex;align-items:center;gap:8px;margin-top:5px}
-.row .rprice{font-size:12.5px;font-weight:750}
-.row .tag{font-size:10.5px;color:var(--forest);background:var(--sage);border-radius:6px;padding:2px 6px;font-weight:650}
+.row .rfoot{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.row .rprice{font-size:13px;font-weight:750}
+.row .rseats{font-size:10.5px;font-weight:700;color:var(--muted)}
+.row .rseats.low{color:var(--coral)}
+.row .rtag{font-size:10.5px;color:var(--forest);background:var(--sage);border-radius:6px;padding:2px 6px;font-weight:650}
 .empty{padding:48px 16px;text-align:center;color:var(--muted);font-size:13.5px}
 .empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}
 
 /* ---------- 底部 Tab ---------- */
-.tabs{
-  position:absolute;left:0;right:0;bottom:0;height:calc(62px + env(safe-area-inset-bottom,0px));
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  background:rgba(255,253,248,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);
-  display:grid;grid-template-columns:repeat(4,1fr);align-items:center
-}
+.tabs{position:absolute;left:0;right:0;bottom:0;height:calc(62px + env(safe-area-inset-bottom,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px);background:rgba(255,253,248,.95);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);align-items:center}
 .tab{background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:center;font-size:10.5px;font-weight:650}
 .tab svg{width:21px;height:21px}
 .tab[aria-current="page"]{color:var(--forest)}
 
-/* ---------- 底部抽屉 ---------- */
+/* ---------- 通用遮罩/抽屉 ---------- */
 .scrim{position:absolute;inset:0;background:rgba(22,33,28,.38);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
 .scrim.on{opacity:1;pointer-events:auto}
-.sheet{
-  position:absolute;left:0;right:0;bottom:0;z-index:21;background:var(--surface);
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;background:var(--surface);
   border-radius:24px 24px 0 0;box-shadow:0 -20px 50px -20px rgba(22,33,28,.4);
   transform:translateY(102%);transition:transform .26s cubic-bezier(.22,.8,.24,1);
-  max-height:88%;display:flex;flex-direction:column;overflow:hidden
-}
+  max-height:90%;display:flex;flex-direction:column;overflow:hidden}
 .sheet.on{transform:translateY(0)}
 .sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line2);margin:8px auto 0;flex:none}
-.sheet .pic{height:168px;margin:10px 16px 0;border-radius:16px;overflow:hidden;background:var(--sage);flex:none}
-.sheet .pic img{width:100%;height:100%;object-fit:cover}
-.sheet .content{padding:16px 16px 0;overflow-y:auto}
-.sheet h3{font-size:20px;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
-.sheet .smeta{font-size:12.5px;color:var(--muted);margin:0 0 10px}
-.sheet .sdesc{font-size:13.5px;line-height:1.55;color:var(--ink2);margin:0 0 14px}
-.sheet .facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.sheet .fact{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:9px 11px}
-.sheet .fact .k{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.sheet .fact .v{font-size:13px;font-weight:650;margin-top:2px}
-.sheet .actions{display:flex;gap:8px;padding:10px 0 16px}
-.sheet .actions .btn{flex:1;height:48px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:var(--ink)}
-.sheet .actions .btn.primary{background:var(--forest);border-color:var(--forest);color:#fff}
+
+/* 分步搜索面板 */
+.sheet.search .head{padding:12px 16px 4px;display:flex;align-items:center;gap:10px}
+.sheet.search .steps{display:flex;gap:6px;flex:1}
+.sheet.search .steps i{height:3px;border-radius:2px;background:var(--line);flex:1}
+.sheet.search .steps i.on{background:var(--forest)}
+.sheet.search .close{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;display:grid;place-items:center;color:var(--ink2)}
+.sheet.search h3{font-size:19px;margin:12px 16px 2px}
+.sheet.search .sub{margin:0 16px 10px;font-size:12.5px;color:var(--muted)}
+.sheet.search .opts{padding:4px 16px 8px;overflow-y:auto}
+.opt{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1px solid var(--line);
+  background:var(--surface);border-radius:12px;margin-bottom:8px;text-align:left;min-height:56px}
+.opt .ico{width:34px;height:34px;border-radius:9px;background:var(--sage);display:grid;place-items:center;flex:none;font-size:15px}
+.opt .t{font-size:14px;font-weight:650}
+.opt .d{font-size:11.5px;color:var(--muted)}
+.opt .tick{margin-left:auto;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2);flex:none}
+.opt[aria-pressed="true"]{border-color:var(--forest);background:#F4F8F5}
+.opt[aria-pressed="true"] .tick{background:var(--forest);border-color:var(--forest);position:relative}
+.opt[aria-pressed="true"] .tick::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.sheet.search .foot{padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.sheet.search .foot .count{font-size:12.5px;color:var(--muted);flex:1}
+.sheet.search .foot .show{height:48px;padding:0 20px;border-radius:14px;border:0;background:var(--forest);color:#fff;font-weight:700;font-size:14px}
+
+/* 活动详情抽屉 */
+.sheet.event .pic{height:168px;margin:10px 16px 0;border-radius:16px;overflow:hidden;background:var(--sage);flex:none}
+.sheet.event .pic img{width:100%;height:100%;object-fit:cover}
+.sheet.event .content{padding:16px 16px 0;overflow-y:auto}
+.sheet.event .cat{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.sheet.event h3{font-size:20px;line-height:1.2;margin:4px 0 6px}
+.sheet.event .smeta{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.sheet.event .sdesc{font-size:13.5px;line-height:1.55;color:var(--ink2);margin:0 0 14px}
+.sheet.event .facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.sheet.event .fact{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:9px 11px}
+.sheet.event .fact .k{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.sheet.event .fact .v{font-size:13px;font-weight:650;margin-top:2px}
+.sheet.event .actions{display:flex;gap:8px;padding:10px 0 16px}
+.sheet.event .actions .btn{flex:1;height:48px;border-radius:14px;border:1px solid var(--line);background:var(--surface);
+  font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:var(--ink)}
+.sheet.event .actions .btn.primary{background:var(--forest);border-color:var(--forest);color:#fff}
 </style>
 </head>
 <body>
@@ -214,40 +226,51 @@ h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1;lette
   </header>
 
   <main class="scroll" id="scroll">
-    <!-- Hero -->
     <section class="hero">
       <p class="eyebrow" id="dateLine">Saturday · Sydney</p>
       <h1>What’s your<br>kind of day?</h1>
-      <form class="search" id="searchForm" role="search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-        <input id="q" autocomplete="off" placeholder="Search events, or “free Saturday morning”" aria-label="Search events">
-        <button type="submit" aria-label="Search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+
+      <!-- 4 段式搜索 -->
+      <div class="searchbar" role="search">
+        <button class="seg dim" id="segWhere" aria-label="Where">
+          <span class="lbl">Where</span><span class="val" id="valWhere">Anywhere</span>
         </button>
-      </form>
-      <div class="quick" id="quickRow" role="group" aria-label="Quick filters">
-        <button class="chip" data-quick="today">Today</button>
-        <button class="chip" data-quick="weekend">This weekend</button>
-        <button class="chip" data-quick="free">Free</button>
-        <button class="chip" data-quick="evening">Evening</button>
+        <span class="divider"></span>
+        <button class="seg dim" id="segWhen" aria-label="When">
+          <span class="lbl">When</span><span class="val" id="valWhen">Any day</span>
+        </button>
+        <span class="divider"></span>
+        <button class="seg dim" id="segWhat" aria-label="What">
+          <span class="lbl">What</span><span class="val" id="valWhat">Anything</span>
+        </button>
+        <button class="go" id="searchGo" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+        </button>
       </div>
-      <div class="cats" id="catRow" role="group" aria-label="Categories">
-        <button class="chip" data-cat="all" aria-pressed="true">Everything</button>
-        <button class="chip" data-cat="outdoors">Outdoors</button>
-        <button class="chip" data-cat="social">Social</button>
-        <button class="chip" data-cat="creative">Creative</button>
-        <button class="chip" data-cat="sport">Sport</button>
-        <button class="chip" data-cat="careers">Careers</button>
+
+      <!-- 搜索推荐（真实词） -->
+      <div class="sugg" id="suggRow">
+        <span class="hint">Try</span>
+      </div>
+
+      <!-- 4 个"当前值"筛选按钮 -->
+      <div class="pills" id="pillRow">
+        <button class="pill" data-pill="when" data-active="false"><span id="pillWhen">Any day</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button class="pill" data-pill="what" data-active="false"><span id="pillWhat">Any type</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button class="pill" data-pill="free" data-active="false">Free</button>
+        <button class="pill" data-pill="radius" data-active="false"><span id="pillRadius">Within 3 km</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
       </div>
     </section>
 
-    <!-- 内容：rails 或 结果 -->
     <section id="homeView">
       <div class="sec"><h2>Happening soon</h2><button data-see="soon">See all</button></div>
-      <div class="rail" id="railSoon"><div class="rail-track" id="trackSoon"></div></div>
+      <div class="rail"><div class="rail-track" id="trackSoon"></div></div>
 
       <div class="sec"><h2>Free this week</h2><button data-see="free">See all</button></div>
-      <div class="rail rev" id="railFree"><div class="rail-track" id="trackFree"></div></div>
+      <div class="rail rev"><div class="rail-track" id="trackFree"></div></div>
 
       <div class="sec"><h2>Campuses</h2><button data-see="campus">All</button></div>
       <div class="campuses" id="campusRow"></div>
@@ -255,7 +278,7 @@ h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1;lette
 
     <section id="resultsView" hidden>
       <div class="results">
-        <div class="head"><span class="count" id="resCount"></span><button class="clear" id="clearBtn">Clear</button></div>
+        <div class="head"><span class="count" id="resCount"></span><button class="clear" id="clearBtn">Clear all</button></div>
         <div class="rows" id="rows"></div>
         <div class="empty" id="emptyState" hidden><b>Nothing matches yet</b>Try another word, or clear the filters.</div>
       </div>
@@ -264,38 +287,52 @@ h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1;lette
 
   <nav class="tabs" aria-label="Main">
     <button class="tab" aria-current="page">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-5.5h-5V21H5a1 1 0 0 1-1-1v-9.5Z"/></svg>
-      Home
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-5.5h-5V21H5a1 1 0 0 1-1-1v-9.5Z"/></svg>Home
     </button>
     <button class="tab" data-proto="Search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-      Search
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>Search
     </button>
     <button class="tab" data-proto="Saved">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg>
-      Saved
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg>Saved
     </button>
     <button class="tab" data-proto="Profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>
-      Me
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>Me
     </button>
   </nav>
 
   <div class="scrim" id="scrim"></div>
-  <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+
+  <!-- 分步搜索面板 -->
+  <section class="sheet search" id="searchSheet" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <div class="grab"></div>
-    <div class="pic"><img id="sheetImg" alt=""></div>
+    <div class="head">
+      <div class="steps"><i class="on" data-stepbar="1"></i><i data-stepbar="2"></i><i data-stepbar="3"></i></div>
+      <button class="close" id="searchClose" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <h3 id="searchTitle">Where?</h3>
+    <p class="sub" id="searchSub">Pick a campus, or search anywhere in Sydney.</p>
+    <div class="opts" id="searchOpts"></div>
+    <div class="foot"><span class="count" id="searchCount"></span><button class="show" id="searchShow">Show events</button></div>
+  </section>
+
+  <!-- 活动详情抽屉 -->
+  <section class="sheet event" id="eventSheet" role="dialog" aria-modal="true" aria-labelledby="esTitle">
+    <div class="grab"></div>
+    <div class="pic"><img id="esImg" alt=""></div>
     <div class="content">
-      <h3 id="sheetTitle">Event</h3>
-      <p class="smeta" id="sheetMeta"></p>
-      <p class="sdesc" id="sheetDesc"></p>
+      <div class="cat" id="esCat"></div>
+      <h3 id="esTitle">Event</h3>
+      <p class="smeta" id="esMeta"></p>
+      <p class="sdesc" id="esDesc"></p>
       <div class="facts">
-        <div class="fact"><div class="k">Price</div><div class="v" id="sheetPrice">—</div></div>
-        <div class="fact"><div class="k">Going</div><div class="v" id="sheetGoing">—</div></div>
+        <div class="fact"><div class="k">Price</div><div class="v" id="esPrice">—</div></div>
+        <div class="fact"><div class="k">Going</div><div class="v" id="esGoing">—</div></div>
       </div>
       <div class="actions">
-        <button class="btn" id="sheetSave">☆ Save</button>
-        <a class="btn primary" id="sheetOpen" href="#">Open event ↗</a>
+        <button class="btn" id="esSave">☆ Save</button>
+        <a class="btn primary" id="esOpen" href="#">Open event ↗</a>
       </div>
     </div>
   </section>
@@ -304,109 +341,120 @@ h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1;lette
 <script>
 (function(){
   'use strict';
-  var $ = function(s,r){return (r||document).querySelector(s);};
-  var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
-  var esc = function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
-  var money = function(n){n=Number(n)||0;return n===0?'Free':'$'+n;};
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+  var money=function(n){n=Number(n)||0;return n===0?'Free':'$'+n;};
   var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  function fmtDay(iso){var d=new Date(iso);return DAYS[d.getDay()]+' '+d.getDate()+' '+d.toLocaleString('en-AU',{month:'short'});}
-  function fmtTime(iso){return new Date(iso).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true});}
+  function fmtDay(i){var d=new Date(i);return DAYS[d.getDay()]+' '+d.getDate()+' '+d.toLocaleString('en-AU',{month:'short'});}
+  function fmtTime(i){return new Date(i).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',hour12:true});}
 
-  var S={events:[],campuses:[],q:'',cat:'all',quick:null,saved:{}};
+  var CATS={outdoors:'Outdoors',social:'Social',creative:'Creative',sport:'Sport',careers:'Careers',other:'Other'};
+  var S={
+    events:[], campuses:[], anchors:{},
+    q:'', where:'any', whereLabel:'Anywhere', when:'any', what:'all', free:false, radius:0,
+    saved:{}, step:1, pending:{}
+  };
 
   async function api(p){var r=await fetch(p,{credentials:'include'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
 
-  /* ---------- 数据 ---------- */
+  function haversine(a,b){
+    if(!a||!b) return 999;
+    var R=6371,toRad=function(x){return x*Math.PI/180;};
+    var dLat=toRad(b[0]-a[0]),dLon=toRad(b[1]-a[1]);
+    var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(toRad(a[0]))*Math.cos(toRad(b[0]))*Math.sin(dLon/2)*Math.sin(dLon/2);
+    return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))*10)/10;
+  }
+  function distOf(e){var a=S.anchors[e.campus_id];return haversine(a,e.venue_coords);}
+
   async function load(){
-    var d=await api('/api/events?when=all&limit=80');
-    S.events=(d.events||[]);
+    var d=await api('/api/events?when=all&limit=120'); S.events=d.events||[];
     try{var c=await api('/api/campuses');S.campuses=c.campuses||[];}catch(e){}
+    S.events.forEach(function(e){ if(!S.anchors[e.campus_id] && e.venue_coords) S.anchors[e.campus_id]=e.venue_coords; });
   }
 
-  /* ---------- 筛选 ---------- */
+  /* ---------- 自然语言解析（时间/免费/预算/兴趣） ---------- */
   var SYN={outdoors:['hike','walk','outdoor','nature','coast','trail'],social:['party','picnic','trivia','games','food','meet'],creative:['art','clay','pottery','zine','sketch','photo','film'],sport:['run','football','volley','swim','yoga','gym'],careers:['intern','cv','career','portfolio','panel','job']};
-  var WEEKDAYS={sunday:0,sun:0,monday:1,mon:1,tuesday:2,tue:2,tues:2,wednesday:3,wed:3,thursday:4,thu:4,thur:4,thurs:4,friday:5,fri:5,saturday:6,sat:6};
-  function parseQuery(q){
+  var WD={sunday:0,sun:0,monday:1,mon:1,tuesday:2,tue:2,wednesday:3,wed:3,thursday:4,thu:4,friday:5,fri:5,saturday:6,sat:6};
+  function parse(q){
     var p={};
-    if(/\b(free|no cost|gratis)\b/.test(q)) p.free=true;
-    if(/\b(today|tonight)\b/.test(q)) p.day='today';
-    else if(/\btomorrow\b/.test(q)) p.day='tomorrow';
-    else { for(var k in WEEKDAYS){ if(new RegExp('\\b'+k+'\\b').test(q)){ p.weekday=WEEKDAYS[k]; break; } } }
+    if(/\b(free|no cost)\b/.test(q)) p.free=true;
+    if(/\btoday\b/.test(q)) p.day='today'; else if(/\btomorrow\b/.test(q)) p.day='tomorrow';
+    else { for(var k in WD){ if(new RegExp('\\b'+k+'\\b').test(q)){p.weekday=WD[k];break;} } }
     if(/\bweekend\b/.test(q)) p.weekend=true;
-    if(/\bmorning\b/.test(q)) p.hourMax=12;
-    else if(/\bafternoon\b/.test(q)) { p.hourMin=12; p.hourMax=17; }
-    else if(/\b(evening|night)\b/.test(q)) p.hourMin=17;
-    var m=q.match(/(?:under|below|less than)\s*\$?\s*(\d+)/); if(m) p.maxPrice=Number(m[1]);
-    if(/\b(cheap|budget)\b/.test(q)) p.maxPrice=p.maxPrice||10;
+    if(/\bmorning\b/.test(q)) p.hmax=12; else if(/\bafternoon\b/.test(q)){p.hmin=12;p.hmax=17;} else if(/\b(evening|night)\b/.test(q)) p.hmin=17;
+    var m=q.match(/(?:under|below|less than)\s*\$?\s*(\d+)/); if(m) p.max=Number(m[1]);
     return p;
   }
   function matches(e){
-    var q=S.q.trim().toLowerCase();
-    if(S.cat!=='all' && e.category!==S.cat) return false;
-    if(S.quick==='free' && e.price_public>0) return false;
-    var d=new Date(e.starts_at), now=new Date();
-    if(S.quick==='today' && d.toDateString()!==now.toDateString()) return false;
-    if(S.quick==='weekend' && d.getDay()!==0 && d.getDay()!==6) return false;
-    if(S.quick==='evening' && d.getHours()<17) return false;
+    var q=S.q.trim().toLowerCase(), now=new Date(), d=new Date(e.starts_at);
+    if(S.where!=='any' && e.campus_id!==S.where) return false;
+    if(S.what!=='all' && e.category!==S.what) return false;
+    if(S.free && e.price_public>0) return false;
+    if(S.radius>0 && S.where!=='any' && distOf(e)>S.radius) return false;
+    if(S.when==='today' && d.toDateString()!==now.toDateString()) return false;
+    if(S.when==='tomorrow'){var tm=new Date(now.getTime()+86400000); if(d.toDateString()!==tm.toDateString()) return false;}
+    if(S.when==='weekend' && d.getDay()!==0 && d.getDay()!==6) return false;
+    if(S.when==='7d'){var end=now.getTime()+7*86400000; if(d.getTime()>end) return false;}
     if(!q) return true;
-
-    var P=parseQuery(q);
+    var P=parse(q);
     if(P.free && e.price_public>0) return false;
-    if(P.maxPrice!=null && e.price_public>P.maxPrice) return false;
+    if(P.max!=null && e.price_public>P.max) return false;
     if(P.day==='today' && d.toDateString()!==now.toDateString()) return false;
-    if(P.day==='tomorrow'){var tm=new Date(now.getTime()+86400000); if(d.toDateString()!==tm.toDateString()) return false;}
+    if(P.day==='tomorrow'){var tm2=new Date(now.getTime()+86400000); if(d.toDateString()!==tm2.toDateString()) return false;}
     if(P.weekday!=null && d.getDay()!==P.weekday) return false;
     if(P.weekend && d.getDay()!==0 && d.getDay()!==6) return false;
-    if(P.hourMax!=null && d.getHours()>=P.hourMax) return false;
-    if(P.hourMin!=null && d.getHours()<P.hourMin) return false;
-
+    if(P.hmax!=null && d.getHours()>=P.hmax) return false;
+    if(P.hmin!=null && d.getHours()<P.hmin) return false;
     var hay=(e.title+' '+e.society_name+' '+e.venue+' '+e.category+' '+(e.description||'')).toLowerCase();
     if(hay.indexOf(q)>-1) return true;
-    // 关键词/同义词命中
-    var hit=false;
-    for(var k in SYN){ if((q.indexOf(k)>-1||SYN[k].some(function(w){return q.indexOf(w)>-1;})) && e.category===k) hit=true; }
-    if(hit) return true;
-    // 纯时间/价格类查询（如 "free saturday morning"）：条件已满足即算命中
-    var hasContentWords=q.replace(/\b(free|today|tonight|tomorrow|weekend|weekday|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun|morning|afternoon|evening|night|under|below|less|than|cheap|budget|\d+|\$)\b/g,'').trim();
-    if(!hasContentWords) return true;
-    return false;
+    for(var k in SYN){ if((q.indexOf(k)>-1||SYN[k].some(function(w){return q.indexOf(w)>-1;})) && e.category===k) return true; }
+    var rest=q.replace(/\b(free|today|tomorrow|weekend|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun|morning|afternoon|evening|night|under|below|less|than|cheap|budget|\d+|\$)\b/g,'').trim();
+    return !rest;
   }
-  function isFiltering(){return !!(S.q.trim()||S.cat!=='all'||S.quick);}
+  function isFiltering(){return !!(S.q.trim()||S.where!=='any'||S.when!=='any'||S.what!=='all'||S.free||S.radius>0);}
 
-  /* ---------- 渲染 ---------- */
+  /* ---------- 卡片 / 行 ---------- */
+  function seatsTag(e){
+    if(e.seats_left==null) return '';
+    if(e.seats_left===0) return '<span class="seats low">Full</span>';
+    return '<span class="seats'+(e.seats_left<=5?' low':'')+'">'+e.seats_left+' left</span>';
+  }
   function cardHTML(e){
     var d=new Date(e.starts_at);
     return '<button class="card" data-id="'+esc(e.id)+'" aria-label="Open '+esc(e.title)+'">'+
       '<div class="thumb"><img src="'+esc(e.cover_image_url)+'" alt="" loading="lazy">'+
       '<span class="date">'+d.toLocaleString('en-AU',{month:'short'}).toUpperCase()+' '+d.getDate()+'</span>'+
-      '<span class="save" data-save="'+esc(e.id)+'" role="button" aria-label="Save '+(S.saved[e.id]?'d':'')+'" aria-pressed="'+(!!S.saved[e.id])+'">'+
+      '<span class="save" data-save="'+esc(e.id)+'" role="button" aria-label="Save" aria-pressed="'+(!!S.saved[e.id])+'">'+
         '<svg viewBox="0 0 24 24" fill="'+(S.saved[e.id]?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg></span>'+
       '</div>'+
-      '<div class="body"><p class="title">'+esc(e.title)+'</p>'+
-      '<div class="meta">'+esc(fmtDay(e.starts_at))+' · '+esc(fmtTime(e.starts_at))+'</div>'+
-      '<div class="meta">'+esc(String(e.venue).split(',')[0])+'</div>'+
-      '<div class="foot"><span class="price">'+money(e.your_price)+'</span><span class="spots">'+(e.seats_left==null?'':e.seats_left+' left')+'</span></div>'+
+      '<div class="body">'+
+        '<div class="cat">'+esc(CATS[e.category]||'Event')+' · '+esc((e.campus_name||'').split(' ')[0])+'</div>'+
+        '<div class="title">'+esc(e.title)+'</div>'+
+        '<div class="when"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at)+'</div>'+
+        '<div class="where"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>'+esc(String(e.venue).split(',')[0])+'</div>'+
+        '<div class="foot"><span class="price">'+money(e.your_price)+'</span>'+seatsTag(e)+'</div>'+
       '</div></button>';
   }
   function rowHTML(e){
     return '<button class="row" data-id="'+esc(e.id)+'">'+
       '<span class="rhumb"><img src="'+esc(e.cover_image_url)+'" alt="" loading="lazy"></span>'+
-      '<span class="rmain"><div class="rtitle">'+esc(e.title)+'</div>'+
-      '<div class="rmeta">'+esc(fmtDay(e.starts_at))+' · '+esc(fmtTime(e.starts_at))+' · '+esc(String(e.venue).split(',')[0])+'</div>'+
-      '<div class="rfoot"><span class="rprice">'+money(e.your_price)+'</span><span class="tag">'+esc(e.category)+'</span><span class="tag" style="background:#F3EFE3;color:#6C5B3E">'+esc(e.society_name)+'</span></div></span>'+
-      '</button>';
-  }
-  function renderRails(){
-    var soon=S.events.slice().sort(function(a,b){return new Date(a.starts_at)-new Date(b.starts_at);}).slice(0,10);
-    var free=S.events.filter(function(e){return e.price_public===0;}).slice(0,10);
-    fillTrack('#trackSoon',soon);
-    fillTrack('#trackFree',free.length?free:soon.slice().reverse());
+      '<span class="rmain"><div class="rcat">'+esc(CATS[e.category]||'Event')+' · '+esc((e.campus_name||'').split(' ')[0])+'</div>'+
+      '<div class="rtitle">'+esc(e.title)+'</div>'+
+      '<div class="rmeta">'+fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at)+' · '+esc(String(e.venue).split(',')[0])+'</div>'+
+      '<div class="rfoot"><span class="rprice">'+money(e.your_price)+'</span>'+seatsTag(e)+
+      '<span class="rtag">'+esc(e.society_name)+'</span></div></span></button>';
   }
   function fillTrack(sel,list){
     var el=$(sel); if(!el) return;
     var html=list.map(cardHTML).join('');
-    el.innerHTML=html+html; // 复制一份，做无缝循环
-    el.style.animationDuration=(Math.max(24,list.length*5))+'s';
+    el.innerHTML=html+html;
+    el.style.animationDuration=Math.max(26,list.length*5)+'s';
+  }
+  function renderRails(){
+    var soon=S.events.slice().sort(function(a,b){return new Date(a.starts_at)-new Date(b.starts_at);}).slice(0,10);
+    var free=S.events.filter(function(e){return e.price_public===0;}).slice(0,10);
+    fillTrack('#trackSoon',soon); fillTrack('#trackFree',free.length?free:soon.slice().reverse());
   }
   function renderCampuses(){
     $('#campusRow').innerHTML=S.campuses.map(function(c){
@@ -415,8 +463,19 @@ h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1;lette
   }
   function render(){
     var filtering=isFiltering();
-    $('#homeView').hidden=filtering;
-    $('#resultsView').hidden=!filtering;
+    $('#homeView').hidden=filtering; $('#resultsView').hidden=!filtering;
+    // 同步 4 个 pill 的当前值
+    $('#pillWhen').textContent={any:'Any day',today:'Today',tomorrow:'Tomorrow',weekend:'This weekend','7d':'Next 7 days'}[S.when];
+    $('#pillWhat').textContent=S.what==='all'?'Any type':(CATS[S.what]||'Any type');
+    $('#pillRadius').textContent=S.radius?('Within '+S.radius+' km'):'Any distance';
+    $$('#pillRow .pill').forEach(function(b){
+      var k=b.dataset.pill;
+      var on=(k==='when'&&S.when!=='any')||(k==='what'&&S.what!=='all')||(k==='free'&&S.free)||(k==='radius'&&S.radius>0);
+      b.dataset.active=String(!!on);
+    });
+    $('#valWhere').textContent=S.where==='any'?'Anywhere':(S.campuses.filter(function(c){return c.id===S.where;})[0]||{}).short||'Anywhere';
+    $('#valWhen').textContent={any:'Any day',today:'Today',tomorrow:'Tomorrow',weekend:'This weekend','7d':'Next 7 days'}[S.when];
+    $('#valWhat').textContent=S.what==='all'?'Anything':(CATS[S.what]||'Anything');
     if(!filtering) return;
     var list=S.events.filter(matches).sort(function(a,b){return new Date(a.starts_at)-new Date(b.starts_at);});
     $('#resCount').textContent=list.length+' result'+(list.length===1?'':'s')+(S.q?' for “'+S.q+'”':'');
@@ -424,54 +483,136 @@ h1{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1;lette
     $('#emptyState').hidden=list.length>0;
   }
 
-  /* ---------- 交互 ---------- */
-  function setQuick(k){S.quick=(S.quick===k?null:k);$$('#quickRow .chip').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.quick===S.quick));});render();}
-  function setCat(c){S.cat=c;$$('#catRow .chip').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.cat===c));});render();}
-  function openSheet(id){
-    var e=S.events.filter(function(x){return x.id===id;})[0]; if(!e) return;
-    $('#sheetImg').src=e.cover_image_url; $('#sheetImg').alt=e.title;
-    $('#sheetTitle').textContent=e.title;
-    $('#sheetMeta').textContent=fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at)+' · '+e.venue;
-    $('#sheetDesc').textContent=e.description;
-    $('#sheetPrice').textContent=money(e.your_price);
-    $('#sheetGoing').textContent=e.rsvp_count+' going'+(e.capacity?' / '+e.capacity:'');
-    $('#sheetOpen').href='/#/event/'+encodeURIComponent(e.id);
-    $('#sheetSave').textContent=S.saved[e.id]?'★ Saved':'☆ Save';
-    $('#scrim').classList.add('on'); $('#sheet').classList.add('on');
+  /* ---------- 分步搜索面板 ---------- */
+  function countPreview(){
+    var backup={where:S.where,when:S.when,what:S.what};
+    Object.assign(S,S.pending);
+    var n=S.events.filter(matches).length;
+    Object.assign(S,backup);
+    return n;
   }
-  function closeSheet(){$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');}
+  function renderStep(){
+    var st=S.step, o=$('#searchOpts');
+    $$('#searchSheet [data-stepbar]').forEach(function(i){i.classList.toggle('on', Number(i.dataset.stepbar)<=st);});
+    if(st===1){
+      $('#searchTitle').textContent='Where?'; $('#searchSub').textContent='Pick a campus, or search anywhere in Sydney.';
+      var opts=[{k:'any',t:'Anywhere',d:'All of Sydney',i:'🌏'}].concat(S.campuses.map(function(c){return {k:c.id,t:c.name,d:c.short+' campus',i:'🎓'};}));
+      o.innerHTML=opts.map(function(x){
+        var on=(S.pending.where||'any')===x.k;
+        return '<button class="opt" data-opt="where" data-k="'+esc(x.k)+'" aria-pressed="'+on+'"><span class="ico">'+x.i+'</span><span><span class="t">'+esc(x.t)+'</span><br><span class="d">'+esc(x.d)+'</span></span><span class="tick"></span></button>';
+      }).join('');
+    } else if(st===2){
+      $('#searchTitle').textContent='When?'; $('#searchSub').textContent='Pick a window. We only show events that start inside it.';
+      var ws=[['any','Any day','No date filter'],['today','Today','Before midnight'],['tomorrow','Tomorrow','The next day'],['weekend','This weekend','Sat & Sun'],['7d','Next 7 days','Rolling week']];
+      o.innerHTML=ws.map(function(x){
+        var on=(S.pending.when||'any')===x[0];
+        return '<button class="opt" data-opt="when" data-k="'+x[0]+'" aria-pressed="'+on+'"><span class="ico">📅</span><span><span class="t">'+x[1]+'</span><br><span class="d">'+x[2]+'</span></span><span class="tick"></span></button>';
+      }).join('');
+    } else {
+      $('#searchTitle').textContent='What?'; $('#searchSub').textContent='Pick a type, or keep it open.';
+      var ws2=[['all','Anything','All event types']].concat(Object.keys(CATS).map(function(k){return [k,CATS[k],''];}));
+      o.innerHTML=ws2.map(function(x){
+        var on=(S.pending.what||'all')===x[0];
+        return '<button class="opt" data-opt="what" data-k="'+x[0]+'" aria-pressed="'+on+'"><span class="ico">'+(x[0]==='all'?'✨':'🎯')+'</span><span><span class="t">'+x[1]+'</span>'+(x[2]?'<br><span class="d">'+x[2]+'</span>':'')+'</span><span class="tick"></span></button>';
+      }).join('')+
+      '<button class="opt" data-opt="free" data-k="1" aria-pressed="'+(!!S.pending.free)+'"><span class="ico">🆓</span><span><span class="t">Free only</span><br><span class="d">No ticket price</span></span><span class="tick"></span></button>';
+    }
+    var __n=countPreview(); $('#searchCount').textContent=__n+(__n===1?' event matches':' events match');
+    $('#searchShow').textContent=st<3?'Next':'Show events';
+  }
+  function openSearch(step){
+    S.step=step||1;
+    S.pending={where:S.where,when:S.when,what:S.what,free:S.free};
+    renderStep();
+    $('#scrim').classList.add('on'); $('#searchSheet').classList.add('on');
+  }
+  function closeSearch(){$('#scrim').classList.remove('on');$('#searchSheet').classList.remove('on');}
+  function applySearch(){
+    S.where=S.pending.where; S.when=S.pending.when; S.what=S.pending.what; S.free=!!S.pending.free;
+    closeSearch(); render();
+    if(isFiltering()) $('#scroll').scrollTo({top:260,behavior:'smooth'});
+  }
 
+  /* ---------- 详情 ---------- */
+  function openEvent(id){
+    var e=S.events.filter(function(x){return x.id===id;})[0]; if(!e) return;
+    $('#esImg').src=e.cover_image_url; $('#esImg').alt=e.title;
+    $('#esCat').textContent=(CATS[e.category]||'Event').toUpperCase()+' · '+(e.campus_name||'');
+    $('#esTitle').textContent=e.title;
+    $('#esMeta').textContent=fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at)+' · '+e.venue;
+    $('#esDesc').textContent=e.description;
+    $('#esPrice').textContent=money(e.your_price);
+    $('#esGoing').textContent=e.rsvp_count+' going'+(e.capacity?' / '+e.capacity:'');
+    $('#esOpen').href='/#/event/'+encodeURIComponent(e.id);
+    $('#esSave').textContent=S.saved[e.id]?'★ Saved':'☆ Save';
+    $('#scrim').classList.add('on'); $('#eventSheet').classList.add('on');
+  }
+  function closeEvent(){$('#scrim').classList.remove('on');$('#eventSheet').classList.remove('on');}
+
+  /* ---------- 搜索推荐（真实词，点了有结果） ---------- */
+  function renderSugg(){
+    var terms=[{q:'careers',what:'careers'},{q:'walk',what:'outdoors'},{q:'coffee',what:'all'},{q:'hike',what:'outdoors'},{q:'run',what:'sport'}];
+    var good=terms.filter(function(t){
+      var save={q:S.q,what:S.what}; S.q=t.q; S.what=t.what;
+      var n=S.events.filter(matches).length; S.q=save.q; S.what=save.what;
+      t.n=n; return n>0;
+    }).slice(0,4);
+    $('#suggRow').innerHTML='<span class="hint">Try</span>'+good.map(function(t){
+      return '<button data-try="'+esc(t.q)+'" data-trywhat="'+esc(t.what)+'">'+esc(t.q)+' <span style="color:var(--muted);font-weight:600">'+t.n+'</span></button>';
+    }).join('');
+  }
+
+  /* ---------- 事件绑定 ---------- */
   document.addEventListener('click',function(ev){
     var save=ev.target.closest('[data-save]');
-    if(save){ev.stopPropagation();var id=save.dataset.save;S.saved[id]=!S.saved[id];save.setAttribute('aria-pressed',String(!!S.saved[id]));save.querySelector('svg').setAttribute('fill',S.saved[id]?'currentColor':'none');return;}
-    var card=ev.target.closest('[data-id]'); if(card){openSheet(card.dataset.id);return;}
-    var q=ev.target.closest('[data-quick]'); if(q){setQuick(q.dataset.quick);return;}
-    var c=ev.target.closest('[data-cat]'); if(c){setCat(c.dataset.cat);return;}
-    var see=ev.target.closest('[data-see]'); if(see){toast('See all — next screen');return;}
-    var camp=ev.target.closest('[data-campus]'); if(camp){toast('Campus page — next screen');return;}
-    var proto=ev.target.closest('[data-proto]'); if(proto){toast(proto.dataset.proto+' — next screen');return;}
-    if(ev.target.id==='scrim') closeSheet();
+    if(save){ev.stopPropagation();var id=save.dataset.save;S.saved[id]=!S.saved[id];
+      save.setAttribute('aria-pressed',String(!!S.saved[id]));save.querySelector('svg').setAttribute('fill',S.saved[id]?'currentColor':'none');return;}
+    var card=ev.target.closest('[data-id]'); if(card){openEvent(card.dataset.id);return;}
+    var opt=ev.target.closest('[data-opt]');
+    if(opt){
+      var kind=opt.dataset.opt,k=opt.dataset.k;
+      if(kind==='free') S.pending.free=!S.pending.free;
+      else S.pending[kind]=k;
+      renderStep(); return;
+    }
+    var pill=ev.target.closest('[data-pill]');
+    if(pill){
+      var p=pill.dataset.pill;
+      if(p==='free'){S.free=!S.free;render();return;}
+      if(p==='when'){openSearch(2);return;}
+      if(p==='what'){openSearch(3);return;}
+      if(p==='radius'){S.radius=S.radius===0?3:(S.radius===3?5:0);if(S.radius&&S.where==='any'){S.where=S.campuses[0]?S.campuses[0].id:'any';} render();return;}
+    }
+    var tryBtn=ev.target.closest('[data-try]');
+    if(tryBtn){S.q=tryBtn.dataset.try;S.what=tryBtn.dataset.trywhat;S.when='any';S.where='any';render();return;}
+    var camp=ev.target.closest('[data-campus]');
+    if(camp){S.where=camp.dataset.campus;S.when='any';S.what='all';S.free=false;S.radius=0;render();return;}
+    var see=ev.target.closest('[data-see]');
+    if(see){toast('See all — next screen');return;}
+    var proto=ev.target.closest('[data-proto]');
+    if(proto){toast(proto.dataset.proto+' — next screen');return;}
+    if(ev.target.id==='scrim'){closeSearch();closeEvent();}
   });
-  $('#sheetSave').addEventListener('click',function(){var t=this;t.textContent=t.textContent.indexOf('Saved')>-1?'☆ Save':'★ Saved';});
-  $('#sheetOpen').addEventListener('click',function(){});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
-
-  var qEl=$('#q'), deb;
-  qEl.addEventListener('input',function(){S.q=qEl.value;clearTimeout(deb);deb=setTimeout(render,180);});
-  $('#searchForm').addEventListener('submit',function(e){e.preventDefault();S.q=qEl.value;render();qEl.blur();});
-  $('#clearBtn').addEventListener('click',function(){S.q='';qEl.value='';S.cat='all';S.quick=null;$$('#quickRow .chip').forEach(function(b){b.setAttribute('aria-pressed','false');});setCat('all');});
+  $('#segWhere').onclick=function(){openSearch(1);};
+  $('#segWhen').onclick=function(){openSearch(2);};
+  $('#segWhat').onclick=function(){openSearch(3);};
+  $('#searchGo').onclick=function(){openSearch(1);};
+  $('#searchClose').onclick=closeSearch;
+  $('#searchShow').onclick=function(){ if(S.step<3){S.step++;renderStep();} else applySearch(); };
+  $('#esSave').onclick=function(){this.textContent=this.textContent.indexOf('Saved')>-1?'☆ Save':'★ Saved';};
+  $('#clearBtn').onclick=function(){S.q='';S.where='any';S.when='any';S.what='all';S.free=false;S.radius=0;render();};
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeSearch();closeEvent();}});
 
   var toastEl=document.createElement('div');
   toastEl.style.cssText='position:absolute;left:50%;bottom:86px;transform:translate(-50%,10px);background:rgba(22,33,28,.92);color:#fff;padding:9px 14px;border-radius:10px;font-size:12.5px;opacity:0;transition:.2s;z-index:30;pointer-events:none;white-space:nowrap';
-  $('#app').appendChild(toastEl);
-  var tt;
+  $('#app').appendChild(toastEl); var tt;
   function toast(m){toastEl.textContent=m;toastEl.style.opacity='1';toastEl.style.transform='translate(-50%,0)';clearTimeout(tt);tt=setTimeout(function(){toastEl.style.opacity='0';toastEl.style.transform='translate(-50%,10px)';},1600);}
 
   (async function boot(){
     var d=new Date();
     $('#dateLine').textContent=d.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long'})+' · Sydney';
-    try{ await load(); }catch(e){ $('#rows').innerHTML='<div class="empty"><b>Could not load events</b>'+esc(e.message)+'</div>'; }
-    renderRails(); renderCampuses();
+    try{await load();}catch(e){$('#rows').innerHTML='<div class="empty"><b>Could not load events</b>'+esc(e.message)+'</div>';}
+    renderRails(); renderCampuses(); renderSugg(); render();
   })();
 })();
 </script>
