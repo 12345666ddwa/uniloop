@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UniLoop — find your kind of day</title>
+<meta name="description" content="Campus events, society memberships, maps and member prices — in one place.">
+<link rel="icon" href="/assets/favicon.png">
+<style>/*__TEMPLATE_CSS__*/</style>
+<style>/*__EXTRA_CSS__*/</style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- 登录 / 注册 -->
+  <div class="scrim" id="authScrim" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-head">
+        <div><h2 id="authTitle">Welcome back</h2><p>Save your spot, get member prices.</p></div>
+        <button class="iconbtn" type="button" id="authClose" aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="tabs" style="display:flex;gap:6px;margin-bottom:14px">
+        <button type="button" data-auth="login" aria-pressed="true" style="flex:1">Log in</button>
+        <button type="button" data-auth="signup" aria-pressed="false" style="flex:1">Sign up</button>
+      </div>
+      <form id="authForm">
+        <div class="field" id="nameField" style="display:none"><label for="auName">Name</label><input id="auName" autocomplete="name" placeholder="Jamie Chen"></div>
+        <div class="field"><label for="auEmail">Email</label><input id="auEmail" type="email" autocomplete="email" required placeholder="student@uniloop.demo"></div>
+        <div class="field" id="campusField" style="display:none"><label for="auCampus">Campus</label><select id="auCampus"></select></div>
+        <div class="field"><label for="auPass">Password</label><input id="auPass" type="password" autocomplete="current-password" required placeholder="demo1234"></div>
+        <p class="err-inline is-hidden" id="authErr"></p>
+        <div class="modal-actions"><button class="btn btn-ghost" type="button" id="authCancel">Not now</button><button class="btn btn-primary" type="submit" id="authSubmit">Log in</button></div>
+      </form>
+      <div class="row" style="margin-top:12px">
+        <button class="btn-mini" type="button" data-demo="student@uniloop.demo">Student demo</button>
+        <button class="btn-mini" type="button" data-demo="exec@uniloop.demo">Organiser demo</button>
+      </div>
+      <p class="tiny muted" style="margin-top:10px">Demo password: <b>demo1234</b> · sample data only</p>
+    </div>
+  </div>
+
+  <!-- 支付 -->
+  <div class="scrim" id="payScrim" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+    <form class="modal" id="payForm" style="max-width:420px">
+      <div class="modal-head">
+        <div><h2 id="payTitle">Confirm and pay</h2><p id="paySub">Test mode — no real charge.</p></div>
+        <button class="iconbtn" type="button" id="payClose" aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div id="payLines" style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0"></div>
+      <div class="field"><label for="payCard">Card (test)</label><input id="payCard" value="4242 4242 4242 4242" inputmode="numeric"></div>
+      <p class="err-inline is-hidden" id="payErr"></p>
+      <div class="modal-actions"><button class="btn btn-ghost" type="button" id="payCancel">Cancel</button><button class="btn btn-primary" type="submit">Pay &amp; RSVP</button></div>
+    </form>
+  </div>
+
+  <!-- 发布活动 -->
+  <div class="scrim" id="createScrim" role="dialog" aria-modal="true" aria-labelledby="createTitle">
+    <form class="modal" id="createForm" style="max-width:560px">
+      <div class="modal-head">
+        <div><h2 id="createTitle">Create an event</h2><p>Published straight into Discover.</p></div>
+        <button class="iconbtn" type="button" id="createClose" aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="field"><label for="evTitle">Event name</label><input id="evTitle" required placeholder="e.g. Sunset sketch club"></div>
+      <div class="field"><label for="evDesc">Short description</label><textarea id="evDesc" placeholder="One or two sentences a student would actually read."></textarea></div>
+      <div class="field-row">
+        <div class="field"><label for="evCat">Category</label><select id="evCat"><option value="social">Social</option><option value="outdoors">Outdoors</option><option value="creative">Creative</option><option value="sport">Sport</option><option value="careers">Careers</option><option value="other">Other</option></select></div>
+        <div class="field"><label for="evScope">Who can join</label><select id="evScope"><option value="OPEN_TO_ALL">Open to all campuses</option><option value="CAMPUS_ONLY">Own campus only</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="evDate">Date</label><input id="evDate" type="date" required></div>
+        <div class="field"><label for="evTime">Start</label><input id="evTime" type="time" value="17:00"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="evPlace">Where</label><input id="evPlace" placeholder="Macquarie University" required></div>
+        <div class="field"><label for="evCap">Capacity</label><input id="evCap" type="number" min="1" value="40"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="evPM">Member price ($)</label><input id="evPM" type="number" min="0" value="0"></div>
+        <div class="field"><label for="evPP">Public price ($)</label><input id="evPP" type="number" min="0" value="0"></div>
+      </div>
+      <p class="err-inline is-hidden" id="createErr"></p>
+      <div class="modal-actions"><button class="btn btn-ghost" type="button" id="createCancel">Not yet</button><button class="btn btn-primary" type="submit">Publish event</button></div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>/*__APP_JS__*/</script>
+</body>
+</html>

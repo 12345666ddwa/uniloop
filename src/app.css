@@ -1,0 +1,179 @@
+/* ==========================================================================
+   UniLoop v2 — 在模板 A 之上的扩展样式（只加新组件，不改模板原有类）
+   设计 token 沿用 docs/design-tokens.json：paper #F7F5EF / forest #1F4A3B / coral #D8583A
+   ========================================================================== */
+:root{ --ink-3:#5A6A62; --radius-pill:999px; }
+
+.is-hidden{display:none !important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.muted{color:var(--muted)}
+.tiny{font-size:11.5px}
+.small{font-size:12.5px}
+.nowrap{white-space:nowrap}
+.spacer{flex:1}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row.tight{gap:6px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.block{width:100%}
+
+/* ---------- 顶部筛选条 ---------- */
+.filterbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:12px 14px;margin:0 0 20px;
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 1px 2px rgba(27,42,36,.05);
+}
+.filterbar label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.filterbar select,.filterbar input{
+  height:38px;border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:0 10px;font:inherit;font-size:14px;color:var(--ink);
+}
+.filterbar select:focus,.filterbar input:focus{outline:2px solid #DCE7DF;border-color:var(--forest)}
+.filterbar .grow{flex:1;min-width:200px}
+.filterbar .toggle{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2);text-transform:none;letter-spacing:0}
+.chipset{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:#fff}
+
+/* ---------- 活动卡片 v2 ---------- */
+.card.ev2{display:flex;flex-direction:column;cursor:pointer;overflow:hidden;transition:transform .12s ease,box-shadow .12s ease}
+.card.ev2:hover{transform:translateY(-2px);box-shadow:0 14px 34px -18px rgba(27,42,36,.32)}
+.ev2 .ev2-media{position:relative;aspect-ratio:16/10;overflow:hidden;background:#EDEAE0}
+.ev2 .ev2-media img{width:100%;height:100%;object-fit:cover;display:block}
+.ev2 .ev2-body{padding:14px 15px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+.ev2 h3{font-size:16.5px;font-weight:650;line-height:1.25;margin:0}
+.ev2 .ev2-desc{font-size:13px;color:var(--ink-3);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev2 .ev2-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.ev2 .ev2-foot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+.ev2 .ev2-price{font-weight:700;font-size:15px}
+.ev2 .ev2-price small{font-weight:600;color:var(--muted);font-size:11.5px}
+.gone{font-size:12.5px;color:var(--muted)}
+.icon-save{
+  width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#fff;
+  display:grid;place-items:center;cursor:pointer;color:var(--ink-2);flex:none
+}
+.icon-save[aria-pressed="true"]{background:#FDF0EC;border-color:#F0C4B6;color:var(--coral-dark)}
+.icon-save svg{width:16px;height:16px}
+
+/* 只对"仅本校"给一条低调提示；OPEN TO ALL 不再显示标签 */
+.scope-note{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted)}
+.scope-note::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--coral)}
+
+/* ---------- 详情页 ---------- */
+.detail2{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:26px;align-items:start}
+@media (max-width:900px){.detail2{grid-template-columns:1fr}}
+.detail2 .hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;display:block}
+.detail2 h1{margin:16px 0 6px}
+.detail2 .sub{color:var(--muted);margin:0 0 14px}
+.detail2 .desc{max-width:64ch;line-height:1.6}
+.panel2{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 1px 2px rgba(27,42,36,.05)}
+.panel2 h2{font-size:17px;margin:0 0 12px}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:6px 0}
+.kv b{font-variant-numeric:tabular-nums}
+.bar2{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin:10px 0}
+.bar2 span{display:block;height:100%;background:linear-gradient(90deg,var(--forest),#3C7B60)}
+.mapcard{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.mapcard iframe{width:100%;height:220px;border:0;display:block;background:#EDEAE0}
+.mapcard .map-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-top:1px solid var(--line)}
+.mapcard .map-addr{font-size:12.5px;color:var(--muted);flex:1;min-width:140px}
+.btn-mini{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 11px;font-size:12.5px;font-weight:650;color:var(--ink-2);cursor:pointer;text-decoration:none}
+.btn-mini:hover{border-color:var(--forest);color:var(--forest)}
+.btn-mini.primary{background:var(--forest);border-color:var(--forest);color:#fff}
+
+/* ---------- 校徽 / 社团 ---------- */
+.campus-head{display:flex;align-items:center;gap:12px;margin:26px 0 14px}
+.campus-head img{height:34px;width:auto;max-width:120px;object-fit:contain}
+.campus-head .nm{font-weight:700;font-size:15px}
+.campus-head .lbl{font-size:12px;color:var(--muted)}
+.soc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.soc3{display:flex;flex-direction:column;gap:8px;padding:16px;cursor:pointer;transition:transform .12s}
+.soc3:hover{transform:translateY(-2px)}
+.soc3 .top{display:flex;align-items:center;gap:10px}
+.soc3 .mark{width:42px;height:42px;border-radius:12px;background:#F2EFE4;display:grid;place-items:center;overflow:hidden;flex:none}
+.soc3 .mark img{width:100%;height:100%;object-fit:contain;padding:5px}
+.soc3 .nm{font-weight:700;font-size:15.5px;line-height:1.2}
+.soc3 .meta{font-size:12px;color:var(--muted)}
+.soc3 .blurb{font-size:12.5px;color:var(--ink-3);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.soc3 .foot{display:flex;align-items:center;gap:8px;margin-top:6px}
+.stars{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;color:var(--ink-2);font-weight:650}
+.stars .s{color:#C9822B;letter-spacing:-1px}
+.badge-soft{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:7px;background:#F1F4F0;color:var(--forest)}
+.badge-member{background:#E7F0EA;color:#1F4A3B}
+
+/* 社团主页 */
+.hub-cover{height:170px;border-radius:16px;overflow:hidden;position:relative;background:#EDEAE0}
+.hub-cover img{width:100%;height:100%;object-fit:cover;filter:saturate(.9)}
+.hub-head{display:flex;gap:16px;align-items:flex-end;margin-top:-38px;padding:0 6px;position:relative}
+.hub-logo{width:76px;height:76px;border-radius:18px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;box-shadow:0 6px 18px rgba(27,42,36,.12)}
+.hub-logo img{width:100%;height:100%;object-fit:contain;padding:10px}
+.hub-title{flex:1;padding-bottom:6px}
+.hub-title h1{margin:0;font-size:30px}
+.hub-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:18px 0}
+.hub-stats .cell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.hub-stats .n{font-size:20px;font-weight:750;font-variant-numeric:tabular-nums}
+.hub-stats .l{font-size:11.5px;color:var(--muted);margin-top:2px}
+.tabs2{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:22px 0 16px;overflow-x:auto}
+.tabs2 button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;font:inherit;font-weight:650;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs2 button[aria-selected="true"]{color:var(--forest);border-bottom-color:var(--forest)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.gallery a{display:block}.gallery figure{margin:0;border-radius:12px;overflow:hidden;position:relative;background:#EDEAE0}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:18px 10px 8px;font-size:11.5px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+.reviews{display:flex;flex-direction:column;gap:10px}
+.review{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.review .top{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.review .who{font-weight:650;font-size:13.5px}
+.review .txt{font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+.review-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.review-form select,.review-form input{height:36px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font:inherit;font-size:13px}
+
+/* ---------- 主办方 ---------- */
+.kpis2{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 18px}
+@media (max-width:900px){.kpis2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi2 .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.kpi2 .v{font-size:24px;font-weight:750;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi2 .v small{font-size:12px;color:var(--muted);font-weight:600}
+.kpi2 .n{font-size:11.5px;color:var(--muted);margin-top:4px}
+.chartcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.chartcard h2{font-size:16px;margin:0 0 2px}
+.chartcard .cap{font-size:12px;color:var(--muted);margin-bottom:8px}
+.chart-legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin-top:6px}
+.chart-legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.org-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:16px;align-items:start}
+@media (max-width:960px){.org-grid{grid-template-columns:1fr}}
+.list-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.list-row:last-child{border-bottom:0}
+.list-row img{width:64px;height:44px;border-radius:8px;object-fit:cover;flex:none}
+.list-row .t{font-weight:650;font-size:13.5px}
+.list-row .m{font-size:11.5px;color:var(--muted)}
+
+/* ---------- 竖版预览 ---------- */
+.phone-wrap{display:grid;place-items:center;padding:24px 0 40px}
+.phone{width:390px;height:844px;border-radius:44px;background:#0F1A16;padding:12px;box-shadow:0 30px 80px -30px rgba(15,26,22,.6);position:relative}
+.phone .screen{width:100%;height:100%;border-radius:34px;overflow:hidden;background:var(--paper);position:relative}
+.phone .screen iframe{width:390px;height:820px;border:0;display:block}
+.phone .notch{position:absolute;top:16px;left:50%;transform:translateX(-50%);width:110px;height:22px;background:#0F1A16;border-radius:0 0 14px 14px;z-index:3}
+.phone-hint{text-align:center;color:var(--muted);font-size:12.5px;margin-top:14px}
+
+/* ---------- 空状态 / toast ---------- */
+.empty2{padding:36px 16px;text-align:center;color:var(--muted)}
+.empty2 b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+.err-inline{margin-top:8px;font-size:13px;color:var(--coral-dark);background:#FDECE6;border-radius:8px;padding:8px 10px}
+.skel{background:linear-gradient(90deg,#EDEAE0 25%,#F5F3EA 37%,#EDEAE0 63%);background-size:400% 100%;animation:sk 1.4s ease infinite;border-radius:12px}
+@keyframes sk{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.skel-card{aspect-ratio:16/10;border-radius:14px}
+
+/* ---------- 移动端 ---------- */
+@media (max-width:720px){
+  .filterbar{padding:10px;gap:8px}
+  .filterbar label{flex:1;min-width:120px}
+  .ev2 .ev2-body{padding:12px 13px 13px}
+  .hub-head{margin-top:-28px}
+  .hub-logo{width:60px;height:60px;border-radius:14px}
+  .hub-title h1{font-size:23px}
+  .phone{width:100%;height:auto;padding:0;border-radius:0;box-shadow:none;background:transparent}
+  .phone .screen{border-radius:0}
+  .phone .screen iframe{width:100%;height:80vh}
+  .phone .notch{display:none}
+}

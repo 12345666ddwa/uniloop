@@ -1,0 +1,86 @@
+{
+  "$comment": "UniLoop 设计令牌。两个版本共用品牌色，字阶、圆角、密度不同。改主题只改这一个文件。",
+  "brand": {
+    "name": "UniLoop",
+    "voice": "清楚、克制、校园编辑感；不用感叹号，不用营销黑话"
+  },
+  "shared": {
+    "colors": {
+      "forest": "#1F4A3B",
+      "forest-deep": "#16362C",
+      "coral": "#D8583A",
+      "coral-dark": "#BF472B",
+      "ink": "#1B2A24",
+      "ink-2": "#3F5049",
+      "muted": "#78867E",
+      "paper": "#F7F5EF",
+      "surface": "#FFFDF8",
+      "line": "#E3E1D6",
+      "line-strong": "#CFCDBE"
+    },
+    "usage": {
+      "coral": "只用于主操作（RSVP、Publish、Find plans）和 AI 的极少量强调；一屏最多两处",
+      "forest": "结构色：导航、标题、已选中的筛选、图表线",
+      "ink": "正文与数字",
+      "muted": "辅助信息，最小 12px",
+      "never": "不要给不同模块分配不同色相来区分功能；用分区、留白和字重区分"
+    },
+    "semantic": {
+      "success": "#327451",
+      "warning": "#8A5A2B",
+      "info-ai": "#1F4A3B"
+    },
+    "fonts": {
+      "sans": "Inter, -apple-system, 'Segoe UI', system-ui, sans-serif",
+      "serif": "Instrument Serif, Georgia, 'Songti SC', serif"
+    },
+    "spacing": { "1": "4px", "2": "8px", "3": "12px", "4": "16px", "5": "20px", "6": "26px", "7": "34px", "8": "44px" },
+    "breakpoints": { "mobile": "720px", "tablet": "1080px", "desktop": "1440px" },
+    "icon": { "style": "1.8px 描边，圆角端点，24×24 画布", "sizes": [16, 18, 20] }
+  },
+  "versionA": {
+    "$comment": "编辑风格：衬线大标题 + 细线卡片 + 紧圆角。适合大屏路演。",
+    "typography": {
+      "display": { "font": "serif", "size": "clamp(30px, 3.2vw, 46px)", "lineHeight": 1.04, "letterSpacing": "-0.015em", "weight": 400 },
+      "h2": { "font": "sans", "size": "19px", "weight": 650, "letterSpacing": "-0.01em" },
+      "h3-card": { "font": "sans", "size": "16.5px", "weight": 650, "lineHeight": 1.25 },
+      "h3-feature": { "font": "sans", "size": "26px", "weight": 650, "lineHeight": 1.15 },
+      "body": { "font": "sans", "size": "14.5px", "lineHeight": 1.5 },
+      "small": { "size": "12.5px" },
+      "micro": { "size": "11px", "note": "只用于一处 eyebrow 和大写小标签" },
+      "absoluteMin": "10px（仅日期角标的月份）"
+    },
+    "radius": { "feature": "16px", "card": "16px", "control": "10px", "chip": "999px", "tag": "7px" },
+    "elevation": { "card": "0 1px 2px rgba(27,42,36,.05), 0 14px 34px -18px rgba(27,42,36,.22)" },
+    "density": { "cardPadding": "16px 17px 15px", "gridGap": "20px", "sectionGap": "38px" },
+    "layout": { "mainGrid": "minmax(0,1fr) 316px", "maxWidth": "1220px", "pagePadding": "44px 32px 72px" }
+  },
+  "versionB": {
+    "$comment": "产品工具感：无衬线粗标题 + 柔和阴影卡片 + 列表流。适合评委自己点。",
+    "typography": {
+      "display": { "font": "sans", "size": "clamp(28px, 3vw, 38px)", "lineHeight": 1.08, "letterSpacing": "-0.035em", "weight": 800 },
+      "h2": { "font": "sans", "size": "16px", "weight": 700, "letterSpacing": "-0.02em" },
+      "h3-card": { "font": "sans", "size": "16.5px", "weight": 700 },
+      "h3-lead": { "font": "sans", "size": "19px", "weight": 700 },
+      "body": { "font": "sans", "size": "15px", "lineHeight": 1.5 },
+      "small": { "size": "13px" },
+      "micro": { "size": "11px" },
+      "absoluteMin": "10px"
+    },
+    "radius": { "feature": "20px", "card": "14px", "control": "10px", "chip": "8px", "tag": "5px" },
+    "elevation": {
+      "card": "0 1px 2px rgba(23,38,31,.05)",
+      "cardHover": "0 2px 4px rgba(23,38,31,.04), 0 16px 32px -20px rgba(23,38,31,.28)"
+    },
+    "density": { "rowPadding": "12px", "gridGap": "12px", "sectionGap": "26px" },
+    "layout": { "shell": "244px minmax(0,1fr)", "mainGrid": "minmax(0,1fr) 292px", "sidebar": "深色常驻" }
+  },
+  "rules": [
+    "一个版本里只用一种卡片骨架；主推项 = 同骨架放大，不是另画一套",
+    "强调色只给主操作，一屏不超过两处珊瑚色",
+    "大写字母间距标签每屏最多两处",
+    "数字一律 tabular-nums",
+    "分类靠文字和位置区分，不靠新增色相",
+    "所有预估值必须写 Estimate"
+  ]
+}

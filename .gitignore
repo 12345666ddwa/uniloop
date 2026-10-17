@@ -1,0 +1,14 @@
+# 运行数据（每次演示后会被重置，不进版本库）
+.sym-data/
+*.log
+TUNNEL_URL.txt
+
+# 依赖与缓存
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+
+# 本地临时文件
+*.tmp
+.tmp/
