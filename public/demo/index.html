@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UniLoop · Demo Guide</title>
+<style>
+  :root{
+    --paper:#F4F1E7; --surface:#FFFDF8; --ink:#14201B; --ink2:#3A4A42; --muted:#74817A;
+    --line:#E4DFD2; --forest:#1F4A3B; --coral:#D8583A; --sage:#E9EFE8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(900px 520px at 50% -8%,#FFFDF6,#EFEBDF 60%,#E7E2D4);
+       color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;line-height:1.55}
+  .wrap{max-width:860px;margin:0 auto;padding:44px 24px 70px}
+  header{margin-bottom:30px}
+  .kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:0 0 10px}
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:40px;line-height:1.05;letter-spacing:-.02em;margin:0 0 10px}
+  .lede{font-size:15px;color:var(--ink2);margin:0;max-width:640px}
+  h2{font-size:17px;margin:34px 0 12px;letter-spacing:-.01em}
+  h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:22px 0 8px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:14px 0}
+  .row{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+  .btn{display:inline-block;background:var(--forest);color:#fff;text-decoration:none;font-weight:700;
+       padding:12px 18px;border-radius:12px;font-size:14.5px}
+  .btn:hover{background:#173a2e}
+  .link{color:var(--forest);font-weight:650;text-decoration:none;border-bottom:1px solid rgba(31,74,59,.3)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  tr:last-child td{border-bottom:0}
+  code{background:#F1EDE0;border-radius:5px;padding:1px 6px;font-size:12.5px}
+  ol,ul{margin:0;padding-left:20px}
+  li{margin:6px 0;font-size:13.8px;color:var(--ink2)}
+  li b{color:var(--ink)}
+  .qr{width:150px;height:150px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:6px}
+  .pill{display:inline-block;background:var(--sage);color:var(--forest);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin-right:6px}
+  .pill.warn{background:#FBEDE8;color:#B4472C}
+  .muted{color:var(--muted);font-size:12.5px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:720px){.two{grid-template-columns:1fr}h1{font-size:32px}.wrap{padding:28px 16px 60px}}
+  footer{margin-top:34px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="kicker">UniLoop · demo guide</p>
+    <h1>Campus events, club memberships and a live organiser view — in one place.</h1>
+    <p class="lede">This page is everything you need to try the build and to run a 3-minute demo.
+      No installation required: open the link, log in with a demo account, and follow the script below.</p>
+  </header>
+
+  <div class="card">
+    <div class="row">
+      <div style="flex:1;min-width:300px">
+        <h3 style="margin-top:0">Open the app</h3>
+        <p style="margin:0 0 12px"><a class="btn" href="https://12345666ddwa.github.io/uniloop-live/" target="_blank" rel="noopener">Open UniLoop →</a></p>
+        <table style="margin-top:6px">
+          <tr><th>Link</th><th>What it is</th></tr>
+          <tr><td><a class="link" href="https://12345666ddwa.github.io/uniloop-live/" target="_blank" rel="noopener">12345666ddwa.github.io/uniloop-live</a></td><td><b>Use this one.</b> Fixed address, always forwards to the latest running demo.</td></tr>
+          <tr><td><code>http://localhost:3400</code></td><td>Direct local build (fastest, no internet needed).</td></tr>
+          <tr><td><code>http://localhost:3500</code></td><td>The earlier teammate build, kept for side-by-side comparison.</td></tr>
+        </table>
+      </div>
+      <div style="text-align:center">
+        <img class="qr" src="qr.png" alt="QR code to the live demo">
+        <div class="muted" style="margin-top:6px">Scan to open on a phone</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Demo accounts</h2>
+  <div class="card">
+    <table>
+      <tr><th>Role</th><th>Email</th><th>Password</th><th>What you see</th></tr>
+      <tr><td><b>Student</b></td><td><code>student@uniloop.demo</code></td><td><code>demo1234</code></td><td>Discover, search, RSVP, saved events, tickets with QR</td></tr>
+      <tr><td><b>Organiser</b></td><td><code>exec@uniloop.demo</code></td><td><code>demo1234</code></td><td>Live dashboard, attendees, members, ticket scanning, create event</td></tr>
+    </table>
+    <p class="muted" style="margin:12px 0 0">Test card for any payment step: <code>4242 4242 4242 4242</code> (any card ending <code>0002</code> is declined on purpose). No real money moves.</p>
+  </div>
+
+  <h2>3-minute demo script</h2>
+  <div class="card">
+    <p class="muted" style="margin:0 0 10px">Use two windows side by side: laptop = organiser, phone (or a second window) = student.</p>
+    <ol>
+      <li><b>Laptop:</b> log in as <code>exec@uniloop.demo</code> → sidebar <b>Organiser</b>. Leave it open; the dashboard refreshes every 3 seconds.</li>
+      <li><b>Phone:</b> open the same link → log in as <code>student@uniloop.demo</code> → on Discover use <b>Where / When / What</b> → open an event → <b>RSVP</b>.</li>
+      <li><b>Laptop:</b> within 3 seconds the new RSVP appears at the top of <b>Recent RSVPs</b>, flashes orange, and the RSVP counter goes up by one.</li>
+      <li><b>Phone:</b> <b>My stuff</b> → <b>Show ticket</b> → a QR code plus a short ticket code.</li>
+      <li><b>Laptop:</b> <b>Scan tickets</b> → paste the ticket code (or use the camera on a phone) → the attendee is checked in. Scan again and it says “already checked in”.</li>
+      <li>Optional: <b>＋ New event</b> publishes an event that shows up on Discover immediately.</li>
+    </ol>
+  </div>
+
+  <h2>What each role can do</h2>
+  <div class="two">
+    <div class="card">
+      <h3 style="margin-top:0">Student</h3>
+      <ul>
+        <li>Search with a staged filter: <b>Where</b> (campus) · <b>When</b> (window or a specific day) · <b>What</b> (category)</li>
+        <li>Save events; saved items sync across the app</li>
+        <li>RSVP with capacity, one-ticket-per-person and campus-only rules enforced by the server</li>
+        <li>Join a club (mock payment) → member pricing applies automatically</li>
+        <li>Ticket with QR code and check-in status</li>
+        <li>Every event keeps its <b>official registration link</b> (opens the original club page)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Organiser</h3>
+      <ul>
+        <li>Live KPIs: RSVPs, fill rate, page views, revenue</li>
+        <li>Cumulative RSVP curve with capacity line and projection</li>
+        <li>Recent RSVPs list with ticket codes and check-in state</li>
+        <li>Members list</li>
+        <li>Ticket scanning (paste code or camera)</li>
+        <li>Create and publish events</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Honest scope</h2>
+  <div class="card">
+    <table>
+      <tr><th>Area</th><th>Status</th></tr>
+      <tr><td>Accounts, sessions, roles</td><td><span class="pill">Working</span> real server-side auth, cookies, password hashing</td></tr>
+      <tr><td>Events, clubs, search, filters</td><td><span class="pill">Working</span> 400+ upcoming events, 1,100+ clubs, 5 Sydney universities</td></tr>
+      <tr><td>RSVP rules (capacity, duplicates, campus-only)</td><td><span class="pill">Working</span> enforced on the server, not in the browser</td></tr>
+      <tr><td>Memberships and member pricing</td><td><span class="pill">Working</span> checkout is <b>mock payment</b> only</td></tr>
+      <tr><td>Tickets, QR, check-in, members list</td><td><span class="pill">Working</span> camera scanning needs localhost or HTTPS</td></tr>
+      <tr><td>Organiser dashboard</td><td><span class="pill">Working</span> polls every 3s; projection is a simple trend estimate, not a model</td></tr>
+      <tr><td>Official event links</td><td><span class="pill">Working</span> imported from the source listings</td></tr>
+      <tr><td>Event cover images</td><td><span class="pill warn">Sample</span> stock images used as placeholders</td></tr>
+      <tr><td>“For you” recommendations</td><td><span class="pill warn">Backend only</span> rules-based endpoint exists; no UI yet</td></tr>
+      <tr><td>Ratings / reviews</td><td><span class="pill warn">Partial</span> demo reviews display; students cannot post yet</td></tr>
+      <tr><td>Payments</td><td><span class="pill warn">Mocked</span> test cards, no gateway</td></tr>
+      <tr><td>Data storage</td><td><span class="pill warn">Local file</span> JSON on disk; single server only</td></tr>
+    </table>
+  </div>
+
+  <h2>If something does not work</h2>
+  <div class="card">
+    <ul>
+      <li><b>The public link does not open:</b> use <code>http://localhost:3400</code> on the demo machine. The public address is a tunnel that is re-pointed automatically, but it can take a minute after a restart.</li>
+      <li><b>Camera scanning does nothing:</b> browsers only allow camera access on <code>localhost</code> or HTTPS. Paste the ticket code instead.</li>
+      <li><b>Nothing shows on the dashboard:</b> make sure you are logged in as the organiser account and that you are on the <b>Organiser</b> page; demo data is seeded for that club.</li>
+      <li><b>Want a clean start:</b> delete <code>.sym-data/uniloop-db.json</code> and restart with <code>node server.js</code>.</li>
+    </ul>
+  </div>
+
+  <footer>
+    UniLoop · demo build · accounts and RSVPs are demo data; event listings and official links come from public club pages.
+  </footer>
+</div>
+</body>
+</html>
