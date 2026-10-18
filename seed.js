@@ -100,7 +100,11 @@ function buildSeed(hashPassword) {
     id, name, email, campusId, role, societyId: societyId || null, interests: interests || [],
     savedEvents: [], ...hashPassword('demo1234'), createdAt: iso(now - 60 * DAY),
   });
-  const mqClub = societies.find((s) => s.campusId === 'mq_sydney') || societies[0];
+  // exec 账号绑定到“活动最多”的社团，保证看板/扫码有内容
+  const counts = {};
+  events.forEach((e) => { if (!e.past) counts[e.societyId] = (counts[e.societyId] || 0) + 1; });
+  const busiestId = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
+  const mqClub = socById[busiestId] || societies.find((s) => s.campusId === 'mq_sydney') || societies[0];
   mkUser('usr_student', 'Jamie Chen', 'student@uniloop.demo', 'mq_sydney', 'student', null, ['outdoors', 'social', 'creative']);
   mkUser('usr_exec', 'Jamie Lee', 'exec@uniloop.demo', mqClub.campusId, 'exec', mqClub.id, ['outdoors', 'social']);
   const execClub = mqClub;

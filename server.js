@@ -466,7 +466,7 @@ route('GET', '/api/exec/dashboard', ({ user, query }) => {
       revenue: rsvps.reduce((s, r) => s + (r.pricePaid || 0), 0),
     },
     series,
-    attendees: rsvps.slice(0, 60).map((r) => { const u = byId(db.users, r.userId) || {}; return { id: r.id, display_name: u.name || 'Student', email: u.email || '', campus_id: u.campusId, status: r.status, ticket_type: r.ticketType, price_paid: r.pricePaid, created_at: r.createdAt }; }),
+    attendees: rsvps.slice(0, 60).map((r) => { const u = byId(db.users, r.userId) || {}; return { id: r.id, display_name: u.name || 'Student', email: u.email || '', campus_id: u.campusId, status: r.status, ticket_type: r.ticketType, price_paid: r.pricePaid, created_at: r.createdAt, ticket_code: r.ticketCode || null, checked_in: !!r.checkedIn }; }),
   };
 });
 route('POST', '/api/exec/events', async ({ user, body }) => {
