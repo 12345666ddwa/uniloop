@@ -145,7 +145,12 @@ function startSession(u) {
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.ico': 'image/x-icon', '.json': 'application/json' };
 function serveStatic(req, res, pathname) {
   let rel = pathname;
-  if (rel === '/' || rel === '/index.html') rel = '/v3/index.html';
+  /* 统一入口：/ 和 /index.html 都跳到 /v3/，保证相对资源路径（app.js / ../assets）能正确解析 */
+  if (rel === '/' || rel === '/index.html') {
+    res.writeHead(302, { Location: '/v3/' });   // 浏览器会保留原 hash
+    return res.end();
+  }
+  if (rel === '/v3') { res.writeHead(301, { Location: '/v3/' }); return res.end(); }
   if (rel.endsWith('/')) rel += 'index.html';
   if (!/\.[a-zA-Z0-9]+$/.test(rel)) rel += '/index.html';   // /v3 → /v3/index.html
   const full = path.normalize(path.join(PUBLIC_DIR, rel));
