@@ -132,7 +132,7 @@ function buildSeed(hashPassword) {
       id: 'rsvp_' + (++seq.rsvp), eventId: ev.id, userId, status: 'CONFIRMED',
       ticketType: member ? 'member' : 'public', pricePaid: member ? ev.priceMember : ev.pricePublic,
       createdAt: iso(now - daysAgo * DAY - (seq.rsvp % 9) * 3600000),
-      checkedIn: false, ticketCode: null,
+      checkedIn: false, ticketCode: require('crypto').randomBytes(4).toString('hex').toUpperCase(),
     });
   };
   const hero = upcoming[0];

@@ -26,6 +26,8 @@
     soc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="3.2"/><circle cx="16.5" cy="10.5" r="2.4"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14 19a4.5 4.5 0 0 1 6.5-3.9"/></svg>',
     saved: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg>',
     me: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>',
+    qr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.4"/><path d="M14 14h2.5v2.5H14zM18.5 18.5H21V21h-2.5zM14 20h2"/></svg>',
+    people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 6.2a3 3 0 0 1 0 5.6M17.5 19a5 5 0 0 0-2-4"/></svg>',
     org: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></svg>'
   };
 
@@ -147,7 +149,9 @@
       '<div class="body"><div class="title">' + esc(e.title) + '</div>' +
       '<div class="meta">' + ICON.cal + ' ' + fmtDay(e.starts_at) + ' · ' + fmtTime(e.starts_at) + '</div>' +
       '<div class="meta">' + ICON.pin + ' ' + esc(String(e.venue).split(',')[0]) + '</div>' +
-      '<div class="foot"><span class="price">' + money(e.your_price) + '</span>' + seatsTag(e) + '</div></div></button>';
+      '<div class="foot"><span class="price">' + money(e.your_price) + '</span>' + seatsTag(e) + '</div>' +
+      (e.source ? '<span class="official-link" data-ext="' + esc(e.source) + '" role="link" tabindex="0">Official page ↗</span>' : '') +
+      '</div></button>';
   }
   function row(e) {
     return '<button class="row" data-open="' + esc(e.id) + '"><span class="rhumb"><img src="' + esc(e.cover_image_url) + '" alt=""></span>' +
@@ -178,7 +182,8 @@
       '<nav class="snav">' + nav.map(function (n) {
         return '<a href="' + n[1] + '"' + (active === n[0] ? ' aria-current="page"' : '') + '>' + n[3] + n[2] + '</a>';
       }).join('') +
-      (S.me && S.me.role === 'exec' ? '<a href="#/organiser"' + (active === 'organiser' ? ' aria-current="page"' : '') + '>' + ICON.org + 'Organiser</a>' : '') +
+      (S.me && S.me.role === 'exec' ? '<a href="#/organiser"' + (active === 'organiser' ? ' aria-current="page"' : '') + '>' + ICON.org + 'Organiser</a>' +
+        '<a href="#/scan">' + ICON.qr + 'Scan tickets</a><a href="#/members">' + ICON.people + 'Members</a>' : '') +
       '</nav>' +
       '<div class="sblock"><h4>When</h4><div class="chips">' +
       [['any', 'Any day'], ['today', 'Today'], ['weekend', 'Weekend'], ['7d', '7 days']].map(function (x) {
@@ -195,6 +200,7 @@
       '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a></div>';
   }
   function tabs() {
+    if (!window.matchMedia('(hover:none) and (pointer:coarse)').matches) return '';
     var act = S.route.name; if (act === 'event') act = 'home';
     var items = [['home', '#/', 'Home', ICON.home], ['societies', '#/societies', 'Societies', ICON.soc], ['saved', '#/saved', 'Saved', ICON.saved], ['my', '#/my', 'Me', ICON.me]];
     return items.map(function (i) {
@@ -212,7 +218,7 @@
       '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.2c3 2.4 4.6 5.6 4.6 8.8S15 18.4 12 20.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4.2 9.2h15.6M4.2 14.8h15.6" stroke="currentColor" stroke-width="1.4" opacity=".55"/></svg>UniLoop</a>' +
       '<span class="city">Sydney</span><span class="sp"></span>' +
       '<button class="avatar" id="avatarBtn">' + (S.me ? esc(initials(S.me.name)) : 'Log in') + '</button></header>' +
-      '<div class="hero-body"><p class="kicker">Tonight on campus</p><h1>Find your kind<br>of evening.</h1>' +
+      '<div class="hero-body"><p class="kicker">Sydney universities</p><h1>What&rsquo;s on<br>this week.</h1>' +
       '<p class="hero-meta">' + (e.title ? '<b>' + esc(e.society_name) + '</b><span class="dot"></span><span>' + fmtDay(e.starts_at) + ' · ' + fmtTime(e.starts_at) + '</span><span class="dot"></span><span>' + esc(String(e.venue).split(',')[0]) + '</span>' : '') + '</p></div>' +
       '<div class="hero-dots">' + [0, 1, 2, 3].map(function (i) { return '<i class="' + (i === S.heroIdx ? 'on' : '') + '"></i>'; }).join('') + '</div></section>';
   }
@@ -246,7 +252,44 @@
       S.campuses.map(function (c) { return '<button class="campus" data-campus="' + esc(c.id) + '"><img src="' + esc(c.logo) + '" alt=""><span>' + esc(c.short) + '</span></button>'; }).join('') + '</div></section>';
   }
 
-  /* ---------------- 活动页 ---------------- */
+  /* ---------------- 活动页（路由） ---------------- */
+  function viewEventPage(e) {
+    if (!e) return '<div class="empty"><b>Event not found</b><a class="btn-quiet" href="#/">Back to Discover</a></div>';
+    var pct = e.capacity ? Math.min(100, Math.round(e.rsvp_count / e.capacity * 100)) : 0;
+    var seatsTxt = e.seats_left == null ? 'No cap' : (e.seats_left === 0 ? 'Full' : e.seats_left + ' spots left');
+    var memberLine = e.price_member < e.price_public
+      ? '<div class="n">Member price ' + money(e.price_member) + ' · join the society to get it</div>' : '';
+    return '<div class="evpage"><a class="evback" href="#/">← Back to Discover</a>' +
+      '<div class="evgrid"><div class="evmain">' +
+        '<div class="evhero"><img src="' + esc(e.cover_image_url) + '" alt="' + esc(e.title) + '"></div>' +
+        '<div class="pg-cat" style="margin-top:16px">' + (CATS[e.category] || 'Event').toUpperCase() + ' · ' + esc(e.campus_name || '') + '</div>' +
+        '<h1>' + esc(e.title) + '</h1>' +
+        '<div class="pg-host"><img src="' + esc(e.society_logo || '') + '" alt=""><div><b>' + esc(e.society_name) + '</b><span>' +
+          (e.society_rating ? '★ ' + e.society_rating + ' · ' : '') + esc(e.campus_name || '') + '</span></div></div>' +
+        (e.source ? '<a class="official-big" href="' + esc(e.source) + '" target="_blank" rel="noopener"><span>Official event page<span>Opens the original listing in a new tab</span></span>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg></a>' : '') +
+        '<div class="pg-meta">' +
+          '<div class="mrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg><div><b>' + fmtDay(e.starts_at) + ' · ' + fmtTime(e.starts_at) + '</b><span>' + (((new Date(e.ends_at) - new Date(e.starts_at)) / 3600000)) + ' hours · ' + (e.audience_scope === 'CAMPUS_ONLY' ? 'Own campus only' : 'Open to all campuses') + '</span></div></div>' +
+          '<div class="mrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><div><b>' + esc(String(e.venue).split(',')[0]) + '</b><span>' + (e.venue_coords ? 'Directions · ' + distOf(e) + ' km from campus' : '') + '</span></div></div>' +
+        '</div>' +
+        '<p class="pg-desc">' + esc(e.description) + '</p>' +
+        '<div class="pg-sec">Spots</div><div class="pg-bar"><span style="width:' + pct + '%"></span></div>' +
+        '<div style="font-size:12px;color:var(--muted)">' + e.rsvp_count + ' going · ' + seatsTxt + '</div>' +
+        '<div class="pg-sec">Where</div><div class="pg-map"><iframe src="' + esc((e.map || {}).osm_embed || '') + '" title="Map" loading="lazy" referrerpolicy="no-referrer"></iframe>' +
+          '<div class="mapbtns"><a href="' + esc((e.map || {}).google_directions || '#') + '" target="_blank" rel="noopener">Google directions</a><a href="' + esc((e.map || {}).apple_maps || '#') + '" target="_blank" rel="noopener">Apple Maps</a></div></div>' +
+      '</div>' +
+      '<aside class="evaside">' +
+        '<div class="evcard"><div class="k">Price</div><div class="v">' + money(e.your_price) + '</div>' + memberLine +
+          (e.my_rsvp ? '<div class="n" style="color:var(--forest);font-weight:700">You are in · ' + (e.my_rsvp.ticket_type === 'member' ? 'member ticket' : 'general ticket') + (e.my_rsvp.ticket_code ? ' · ' + esc(e.my_rsvp.ticket_code) : '') + '</div>' : '') +
+          '<button class="evcta" id="evRsvp"' + (e.my_rsvp || e.seats_left === 0 ? ' disabled' : '') + '>' +
+            (e.my_rsvp ? "You're in" : (e.seats_left === 0 ? 'Full' : 'RSVP' + (e.your_price ? ' · ' + money(e.your_price) : ' free'))) + '</button>' +
+          '<button class="evghost" id="evSave">' + (e.is_saved ? '★ Saved' : '☆ Save for later') + '</button>' +
+          (e.society_membership_price != null ? '<a class="evghost" href="#/society/' + esc(e.society_id) + '">View ' + esc(e.society_name) + ' →</a>' : '') +
+        '</div>' +
+        '<div class="evcard"><div class="k">Going</div><div class="v">' + e.rsvp_count + (e.capacity ? ' <span style="font-size:13px;color:var(--muted)">/ ' + e.capacity + '</span>' : '') + '</div><div class="n">' + seatsTxt + '</div></div>' +
+      '</aside></div></div>';
+  }
+
   function openEvent(id) {
     var e = S.events.filter(function (x) { return x.id === id; })[0];
     if (!e) { api('/api/events/' + encodeURIComponent(id)).then(function (r) { renderEvent(r.event); showEvent(); }).catch(function (err) { toast(err.message); }); return; }
@@ -290,7 +333,6 @@
     try {
       await api('/api/events/' + encodeURIComponent(id) + '/rsvp', { method: 'POST', body: { card: '4242424242424242' } });
       toast('You are on the list.'); await loadMe(); await loadEvents(); route();
-      var e = S.events.filter(function (x) { return x.id === id; })[0]; if (e) renderEvent(e);
     } catch (err) {
       if (err.status === 402) {
         try { await api('/api/events/' + encodeURIComponent(id) + '/rsvp', { method: 'POST', body: { card: '4242424242424242' } }); toast('Paid & added'); await loadMe(); route(); }
@@ -353,7 +395,10 @@
       '<div class="kpi"><div class="k">Saved</div><div class="v">' + money(S.savedMoney) + '</div><div class="n">with member prices</div></div>' +
       '<div class="kpi"><div class="k">Saved events</div><div class="v">' + S.savedEvents.length + '</div><div class="n">on your list</div></div></div></div>' +
       '<div class="sec"><h2>Tickets</h2><span class="sub">' + S.myRsvps.length + '</span></div>' +
-      (S.myRsvps.length ? '<div class="grid">' + S.myRsvps.map(function (r) { return card(r.event); }).join('') + '</div>' : '<div class="empty"><b>No tickets yet</b></div>') +
+      (S.myRsvps.length ? '<div class="grid">' + S.myRsvps.map(function (r) {
+        return '<div style="display:flex;flex-direction:column;gap:6px">' + card(r.event) +
+          '<button class="evghost" data-ticket="' + esc(r.ticket_code || '') + '" style="margin-top:0">Show ticket · ' + esc(r.ticket_code || '—') + '</button></div>';
+      }).join('') + '</div>' : '<div class="empty"><b>No tickets yet</b></div>') +
       '<div class="sec"><h2>My societies</h2></div>' +
       (S.myMemberships.length ? '<div class="socgrid">' + S.socFromMemberships().join('') + '</div>' : '<div class="empty"><b>No memberships</b>Joining unlocks member prices.</div>');
   }
@@ -363,6 +408,51 @@
       return '<button class="soc" data-soc="' + esc(m.society_id) + '"><div class="top"><span class="mark"><img src="' + esc(s.campus_logo) + '" alt=""></span><span><span class="nm">' + esc(m.society_name) + '</span><br><span class="meta">Member · paid ' + money(m.price_paid) + '</span></span></div></button>';
     });
   };
+
+  function ticketUrl(code) { return location.origin + '/#/checkin/' + code; }
+  function showTicket(code) {
+    if (!code) return toast('No ticket code yet');
+    var svg = (window.QR && QR.svg) ? QR.svg(ticketUrl(code), { size: 240, label: 'Ticket QR code' }) : '';
+    var wrap = document.createElement('div');
+    wrap.className = 'scrim on'; wrap.id = 'ticketScrim';
+    wrap.innerHTML = '<div style="margin:auto;max-width:360px;background:var(--surface);border-radius:20px;padding:20px;text-align:center;box-shadow:0 30px 70px -30px rgba(0,0,0,.5)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:14px">Your ticket</b>' +
+      '<button id="ticketClose" style="border:0;background:transparent;font-size:20px;line-height:1;cursor:pointer;color:var(--muted)">×</button></div>' +
+      '<div style="background:#fff;border-radius:14px;padding:12px">' + svg + '</div>' +
+      '<div style="font-family:ui-monospace,monospace;font-size:18px;letter-spacing:.16em;margin-top:12px">' + esc(code) + '</div>' +
+      '<div style="font-size:11.5px;color:var(--muted);margin-top:6px">Show this at the door. Exec scans it to check you in.</div></div>';
+    document.body.appendChild(wrap);
+    wrap.onclick = function (e) { if (e.target === wrap || e.target.id === 'ticketClose') wrap.remove(); };
+  }
+
+  function viewScan() {
+    if (!S.me || S.me.role !== 'exec') return '<div class="empty"><b>Organiser sign-in required</b></div>';
+    return '<div class="evpage" style="max-width:720px"><div class="sec" style="padding-left:0"><h2>Scan tickets</h2><span class="sub">Check-in</span></div>' +
+      '<div class="evcard"><div class="k">Ticket code</div>' +
+      '<input id="scanInput" placeholder="Paste code or ticket link" style="width:100%;height:48px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 12px;font-size:15px;margin-top:8px;color:var(--ink)">' +
+      '<button class="evcta" id="scanBtn">Check in</button>' +
+      '<div id="scanResult" style="margin-top:12px;font-size:13px"></div>' +
+      '<button class="evghost" id="scanCam">Scan with camera</button><video id="scanVideo" playsinline style="display:none;width:100%;border-radius:12px;margin-top:10px"></video></div>' +
+      '<p style="font-size:12px;color:var(--muted);margin-top:12px">Tip: the QR contains ' + esc(location.origin) + '/#/checkin/CODE</p></div>';
+  }
+  async function doScan(code) {
+    try {
+      var r = await api('/api/exec/scan', { method: 'POST', body: { code: code } });
+      $('#scanResult').innerHTML = '<div style="background:#E7F0EA;color:#1F4A3B;padding:12px;border-radius:10px;font-weight:700">✓ ' +
+        esc(r.attendee.name) + (r.already ? ' — already checked in' : ' — checked in') + '</div>';
+      return true;
+    } catch (e) { $('#scanResult').innerHTML = '<div style="background:#FBEDE8;color:#B4472C;padding:12px;border-radius:10px">' + esc(e.message) + '</div>'; return false; }
+  }
+
+  function viewMembers() {
+    if (!S.me || S.me.role !== 'exec') return '<div class="empty"><b>Organiser sign-in required</b></div>';
+    if (!S.members) return '<div class="empty">Loading…</div>';
+    return '<div class="evpage" style="max-width:900px"><div class="sec" style="padding-left:0"><h2>Members</h2><span class="sub">' + S.members.count + ' total</span></div>' +
+      '<div class="evcard" style="padding:4px 14px">' + (S.members.members.length ? S.members.members.map(function (m) {
+        return '<div class="lrow" style="border-color:var(--line)"><div style="width:34px;height:34px;border-radius:50%;background:var(--sage);display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--forest)">' + esc(initials(m.name)) + '</div>' +
+          '<div><div class="t">' + esc(m.name) + '</div><div class="m">' + esc(m.email) + '</div></div><div class="r">' + money(m.price_paid) + '</div></div>';
+      }).join('') : '<div class="empty"><b>No members yet</b></div>') + '</div></div>';
+  }
 
   /* ---------------- 主办方 ---------------- */
   function chart(series, capacity) {
@@ -538,8 +628,22 @@
       S.route = { name: 'saved' }; await loadMe(); $('#view').innerHTML = viewSaved();
     } else if (p[0] === 'my') {
       S.route = { name: 'my' }; await loadMe(); if (!S.societies.length) await loadSocieties(); $('#view').innerHTML = viewMy();
+    } else if (p[0] === 'scan') {
+      S.route = { name: 'scan' }; await loadMe(); $('#view').innerHTML = viewScan();
+    } else if (p[0] === 'members') {
+      S.route = { name: 'members' }; await loadMe();
+      try { S.members = await api('/api/exec/members'); } catch (e) { S.members = null; }
+      $('#view').innerHTML = viewMembers();
+    } else if (p[0] === 'checkin') {
+      S.route = { name: 'scan' }; $('#view').innerHTML = viewScan();
     } else if (p[0] === 'organiser') {
       S.route = { name: 'organiser' }; await loadMe(); if (S.me && S.me.role === 'exec') await loadOrg(); $('#view').innerHTML = viewOrganiser();
+    } else if (p[0] === 'event' && p[1]) {
+      S.route = { name: 'event', id: p[1] };
+      var ev = S.events.filter(function (x) { return x.id === p[1]; })[0];
+      if (!ev) { try { var rr = await api('/api/events/' + encodeURIComponent(p[1])); ev = rr.event; } catch (e) { ev = null; } }
+      $('#view').innerHTML = viewEventPage(ev);
+      S.openEventId = ev ? ev.id : null;
     } else if (p[0] === 'search') {
       S.route = { name: 'home' }; S.q = S.q || ''; $('#view').innerHTML = viewHome();
     } else {
@@ -555,8 +659,8 @@
   function bind() {
     $$('[data-open]').forEach(function (el) {
       el.addEventListener('click', function (ev) {
-        if (ev.target.closest('[data-save]')) return;
-        openEvent(el.dataset.open);
+        if (ev.target.closest('[data-save],[data-ext]')) return;
+        location.hash = '#/event/' + el.dataset.open;
       });
     });
     $$('[data-save]').forEach(function (b) {
@@ -616,7 +720,30 @@
       this.setAttribute('aria-pressed', String(!on)); this.querySelector('svg').setAttribute('fill', !on ? 'currentColor' : 'none');
       setSavedLocal(id, !on); await loadMe(); toast(on ? 'Removed from saved' : 'Saved');
     };
-    var pgRsvp = $('#pgRsvp'); if (pgRsvp) pgRsvp.onclick = function () { if (S.openEventId) rsvp(S.openEventId); };
+    $$('[data-ticket]').forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); showTicket(b.dataset.ticket); }; });
+    var sb = $('#scanBtn'); if (sb) sb.onclick = function () { var v = ($('#scanInput').value || '').trim(); if (!v) return toast('Paste a code first'); doScan(v); };
+    var sc = $('#scanCam'); if (sc) sc.onclick = async function () {
+      try {
+        var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        var video = $('#scanVideo'); video.style.display = 'block'; video.srcObject = stream; await video.play();
+        if (!window.jsQR) { await new Promise(function (res, rej) { var s = document.createElement('script'); s.src = '/v3/vendor/jsqr.js'; s.onload = res; s.onerror = rej; document.body.appendChild(s); }); }
+        var cv = document.createElement('canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
+        var timer = setInterval(function () {
+          if (!video.videoWidth) return;
+          var w = 480, h = Math.round(480 * video.videoHeight / video.videoWidth) || 360;
+          cv.width = w; cv.height = h; cx.drawImage(video, 0, 0, w, h);
+          var r = window.jsQR(cx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'dontInvert' });
+          if (r && r.data) { clearInterval(timer); stream.getTracks().forEach(function (t) { t.stop(); }); video.style.display = 'none'; $('#scanInput').value = r.data; doScan(r.data); }
+        }, 400);
+      } catch (e) { toast('Camera unavailable: ' + e.message); }
+    };
+    var evR = $('#evRsvp'); if (evR) evR.onclick = function () { if (S.openEventId) rsvp(S.openEventId); };
+    var evS = $('#evSave'); if (evS) evS.onclick = async function () {
+      if (!S.me) { S.pending = { type: 'save' }; openAuth(); return; }
+      var id = S.openEventId; var on = this.textContent.indexOf('★') === 0;
+      await api('/api/events/' + encodeURIComponent(id) + '/save', { method: on ? 'DELETE' : 'POST' });
+      setSavedLocal(id, !on); await loadMe(); toast(on ? 'Removed from saved' : 'Saved'); route();
+    };
     var oc = $('#openCreate'); if (oc) oc.onclick = openCreate;
     var sc = $('#searchClose'); if (sc) sc.onclick = closeSearch;
     var ss = $('#searchShow'); if (ss) ss.onclick = function () { if (S.step < 3) { S.step++; renderStep(); } else applySearch(); };
