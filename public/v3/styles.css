@@ -581,3 +581,22 @@ html[data-theme="dark"] .avatar{background:rgba(255,255,255,.12)}
 .card .official-link{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:750;
   color:var(--forest);text-decoration:none;padding:2px 0}
 .card .official-link:hover{text-decoration:underline}
+
+/* ==========================================================================
+   v3.4 — 看板实时 RSVP 列表 + 新记录高亮；票列表折叠
+   ========================================================================== */
+.lrow .av{width:34px;height:34px;border-radius:50%;background:var(--sage);color:var(--forest);
+  display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+.lrow .who{font-size:12.5px;font-weight:650;color:var(--ink)}
+.lrow .sub2{font-size:10.5px;color:var(--muted);margin-top:1px}
+.lrow .pill-ok{font-size:10px;font-weight:750;color:var(--forest);background:var(--sage);border-radius:6px;padding:3px 7px}
+.lrow .pill-wait{font-size:10px;font-weight:750;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:3px 7px}
+.lrow.flash{animation:flashRow 2.6s ease}
+@keyframes flashRow{
+  0%{background:rgba(216,88,58,.18)}
+  35%{background:rgba(216,88,58,.10)}
+  100%{background:transparent}
+}
+.livedot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--coral);margin-right:6px;
+  animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}

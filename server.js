@@ -45,7 +45,7 @@ const isSaved = (u, evId) => !!u && (u.savedEvents || []).includes(evId);
 function publicUser(u) {
   if (!u) return null;
   const c = campusOf(u.campusId);
-  return { id: u.id, name: u.name, email: u.email, campus_id: u.campusId, campus_name: c.name, campus_logo: c.logo, role: u.role, society_id: u.societyId, interests: u.interests || [] };
+  return { id: u.id, name: u.name, username: u.username || null, email: u.email, campus_id: u.campusId, campus_name: c.name, campus_logo: c.logo, role: u.role, society_id: u.societyId, interests: u.interests || [] };
 }
 function ratingOf(societyId) {
   const rs = db.reviews.filter((r) => r.societyId === societyId);
@@ -170,12 +170,32 @@ const needExec = (u) => { needUser(u); if (u.role !== 'exec') fail(403, 'Society
 route('GET', '/_sym/health', () => ({ ok: true, users: db.users.length, events: db.events.length, societies: db.societies.length, reviews: db.reviews.length }));
 
 /* 认证 */
+const USERNAME_RE = /^[a-z0-9._]{3,20}$/;
+const unameTaken = (u) => db.users.some((x) => (x.username || '').toLowerCase() === u);
+
+route('GET', '/api/username-available', ({ query }) => {
+  const u = String(query.u || '').trim().toLowerCase().replace(/^@/, '');
+  if (!USERNAME_RE.test(u)) return { available: false, reason: '3–20 characters: letters, numbers, dots or underscores.' };
+  if (unameTaken(u)) return { available: false, reason: 'That username is taken.' };
+  return { available: true, reason: 'Available' };
+});
+
 route('POST', '/api/auth/signup', async ({ body }) => {
   const name = String(body.name || '').trim(), email = String(body.email || '').trim().toLowerCase(), pw = String(body.password || '');
   if (!name || !email.includes('@')) fail(400, 'Enter your name and a valid email.');
   if (pw.length < 6) fail(400, 'Password must be at least 6 characters.');
   if (db.users.some((u) => u.email === email)) fail(409, 'That email already has an account.');
-  const u = { id: 'usr_' + nextId('user'), name, email, campusId: body.campus_id || 'mq_sydney', role: 'student', societyId: null, interests: Array.isArray(body.interests) ? body.interests.slice(0, 12) : [], savedEvents: [], ...hashPassword(pw), createdAt: iso() };
+  let username = String(body.username || '').trim().toLowerCase().replace(/^@/, '');
+  if (username) {
+    if (!USERNAME_RE.test(username)) fail(400, 'Username: 3–20 letters, numbers, dots or underscores.');
+    if (unameTaken(username)) fail(409, 'That username is taken. Try another.');
+  } else {
+    const base = name.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.|\.$/g, '').slice(0, 15) || 'student';
+    username = base;
+    let n = 1;
+    while (unameTaken(username)) username = base + (++n);
+  }
+  const u = { id: 'usr_' + nextId('user'), name, username, email, campusId: body.campus_id || 'mq_sydney', role: 'student', societyId: null, interests: Array.isArray(body.interests) ? body.interests.slice(0, 12) : [], savedEvents: [], ...hashPassword(pw), createdAt: iso() };
   db.users.push(u);
   return { __headers: startSession(u), user: publicUser(u) };
 });

@@ -34,6 +34,7 @@
   var S = {
     me: null, events: [], campuses: [], societies: [], savedEvents: [], myRsvps: [], myMemberships: [], savedMoney: 0,
     q: '', where: 'any', when: 'any', date: '', what: 'all', free: false, radius: 0,
+    showAllTickets: false, showPastTickets: false, flashIds: [], orgTimer: null, unameOk: null,
     pending: {}, step: 1, route: { name: 'home' }, heroIdx: 0, openEventId: null, org: null, orgDash: null, socTab: 'upcoming', socData: null
   };
 
@@ -388,17 +389,35 @@
   }
   function viewMy() {
     if (!S.me) return '<div class="empty"><b>Sign in to see your stuff</b><div style="margin-top:12px"><button class="filter" id="loginBtn">Log in</button></div></div>';
-    return '<div class="sec" style="padding-top:28px"><h2>My stuff</h2><span class="sub">' + esc(S.me.campus_name) + '</span></div>' +
+    return '<div class="sec" style="padding-top:28px"><h2>My stuff</h2><span class="sub">' + (S.me.username ? '@' + esc(S.me.username) + ' · ' : '') + esc(S.me.campus_name) + '</span></div>' +
       '<div style="padding:0 16px 6px"><button class="themebtn" id="themeBtn2" style="margin-top:0">' + (currentTheme() === 'dark' ? '☀ Switch to light' : '☾ Switch to dark') + '</button></div>' +
       '<div style="padding:0 16px 8px"><div class="kpis" style="padding:0"><div class="kpi"><div class="k">Tickets</div><div class="v">' + S.myRsvps.length + '</div><div class="n">upcoming</div></div>' +
       '<div class="kpi"><div class="k">Societies</div><div class="v">' + S.myMemberships.length + '</div><div class="n">memberships</div></div>' +
       '<div class="kpi"><div class="k">Saved</div><div class="v">' + money(S.savedMoney) + '</div><div class="n">with member prices</div></div>' +
       '<div class="kpi"><div class="k">Saved events</div><div class="v">' + S.savedEvents.length + '</div><div class="n">on your list</div></div></div></div>' +
-      '<div class="sec"><h2>Tickets</h2><span class="sub">' + S.myRsvps.length + '</span></div>' +
-      (S.myRsvps.length ? '<div class="grid">' + S.myRsvps.map(function (r) {
-        return '<div style="display:flex;flex-direction:column;gap:6px">' + card(r.event) +
-          '<button class="evghost" data-ticket="' + esc(r.ticket_code || '') + '" style="margin-top:0">Show ticket · ' + esc(r.ticket_code || '—') + '</button></div>';
-      }).join('') + '</div>' : '<div class="empty"><b>No tickets yet</b></div>') +
+      (function () {
+        var now = Date.now();
+        var up = S.myRsvps.filter(function (r) { return new Date(r.event.starts_at).getTime() >= now; });
+        var past = S.myRsvps.filter(function (r) { return new Date(r.event.starts_at).getTime() < now; });
+        var shown = S.showAllTickets ? up : up.slice(0, 3);
+        var html = '<div class="sec"><h2>Upcoming tickets</h2><span class="sub">' + up.length + '</span></div>';
+        if (!up.length) html += '<div class="empty"><b>No upcoming tickets</b>RSVP to something on Discover.</div>';
+        else {
+          html += '<div class="grid">' + shown.map(function (r) {
+            return '<div style="display:flex;flex-direction:column;gap:6px">' + card(r.event) +
+              '<button class="evghost" data-ticket="' + esc(r.ticket_code || '') + '" style="margin-top:0">Show ticket · ' + esc(r.ticket_code || '—') + '</button></div>';
+          }).join('') + '</div>';
+          if (up.length > 3) html += '<div style="padding:8px 16px 0"><button class="evghost" id="toggleTickets">' +
+            (S.showAllTickets ? 'Show fewer' : 'Show all ' + up.length + ' tickets') + '</button></div>';
+        }
+        if (past.length) {
+          html += '<div class="sec"><h2>Past tickets</h2><span class="sub">' + past.length + '</span></div>';
+          html += '<div style="padding:0 16px"><button class="evghost" id="togglePast">' +
+            (S.showPastTickets ? 'Hide past tickets' : 'Show ' + past.length + ' past tickets') + '</button></div>';
+          if (S.showPastTickets) html += '<div class="grid" style="margin-top:10px">' + past.slice(0, 12).map(function (r) { return card(r.event); }).join('') + '</div>';
+        }
+        return html;
+      })() +
       '<div class="sec"><h2>My societies</h2></div>' +
       (S.myMemberships.length ? '<div class="socgrid">' + S.socFromMemberships().join('') + '</div>' : '<div class="empty"><b>No memberships</b>Joining unlocks member prices.</div>');
   }
@@ -483,6 +502,18 @@
       '<div class="kpi"><div class="k">Revenue</div><div class="v">' + money(st.revenue) + '</div><div class="n">tickets + members</div></div></div>' +
       '<div class="chartcard"><h2>Will it fill?</h2><p class="cap">Cumulative RSVPs, last 14 days · capacity line</p>' + chart(d.series, (d.event || {}).capacity) +
       '<p style="font-size:11.5px;color:var(--muted);margin:8px 0 0">' + (ds.rsvp_count || 0) + ' of ' + ((d.event || {}).capacity || '∞') + ' · ' + (ds.needed_to_fill == null ? 'no cap' : ds.needed_to_fill + ' more to fill') + ' · projected ' + (ds.projected_final || 0) + '</p></div>' +
+      '<div class="sec"><h2>Recent RSVPs</h2><span class="sub"><span class="livedot"></span>live · 3s</span></div>' +
+      '<div class="list" id="orgAttendees">' + (function () {
+        var rows = (S.orgDash && S.orgDash.attendees) || [];
+        if (!rows.length) return '<div class="empty"><b>No RSVPs yet</b>Share the event link.</div>';
+        return rows.slice(0, 8).map(function (a) {
+          var flash = S.flashIds.indexOf(a.id) > -1 ? ' flash' : '';
+          return '<div class="lrow' + flash + '"><div class="av">' + esc(initials(a.display_name)) + '</div>' +
+            '<div style="min-width:0"><div class="who">' + esc(a.display_name) + '</div>' +
+            '<div class="sub2">' + (a.ticket_code ? esc(a.ticket_code) + ' · ' : '') + (a.ticket_type === 'member' ? 'member' : 'general') + ' · ' + (a.email ? esc(a.email.split('@')[0]) : '') + '</div></div>' +
+            '<div class="r">' + (a.checked_in ? '<span class="pill-ok">✓ checked in</span>' : '<span class="pill-wait">not yet</span>') + '</div></div>';
+        }).join('');
+      })() + '</div>' +
       '<div class="sec"><h2>Upcoming</h2><span class="sub">' + h.upcoming.length + '</span></div><div class="list">' +
       h.upcoming.map(function (e) { return '<div class="lrow" data-open="' + esc(e.id) + '"><img src="' + esc(e.cover_image_url) + '" alt=""><div><div class="t">' + esc(e.title) + '</div><div class="m">' + fmtDay(e.starts_at) + ' · ' + esc(String(e.venue).split(',')[0]) + '</div></div><div class="r">' + e.rsvp_count + '/' + (e.capacity || '∞') + '</div></div>'; }).join('') + '</div>' +
       '<div class="sec"><h2>Past events</h2><span class="sub">' + h.past.length + '</span></div><div class="gallery">' +
@@ -565,6 +596,7 @@
     var login = authMode === 'login';
     $('#authTitle').textContent = login ? 'Log in' : 'Join UniLoop';
     $('#fName').style.display = login ? 'none' : '';
+    $('#fUsername').style.display = login ? 'none' : '';
     $('#fCampus').style.display = login ? 'none' : '';
     $('#authSubmit').textContent = login ? 'Log in' : 'Create account';
     $$('#authSheet [data-auth]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.auth === authMode)); });
@@ -572,9 +604,13 @@
   }
   async function submitAuth() {
     var err = $('#authErr'); err.classList.add('is-hidden');
+    if (authMode === 'signup') {
+      var uv = ($('#auUsername').value || '').trim();
+      if (uv && S.unameOk === false) { err.textContent = 'Pick a different username.'; err.classList.remove('is-hidden'); return; }
+    }
     try {
       var payload = authMode === 'login' ? { email: $('#auEmail').value.trim(), password: $('#auPass').value }
-        : { name: $('#auName').value.trim(), email: $('#auEmail').value.trim(), password: $('#auPass').value, campus_id: $('#auCampus').value };
+        : { name: $('#auName').value.trim(), username: ($('#auUsername').value || '').trim(), email: $('#auEmail').value.trim(), password: $('#auPass').value, campus_id: $('#auCampus').value };
       var r = await api('/api/auth/' + authMode, { method: 'POST', body: payload });
       closeAuth(); toast('Signed in as ' + r.user.name.split(' ')[0]);
       await loadMe(); await loadEvents(); await loadSocieties();
@@ -613,6 +649,30 @@
   async function loadOrg() {
     try { S.org = await api('/api/exec/hub'); S.orgDash = await api('/api/exec/dashboard'); } catch (e) { S.org = null; S.orgDash = null; }
   }
+  function stopOrgPolling() { if (S.orgTimer) { clearInterval(S.orgTimer); S.orgTimer = null; } }
+  function startOrgPolling() {
+    stopOrgPolling();
+    S.orgTimer = setInterval(async function () {
+      if (S.route.name !== 'organiser') return stopOrgPolling();
+      try {
+        var hub = await api('/api/exec/hub'), dash = await api('/api/exec/dashboard');
+        var prev = ((S.orgDash && S.orgDash.attendees) || []).map(function (a) { return a.id; });
+        var fresh = (dash.attendees || []).filter(function (a) { return prev.indexOf(a.id) === -1; }).map(function (a) { return a.id; });
+        var changed = fresh.length || (hub.stats.rsvps_upcoming !== (S.org ? S.org.stats.rsvps_upcoming : -1));
+        S.org = hub; S.orgDash = dash;
+        if (changed) {
+          S.flashIds = fresh;
+          if (fresh.length) toast(fresh.length + ' new RSVP' + (fresh.length > 1 ? 's' : '') + ' just now');
+          var main = document.getElementById('main'); var y = main ? main.scrollTop : 0;
+          if (S.route.name === 'organiser') {
+            $('#view').innerHTML = viewOrganiser(); bind();
+            if (main) main.scrollTop = y;
+          }
+          setTimeout(function () { S.flashIds = []; }, 3000);
+        }
+      } catch (e) { /* 静默失败，下次再试 */ }
+    }, 3000);
+  }
 
   /* ---------------- 路由 ---------------- */
   async function route() {
@@ -637,7 +697,7 @@
     } else if (p[0] === 'checkin') {
       S.route = { name: 'scan' }; $('#view').innerHTML = viewScan();
     } else if (p[0] === 'organiser') {
-      S.route = { name: 'organiser' }; await loadMe(); if (S.me && S.me.role === 'exec') await loadOrg(); $('#view').innerHTML = viewOrganiser();
+      S.route = { name: 'organiser' }; await loadMe(); if (S.me && S.me.role === 'exec') await loadOrg(); $('#view').innerHTML = viewOrganiser(); startOrgPolling();
     } else if (p[0] === 'event' && p[1]) {
       S.route = { name: 'event', id: p[1] };
       var ev = S.events.filter(function (x) { return x.id === p[1]; })[0];
@@ -649,6 +709,7 @@
     } else {
       S.route = { name: 'home' }; $('#view').innerHTML = viewHome();
     }
+    if (S.route.name !== 'organiser') stopOrgPolling();
     $('#sidebar').innerHTML = sidebar();
     $('#tabs').innerHTML = tabs();
     bind();
@@ -720,6 +781,8 @@
       this.setAttribute('aria-pressed', String(!on)); this.querySelector('svg').setAttribute('fill', !on ? 'currentColor' : 'none');
       setSavedLocal(id, !on); await loadMe(); toast(on ? 'Removed from saved' : 'Saved');
     };
+    var tt = $('#toggleTickets'); if (tt) tt.onclick = function () { S.showAllTickets = !S.showAllTickets; route(); };
+    var tp = $('#togglePast'); if (tp) tp.onclick = function () { S.showPastTickets = !S.showPastTickets; route(); };
     $$('[data-ticket]').forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); showTicket(b.dataset.ticket); }; });
     var sb = $('#scanBtn'); if (sb) sb.onclick = function () { var v = ($('#scanInput').value || '').trim(); if (!v) return toast('Paste a code first'); doScan(v); };
     var sc = $('#scanCam'); if (sc) sc.onclick = async function () {
@@ -764,6 +827,27 @@
     var ac = $('#authClose'); if (ac) ac.onclick = closeAuth;
     $$('#authSheet [data-auth]').forEach(function (b) { b.onclick = function () { authMode = b.dataset.auth; syncAuth(); }; });
     $$('#authSheet [data-demo]').forEach(function (b) { b.onclick = function () { $('#auEmail').value = b.dataset.demo; $('#auPass').value = 'demo1234'; authMode = 'login'; syncAuth(); submitAuth(); }; });
+    var un = $('#auUsername');
+    if (un) {
+      var unTimer = null;
+      un.oninput = function () {
+        var v = un.value.trim().toLowerCase().replace(/^@/, '');
+        var msg = $('#unameMsg');
+        S.unameOk = null;
+        if (!v) { msg.textContent = ''; msg.style.color = 'var(--muted)'; return; }
+        if (!/^[a-z0-9._]{3,20}$/.test(v)) { msg.textContent = '3–20 characters: letters, numbers, dots, underscores'; msg.style.color = 'var(--coral)'; return; }
+        msg.textContent = 'Checking…'; msg.style.color = 'var(--muted)';
+        clearTimeout(unTimer);
+        unTimer = setTimeout(async function () {
+          try {
+            var r = await api('/api/username-available?u=' + encodeURIComponent(v));
+            S.unameOk = !!r.available;
+            msg.textContent = (r.available ? '✓ @' + v + ' is available' : '✗ ' + r.reason);
+            msg.style.color = r.available ? 'var(--forest)' : 'var(--coral)';
+          } catch (e) { msg.textContent = ''; }
+        }, 350);
+      };
+    }
     var as = $('#authSubmit'); if (as) as.onclick = submitAuth;
     var cc = $('#createClose'); if (cc) cc.onclick = closeCreate;
     var cs = $('#createSubmit'); if (cs) cs.onclick = submitCreate;

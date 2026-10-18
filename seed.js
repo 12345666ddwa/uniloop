@@ -113,6 +113,17 @@ function buildSeed(hashPassword) {
     mkUser('usr_' + i, n, slug(n) + '@students.' + campus.split('_')[0] + '.edu.au', campus, 'student', null,
       [['outdoors', 'social', 'creative', 'sport', 'careers', 'other'][i % 6]]);
   });
+  // 统一补 username（唯一）
+  const seenNames = new Set();
+  users.forEach(function (u) {
+    var base = String(u.name || 'student').toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.|\.$/g, '').slice(0, 15) || 'student';
+    var uname = base, n = 1;
+    while (seenNames.has(uname)) uname = base + (++n);
+    seenNames.add(uname);
+    u.username = uname;
+  });
+  users.find((u) => u.id === 'usr_student').username = 'jamie.chen';
+  users.find((u) => u.id === 'usr_exec').username = 'jamie.lee';
   const students = users.filter((u) => u.role === 'student');
 
   /* ---- 会员（exec + 少量学生加入热门社团） ---- */
