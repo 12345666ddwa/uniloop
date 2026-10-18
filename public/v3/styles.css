@@ -492,3 +492,50 @@ html[data-theme="dark"] .avatar{background:rgba(255,255,255,.12)}
 .themebtn:hover{border-color:rgba(255,255,255,.42);color:#fff}
 .themebtn svg{width:15px;height:15px;opacity:.85}
 @media (max-width:899px){.themebtn{border-color:var(--line);color:var(--ink2);background:var(--surface)}}
+
+/* ==========================================================================
+   v3.2 — 卡片放大 + 深色文字修复 + 官方链接 + 社团社交链接
+   ========================================================================== */
+/* 修复：卡片是 <button>，默认颜色是黑色 → 深色模式下看不见 */
+.card, .row, .soc { color: var(--ink); }
+.card .title, .row .rtitle, .soc .nm { color: var(--ink); }
+.card .price, .row .rprice { color: var(--ink); }
+.card .seats { color: var(--muted); }
+
+/* 手机：卡片放大 */
+@media (max-width:899px){
+  .rail .card{width:196px}
+  .rail .card .thumb{height:124px}
+  .grid{grid-template-columns:1fr;gap:14px}
+  .grid .card .thumb{height:210px}
+  .card .title{font-size:15px}
+}
+/* 桌面：卡片明显放大 */
+@media (min-width:900px){
+  .rail .card{width:272px}
+  .rail .card .thumb{height:170px}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .grid .card .thumb{height:196px}
+  .card .title{font-size:15.5px}
+  .socgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* 卡片上的官方链接小按钮 */
+.card .ext{position:absolute;right:44px;top:6px;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,253,248,.94);display:grid;place-items:center;color:#3A4A42;cursor:pointer}
+.card .ext svg{width:14px;height:14px}
+
+/* 活动页官方链接 */
+.official{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:12px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;
+  font-weight:650;font-size:13px;margin:14px 0 4px}
+.official:hover{border-color:var(--forest);color:var(--forest)}
+.official svg{width:15px;height:15px;opacity:.7}
+
+/* 社团主页：社交/官方链接（替代社媒化的评价区） */
+.socials{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 16px 18px}
+.socials a{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px;border:1px solid var(--line);
+  border-radius:12px;background:var(--surface);color:var(--ink2);text-decoration:none;font-size:11px;font-weight:650;text-align:center}
+.socials a:hover{border-color:var(--forest);color:var(--forest)}
+.socials svg{width:20px;height:20px;opacity:.75}
+@media (min-width:900px){ .socials{max-width:900px;grid-template-columns:repeat(3,220px);padding:0 40px 20px} }

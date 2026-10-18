@@ -17,6 +17,9 @@
   var CATCOL = { outdoors: '#1F4A3B', social: '#D8583A', creative: '#B4622E', sport: '#2E5E8C', careers: '#7A3E6B', other: '#6B7280' };
   var CAMPCOL = { mq_sydney: '#1F4A3B', usyd_camperdown: '#D8583A', unsw_kensington: '#2E5E8C', uts_haymarket: '#B4622E', wsu_parramatta: '#7A3E6B' };
   var ICON = {
+    ig: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>',
+    globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.6"/><path d="M3.6 12h16.8M12 3.4c2.4 2.3 3.6 5.3 3.6 8.6S14.4 18.3 12 20.6c-2.4-2.3-3.6-5.3-3.6-8.6S9.6 5.7 12 3.4Z"/></svg>',
     cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>',
     pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>',
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-5.5h-5V21H5a1 1 0 0 1-1-1v-9.5Z"/></svg>',
@@ -139,6 +142,7 @@
       '<div class="thumb"><img src="' + esc(e.cover_image_url) + '" alt="" loading="lazy">' +
       '<span class="date">' + MONTHS[d.getMonth()].toUpperCase() + ' ' + d.getDate() + '</span>' +
       '<span class="chipcat">' + esc(CATS[e.category] || 'Event') + '</span>' +
+      (e.source ? '<span class="ext" data-ext="' + esc(e.source) + '" role="button" aria-label="Official event page">' + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>' + '</span>' : '') +
       '<span class="save" data-save="' + esc(e.id) + '" role="button" aria-label="Save" aria-pressed="' + (!!e.is_saved) + '"><svg viewBox="0 0 24 24" fill="' + (e.is_saved ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg></span></div>' +
       '<div class="body"><div class="title">' + esc(e.title) + '</div>' +
       '<div class="meta">' + ICON.cal + ' ' + fmtDay(e.starts_at) + ' · ' + fmtTime(e.starts_at) + '</div>' +
@@ -273,7 +277,7 @@
     if (e.map) { $('#pgMap').src = e.map.osm_embed; $('#pgGmaps').href = e.map.google_directions; $('#pgApple').href = e.map.apple_maps; }
     $('#pgSave').setAttribute('aria-pressed', String(!!e.is_saved));
     $('#pgSave').querySelector('svg').setAttribute('fill', e.is_saved ? 'currentColor' : 'none');
-    $('#pgAside').innerHTML = '<div class="kpi"><div class="k">Price</div><div class="v">' + money(e.your_price) + '</div>' +
+    $('#pgAside').innerHTML = (e.source ? '<a class="official" href="' + esc(e.source) + '" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>Official event page</a>' : '') + '<div class="kpi"><div class="k">Price</div><div class="v">' + money(e.your_price) + '</div>' +
       '<div class="n">' + (e.price_member < e.price_public ? 'Member price ' + money(e.price_member) : 'Test payments only') + '</div></div>' +
       '<div class="kpi" style="margin-top:10px"><div class="k">Going</div><div class="v">' + e.rsvp_count + (e.capacity ? ' <small>/ ' + e.capacity + '</small>' : '') + '</div><div class="n">' + (e.seats_left == null ? 'No cap' : e.seats_left + ' spots left') + '</div></div>';
     S.openEventId = e.id;
@@ -307,25 +311,30 @@
   }
   function viewSociety(d) {
     if (!d) return '<div class="empty"><b>Society not found</b></div>';
-    var s = d.society, tab = S.socTab;
+    var s = d.society;
     var cover = (d.upcoming[0] || d.past[0] || {}).cover_image_url || '/assets/events/ev1.jpg';
-    var body = '';
-    if (tab === 'upcoming') body = d.upcoming.length ? '<div class="grid">' + d.upcoming.map(card).join('') + '</div>' : '<div class="empty"><b>Nothing scheduled</b></div>';
-    else if (tab === 'past') body = d.gallery.length ? '<div class="gallery">' + d.gallery.map(function (g) { return '<figure><img src="' + esc(g.image) + '" alt=""><figcaption>' + esc(g.title) + '</figcaption></figure>'; }).join('') + '</div>' : '<div class="empty"><b>No past events</b></div>';
-    else body = '<div class="reviews">' + (d.reviews.length ? d.reviews.map(function (r) {
-      return '<div class="review"><div class="top"><span class="who">' + esc(r.display_name) + '</span>' + stars(r.rating) + '</div><div class="txt">' + esc(r.text) + '</div></div>';
-    }).join('') : '<div class="empty"><b>No reviews yet</b></div>') + '</div>';
+    var socials = s.socials || {};
+    var ig = socials.instagram || ('https://www.instagram.com/explore/search/keyword/?q=' + encodeURIComponent(s.name));
+    var luma = socials.luma || ('https://lu.ma/search?q=' + encodeURIComponent(s.name));
+    var web = socials.web || ('https://www.google.com/search?q=' + encodeURIComponent(s.name));
     return '<div class="hub-cover"><img src="' + esc(cover) + '" alt=""></div>' +
       '<div class="hub-head"><div class="hub-logo"><img src="' + esc(s.campus_logo) + '" alt=""></div><div class="hub-title"><h1>' + esc(s.name) + '</h1><p>' + esc(s.campus_name) + ' · ' + esc((s.tags || []).join(' · ')) + '</p></div>' +
       (s.is_member ? '<span class="pill-soft">Member</span>' : '<button class="filter" id="joinSoc" data-soc="' + esc(s.id) + '" data-price="' + s.membership_price + '" style="flex:0 0 auto">Join · ' + money(s.membership_price) + '</button>') + '</div>' +
-      '<div class="hub-stats"><div class="cell"><div class="n">' + (s.rating == null ? '—' : s.rating.toFixed(1)) + '</div><div class="l">Rating</div></div>' +
-      '<div class="cell"><div class="n">' + s.member_count + '</div><div class="l">Members</div></div>' +
+      '<div class="hub-stats"><div class="cell"><div class="n">' + s.member_count + '</div><div class="l">Members</div></div>' +
       '<div class="cell"><div class="n">' + s.followers + '</div><div class="l">Followers</div></div>' +
-      '<div class="cell"><div class="n">' + (d.upcoming.length + d.past.length) + '</div><div class="l">Events</div></div></div>' +
-      '<div class="tabs2">' + [['upcoming', 'Upcoming'], ['past', 'Past & photos'], ['reviews', 'Reviews']].map(function (t) {
-        return '<button data-soctab="' + t[0] + '" aria-selected="' + (tab === t[0]) + '">' + t[1] + '</button>';
-      }).join('') + '</div>' + body +
-      '<div style="padding:16px"><p class="pg-desc">' + esc(s.blurb) + '</p></div>';
+      '<div class="cell"><div class="n">' + d.upcoming.length + '</div><div class="l">Upcoming</div></div>' +
+      '<div class="cell"><div class="n">' + (s.type || 'Society') + '</div><div class="l">Type</div></div></div>' +
+      '<div style="padding:0 16px"><p class="pg-desc">' + esc(s.blurb) + '</p></div>' +
+      '<div class="pg-sec" style="padding:0 16px">Official links</div>' +
+      '<div class="socials">' +
+      '<a href="' + esc(ig) + '" target="_blank" rel="noopener">' + ICON.ig + 'Instagram</a>' +
+      '<a href="' + esc(luma) + '" target="_blank" rel="noopener">' + ICON.link + 'Luma page</a>' +
+      '<a href="' + esc(web) + '" target="_blank" rel="noopener">' + ICON.globe + 'Website / search</a>' +
+      '</div>' +
+      '<div class="sec" style="padding-top:10px"><h2>Upcoming</h2><span class="sub">' + d.upcoming.length + ' events</span></div>' +
+      (d.upcoming.length ? '<div class="grid">' + d.upcoming.map(card).join('') + '</div>' : '<div class="empty"><b>Nothing scheduled</b></div>') +
+      (d.past.length ? '<div class="sec"><h2>Past photos</h2><span class="sub">' + d.past.length + '</span></div><div class="gallery">' +
+        d.gallery.map(function (g) { return '<figure><img src="' + esc(g.image) + '" alt=""><figcaption>' + esc(g.title) + '</figcaption></figure>'; }).join('') + '</div>' : '');
   }
 
   /* ---------------- 我的 / 收藏 ---------------- */
@@ -632,7 +641,11 @@
     var cc = $('#createClose'); if (cc) cc.onclick = closeCreate;
     var cs = $('#createSubmit'); if (cs) cs.onclick = submitCreate;
   }
-  document.addEventListener('click', function (ev) { if (ev.target.id === 'scrim') { closeSearch(); closeAuth(); closeCreate(); } });
+  document.addEventListener('click', function (ev) {
+    var ext = ev.target.closest('[data-ext]');
+    if (ext) { ev.stopPropagation(); ev.preventDefault(); window.open(ext.dataset.ext, '_blank', 'noopener'); return; }
+    if (ev.target.id === 'scrim') { closeSearch(); closeAuth(); closeCreate(); }
+  });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSearch(); closeAuth(); closeCreate(); closeEvent(); } });
   function observeReveals() {
     if (!('IntersectionObserver' in window)) { $$('.reveal').forEach(function (e) { e.classList.add('in'); }); return; }

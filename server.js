@@ -92,11 +92,12 @@ function eventOut(e, user) {
     society_rating: ratingOf(e.societyId).rating,
     cover_image_url: e.coverImageUrl, capacity: e.capacity, status: e.status,
     rsvp_count: taken, page_views: e.pageViews || 0, past: !!e.past,
+    source: e.source || '', kind: e.kind || '',
     price_member: e.priceMember, price_public: e.pricePublic,
     your_price: member ? e.priceMember : e.pricePublic, is_member: member,
     seats_left: e.capacity == null ? null : Math.max(0, e.capacity - taken),
     is_saved: isSaved(user, e.id),
-    my_rsvp: mine ? { id: mine.id, status: mine.status, ticket_type: mine.ticketType, price_paid: mine.pricePaid, created_at: mine.createdAt } : null,
+    my_rsvp: mine ? { id: mine.id, status: mine.status, ticket_type: mine.ticketType, price_paid: mine.pricePaid, created_at: mine.createdAt, ticket_code: mine.ticketCode || null, checked_in: !!mine.checkedIn } : null,
     can_rsvp: !!user && !e.past && (e.audienceScope !== 'CAMPUS_ONLY' || user.campusId === e.campusId)
       && (e.capacity == null || taken < e.capacity) && !mine,
     society_membership_price: soc.membershipPrice || 0,
@@ -141,13 +142,16 @@ function startSession(u) {
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.ico': 'image/x-icon', '.json': 'application/json' };
 function serveStatic(req, res, pathname) {
   let rel = pathname;
-  if (rel === '/' || rel.endsWith('/')) rel += 'index.html';
+  if (rel === '/' || rel === '/index.html') rel = '/v3/index.html';
+  if (rel.endsWith('/')) rel += 'index.html';
   if (!/\.[a-zA-Z0-9]+$/.test(rel)) rel += '/index.html';   // /v3 → /v3/index.html
   const full = path.normalize(path.join(PUBLIC_DIR, rel));
   if (!full.startsWith(PUBLIC_DIR)) return send(res, 403, 'Forbidden');
   fs.readFile(full, (err, data) => {
     if (err) return fs.readFile(path.join(PUBLIC_DIR, 'index.html'), (e2, html) => e2 ? send(res, 404, 'Not found') : (res.writeHead(200, { 'Content-Type': MIME['.html'] }), res.end(html)));
-    res.writeHead(200, { 'Content-Type': MIME[path.extname(full)] || 'application/octet-stream', 'Cache-Control': 'public, max-age=120' });
+    var ext = path.extname(full).toLowerCase();
+    var cache = (ext === '.html' || ext === '.css' || ext === '.js') ? 'no-store' : 'public, max-age=86400';
+    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': cache });
     res.end(data);
   });
 }
@@ -192,7 +196,7 @@ route('GET', '/api/me', ({ user }) => {
     return { id: m.id, society_id: m.societyId, society_name: s.name, price_paid: m.pricePaid, joined_at: m.joinedAt };
   });
   const rsvps = db.rsvps.filter((r) => r.userId === user.id && r.status === 'CONFIRMED')
-    .map((r) => ({ id: r.id, ticket_type: r.ticketType, price_paid: r.pricePaid, created_at: r.createdAt, event: eventOut(byId(db.events, r.eventId), user) }))
+    .map((r) => ({ id: r.id, ticket_type: r.ticketType, price_paid: r.pricePaid, created_at: r.createdAt, ticket_code: r.ticketCode || null, checked_in: !!r.checkedIn, event: eventOut(byId(db.events, r.eventId), user) }))
     .sort((a, b) => new Date(a.event.starts_at) - new Date(b.event.starts_at));
   const saved = (user.savedEvents || []).map((id) => byId(db.events, id)).filter(Boolean).map((e) => eventOut(e, user));
   const savedMoney = rsvps.reduce((s, r) => s + (r.ticket_type === 'member' ? Math.max(0, r.event.price_public - r.price_paid) : 0), 0);
@@ -320,7 +324,8 @@ route('POST', '/api/events/:id/rsvp', async ({ params, user, body }) => {
   const price = member ? e.priceMember : e.pricePublic;
   const ch = mockCharge(body.card, price);
   if (!ch.ok) { const err = new Error(ch.error); err.status = 402; err.price = price; throw err; }
-  const r = { id: 'rsvp_' + nextId('rsvp'), eventId: e.id, userId: user.id, status: 'CONFIRMED', ticketType: member ? 'member' : 'public', pricePaid: price, createdAt: iso() };
+  const code = crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, 8);
+  const r = { id: 'rsvp_' + nextId('rsvp'), eventId: e.id, userId: user.id, status: 'CONFIRMED', ticketType: member ? 'member' : 'public', pricePaid: price, createdAt: iso(), checkedIn: false, ticketCode: code };
   db.rsvps.push(r);
   if (price > 0) db.payments.push({ id: 'pay_' + nextId('payment'), userId: user.id, kind: 'ticket', refId: r.id, amount: price, ref: ch.ref, createdAt: r.createdAt });
   save();
@@ -374,6 +379,31 @@ function cumulativeSeries(events, days = 14) {
   }
   return out;
 }
+route('GET', '/api/exec/members', ({ user }) => {
+  needExec(user);
+  const club = byId(db.societies, user.societyId) || fail(404, 'No society linked.');
+  const rows = db.memberships.filter((m) => m.societyId === club.id).map((m) => {
+    const u = byId(db.users, m.userId) || {};
+    return { id: m.id, name: u.name || 'Student', email: u.email || '', campus_id: u.campusId, joined_at: m.joinedAt, price_paid: m.pricePaid };
+  }).sort((a, b) => new Date(b.joined_at) - new Date(a.joined_at));
+  return { society: societyOut(club, user), count: rows.length, members: rows };
+});
+
+route('POST', '/api/exec/scan', async ({ user, body }) => {
+  needExec(user);
+  const raw = String(body.code || '').trim();
+  const m = raw.match(/checkin\/([A-Za-z0-9]+)/);
+  const code = (m ? m[1] : raw.replace(/[^A-Za-z0-9]/g, '')).toUpperCase();
+  if (!code) fail(400, 'Paste a ticket code or the link inside the QR.');
+  const rsvp = db.rsvps.find((r) => (r.ticketCode || '').toUpperCase() === code && r.status === 'CONFIRMED');
+  if (!rsvp) fail(404, 'No ticket found for that code.');
+  const ev = byId(db.events, rsvp.eventId);
+  if (ev && ev.societyId !== user.societyId) fail(403, 'That ticket belongs to another society.');
+  if (rsvp.checkedIn) return { ok: true, already: true, attendee: { name: (byId(db.users, rsvp.userId) || {}).name || 'Student', event: ev ? ev.title : '', checked_in_at: rsvp.checkedInAt } };
+  rsvp.checkedIn = true; rsvp.checkedInAt = iso(); save();
+  return { ok: true, attendee: { name: (byId(db.users, rsvp.userId) || {}).name || 'Student', event: ev ? ev.title : '', checked_in_at: rsvp.checkedInAt } };
+});
+
 route('GET', '/api/exec/hub', ({ user }) => {
   needExec(user);
   const club = byId(db.societies, user.societyId) || fail(404, 'No society linked to this account.');
@@ -474,7 +504,7 @@ route('GET', '/api/exec/events/:id/attendees', ({ params, user }) => {
   if (!e || e.societyId !== user.societyId) fail(404, 'Event not found.');
   const rows = confirmed(e.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((r) => {
     const u = byId(db.users, r.userId) || {};
-    return { id: r.id, display_name: u.name || 'Student', email: u.email || '', campus_id: u.campusId, ticket_type: r.ticketType, price_paid: r.pricePaid, status: r.status, created_at: r.createdAt };
+    return { id: r.id, display_name: u.name || 'Student', email: u.email || '', campus_id: u.campusId, ticket_type: r.ticketType, price_paid: r.pricePaid, status: r.status, created_at: r.createdAt, checked_in: !!r.checkedIn, ticket_code: r.ticketCode || null };
   });
   return { event: eventOut(e, user), count: rows.length, attendees: rows };
 });
