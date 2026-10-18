@@ -13,6 +13,8 @@
   function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
   function initials(n) { return String(n || '?').split(' ').map(function (p) { return p[0]; }).slice(0, 2).join('').toUpperCase(); }
 
+  function isStatic() { return !!window.__UNILOOP_STATIC__; }
+
   var HERO_LINES = [
     { k: 'Sydney universities', a: 'What&rsquo;s on', b: 'this week.' },
     { k: 'Your kind of day', a: 'Make a day', b: 'of it.' },
@@ -190,7 +192,7 @@
       '<nav class="snav">' + nav.map(function (n) {
         return '<a href="' + n[1] + '"' + (active === n[0] ? ' aria-current="page"' : '') + '>' + n[3] + n[2] + '</a>';
       }).join('') +
-      (S.me && S.me.role === 'exec' ? '<a href="#/organiser"' + (active === 'organiser' ? ' aria-current="page"' : '') + '>' + ICON.org + 'Organiser</a>' +
+      (S.me && S.me.role === 'exec' && !isStatic() ? '<a href="#/organiser"' + (active === 'organiser' ? ' aria-current="page"' : '') + '>' + ICON.org + 'Organiser</a>' +
         '<a href="#/scan">' + ICON.qr + 'Scan tickets</a><a href="#/members">' + ICON.people + 'Members</a>' : '') +
       '</nav>' +
       '<div class="sblock"><h4>When</h4><div class="chips">' +
@@ -204,6 +206,7 @@
       (socs.length ? '<div class="sblock"><h4>My societies</h4><div class="chips">' + socs.map(function (m) {
         return '<button data-soc-link="' + esc(m.society_id) + '">' + esc(m.society_name) + '</button>';
       }).join('') + '</div></div>' : '') +
+      (isStatic() ? '<div style="margin:10px 0 0;font-size:10.5px;font-weight:700;color:#F0B49E;background:rgba(216,88,58,.18);border:1px solid rgba(216,88,58,.35);border-radius:8px;padding:6px 8px;line-height:1.4">Static preview<br><span style="font-weight:500;opacity:.85">RSVPs stay in this browser</span></div>' : '') +
       '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a></div>' +
       '<div class="themerow">' +
         '<button data-theme-set="light" aria-label="Light mode" aria-pressed="' + (currentTheme() !== 'dark') + '">' +
@@ -690,6 +693,14 @@
   /* ---------------- 路由 ---------------- */
   async function route() {
     var h = location.hash.replace(/^#\/?/, ''); var p = h.split('/');
+    if (isStatic() && ['organiser', 'scan', 'members', 'checkin'].indexOf(p[0]) > -1) {
+      S.route = { name: 'static' };
+      $('#view').innerHTML = '<div class="empty" style="max-width:560px;margin:60px auto"><b>Live organiser features need the Node server</b>' +
+        'This deployment is a static preview: browsing, search, event pages, saving and RSVP all work (stored in this browser), ' +
+        'but the live dashboard, members list and ticket scanning need the server build.<br><br>' +
+        '<a class="evghost" style="max-width:260px;margin:0 auto" href="#/">← Back to Discover</a></div>';
+      $('#sidebar').innerHTML = sidebar(); $('#tabs').innerHTML = tabs(); bind(); return;
+    }
     if (p[0] === 'society' && p[1]) {
       S.route = { name: 'society' };
       $('#view').innerHTML = '<div class="empty">Loading…</div>';
@@ -895,6 +906,13 @@
     loaderProgress(78);
     window.addEventListener('hashchange', route);
     await route();
+    if (isStatic()) {
+      var bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:70;background:rgba(20,32,27,.92);color:#fff;padding:9px 14px;border-radius:999px;font-size:12px;box-shadow:0 10px 30px -12px rgba(0,0,0,.5);white-space:nowrap';
+      bar.textContent = 'Static preview · RSVPs and saves stay in this browser';
+      document.body.appendChild(bar);
+      setTimeout(function () { bar.style.transition = 'opacity .4s'; bar.style.opacity = '0'; setTimeout(function () { bar.remove(); }, 500); }, 7000);
+    }
     loaderProgress(100);
     setInterval(function () {
       var soon = S.events.slice().sort(function (a, b) { return new Date(a.starts_at) - new Date(b.starts_at); }).slice(0, 4);

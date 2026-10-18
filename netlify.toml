@@ -1,0 +1,29 @@
+[build]
+  publish = "public"
+
+# 1) 静态托管没有 Node 后端：把 /api 明确返回 404（前端会自动切到静态数据层）
+[[redirects]]
+  from = "/api/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/_sym/*"
+  to = "/404.html"
+  status = 404
+
+# 2) 单页应用：其余未命中静态文件的路径交给 v3 的 index.html
+[[redirects]]
+  from = "/*"
+  to = "/v3/index.html"
+  status = 200
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/v3/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

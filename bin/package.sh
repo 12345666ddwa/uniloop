@@ -11,7 +11,15 @@ def cp(src,dst):
 for f in ['server.js','seed.js','data-real.json','package.json','CHANGELOG.md']:
     if os.path.exists(f): cp(f, os.path.join(PKG,f))
 if os.path.exists('README_PACKAGE.md'): cp('README_PACKAGE.md', os.path.join(PKG,'README.md'))
-for sub in ['v3','demo','assets']:
+for f in ['netlify.toml']:
+    if os.path.exists(f): cp(f, os.path.join(PKG,f))
+for f in ['public/index.html','public/404.html','public/_redirects']:
+    if os.path.exists(f): cp(f, os.path.join(PKG,f))
+import glob
+os.makedirs(os.path.join(PKG,'scripts'), exist_ok=True)
+for f in ['scripts/export-static.js','scripts/static-preview-server.py']:
+    if os.path.exists(f): cp(f, os.path.join(PKG,f))
+for sub in ['v3','demo','assets','data']:
     s=os.path.join('public',sub)
     if os.path.isdir(s): shutil.copytree(s, os.path.join(PKG,'public',sub), dirs_exist_ok=True)
 os.makedirs(os.path.join(PKG,'docs'), exist_ok=True)
