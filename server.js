@@ -140,7 +140,9 @@ function startSession(u) {
 }
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.ico': 'image/x-icon', '.json': 'application/json' };
 function serveStatic(req, res, pathname) {
-  const rel = pathname === '/' ? '/index.html' : pathname;
+  let rel = pathname;
+  if (rel === '/' || rel.endsWith('/')) rel += 'index.html';
+  if (!/\.[a-zA-Z0-9]+$/.test(rel)) rel += '/index.html';   // /v3 → /v3/index.html
   const full = path.normalize(path.join(PUBLIC_DIR, rel));
   if (!full.startsWith(PUBLIC_DIR)) return send(res, 403, 'Forbidden');
   fs.readFile(full, (err, data) => {

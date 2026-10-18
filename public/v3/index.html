@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UniLoop</title>
+<link rel="stylesheet" href="/v3/styles.css">
+<link rel="icon" href="/assets/favicon.png">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main" id="main">
+    <div class="appframe" id="appframe">
+      <div id="view"></div>
+      <nav class="tabs" id="tabs"></nav>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- 搜索 -->
+<section class="sheet" id="searchSheet" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+  <div class="grab"></div>
+  <div class="head"><div class="steps"><i class="on" data-stepbar="1"></i><i data-stepbar="2"></i><i data-stepbar="3"></i></div>
+    <button class="close" id="searchClose" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <h3 id="searchTitle">Where?</h3>
+  <p class="sub" id="searchSub"></p>
+  <div id="searchExtra"></div>
+  <div class="opts" id="searchOpts"></div>
+  <div class="foot"><span class="count" id="searchCount"></span><button class="show" id="searchShow">Show events</button></div>
+</section>
+
+<!-- 登录 -->
+<section class="sheet auth" id="authSheet" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="grab"></div>
+  <div class="head"><div class="steps" style="visibility:hidden"><i class="on"></i></div>
+    <button class="close" id="authClose" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <h3 id="authTitle">Log in</h3>
+  <p class="sub">Save your spot, get member prices.</p>
+  <div class="tabs2"><button data-auth="login" aria-pressed="true">Log in</button><button data-auth="signup" aria-pressed="false">Sign up</button></div>
+  <div class="field" id="fName" style="display:none"><label>Name</label><input id="auName" placeholder="Jamie Chen"></div>
+  <div class="field"><label>Email</label><input id="auEmail" type="email" placeholder="student@uniloop.demo"></div>
+  <div class="field" id="fCampus" style="display:none"><label>Campus</label><select id="auCampus" style="width:100%;height:46px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 10px;font-size:14px"></select></div>
+  <div class="field"><label>Password</label><input id="auPass" type="password" placeholder="demo1234"></div>
+  <p class="err is-hidden" id="authErr"></p>
+  <div class="demo"><button data-demo="student@uniloop.demo">Student demo</button><button data-demo="exec@uniloop.demo">Organiser demo</button></div>
+  <div class="foot"><span class="count">Demo password: demo1234</span><button class="show" id="authSubmit">Log in</button></div>
+</section>
+
+<!-- 创建活动 -->
+<section class="sheet create" id="createSheet" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="head"><div class="steps" style="visibility:hidden"><i class="on"></i></div>
+    <button class="close" id="createClose" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <h3>Create an event</h3>
+  <p class="sub">Published straight into Discover.</p>
+  <div class="field"><label>Name</label><input id="evTitle" placeholder="Sunset sketch club"></div>
+  <div class="field"><label>Description</label><textarea id="evDesc" placeholder="One or two sentences a student would read."></textarea></div>
+  <div class="row2"><div><label>Category</label><select id="evCat"><option value="social">Social</option><option value="outdoors">Outdoors</option><option value="creative">Creative</option><option value="sport">Sport</option><option value="careers">Careers</option><option value="other">Other</option></select></div>
+    <div><label>Who can join</label><select id="evScope"><option value="OPEN_TO_ALL">All campuses</option><option value="CAMPUS_ONLY">Own campus</option></select></div></div>
+  <div class="row2"><div><label>Date</label><input id="evDate" type="date"></div><div><label>Start</label><input id="evTime" type="time" value="17:00"></div></div>
+  <div class="row2"><div><label>Where</label><input id="evPlace" placeholder="Macquarie University"></div><div><label>Capacity</label><input id="evCap" type="number" min="1" value="40"></div></div>
+  <div class="row2"><div><label>Member $</label><input id="evPM" type="number" min="0" value="0"></div><div><label>Public $</label><input id="evPP" type="number" min="0" value="0"></div></div>
+  <p class="err is-hidden" id="createErr"></p>
+  <div class="foot"><span class="count">Test data only</span><button class="show" id="createSubmit">Publish</button></div>
+</section>
+
+<!-- 活动整页 -->
+<section class="page" id="eventPage" role="dialog" aria-modal="true">
+  <div class="page-scroll">
+    <div class="pg-hero"><img id="pgImg" alt="">
+      <div class="pg-top"><button id="pgBack" aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button id="pgSave" aria-label="Save"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg></button></div>
+    </div>
+    <div class="pg-body">
+      <div class="pg-main">
+        <div class="pg-cat" id="pgCat"></div>
+        <h1 id="pgTitle"></h1>
+        <div class="pg-host"><img id="pgCrest" alt=""><div><b id="pgSoc"></b><span id="pgSocMeta"></span></div></div>
+        <div class="pg-meta">
+          <div class="mrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg><div><b id="pgWhen"></b><span id="pgWhenSub"></span></div></div>
+          <div class="mrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><div><b id="pgWhere"></b><span id="pgWhereSub"></span></div></div>
+        </div>
+        <p class="pg-desc" id="pgDesc"></p>
+        <div class="pg-sec">Spots</div>
+        <div class="pg-bar"><span id="pgBar"></span></div>
+        <div id="pgSpots" style="font-size:12px;color:var(--muted)"></div>
+        <div class="pg-sec">Where</div>
+        <div class="pg-map"><iframe id="pgMap" title="Map" loading="lazy" referrerpolicy="no-referrer"></iframe>
+          <div class="mapbtns"><a id="pgGmaps" target="_blank" rel="noopener">Google directions</a><a id="pgApple" target="_blank" rel="noopener">Apple Maps</a></div></div>
+      </div>
+      <aside class="pg-aside" id="pgAside"></aside>
+    </div>
+  </div>
+  <div class="pg-cta" id="pgCta"><div class="inner"><div class="p"><b id="pgPrice">—</b><span id="pgSeats"></span></div><button class="rsvp" id="pgRsvp">RSVP</button></div></div>
+</section>
+
+<script src="/v3/app.js"></script>
+</body>
+</html>
