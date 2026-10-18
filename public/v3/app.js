@@ -209,7 +209,7 @@
         return '<button data-soc-link="' + esc(m.society_id) + '">' + esc(m.society_name) + '</button>';
       }).join('') + '</div></div>' : '') +
       (isStatic() ? '<div style="margin:10px 0 0;font-size:10.5px;font-weight:700;color:#F0B49E;background:rgba(216,88,58,.18);border:1px solid rgba(216,88,58,.35);border-radius:8px;padding:6px 8px;line-height:1.4">Static preview<br><span style="font-weight:500;opacity:.85">RSVPs stay in this browser</span></div>' : '') +
-      '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a>' + (S.me ? '<br><button class="sfoot-out" id="logoutBtn">Log out</button>' : '') + '</div>' +
+      '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a>' + (S.me ? '<br><button class="sfoot-out" id="logoutBtn">Log out</button>' : '') + '<div class="sfoot-credit">Loading animation by <a href="https://github.com/XXIWEN/uniloop-loading" target="_blank" rel="noopener">@XXIWEN</a><br><a href="https://github.com/12345666ddwa/uniloop" target="_blank" rel="noopener">Source on GitHub</a></div></div>' +
       '<div class="themerow">' +
         '<button data-theme-set="light" aria-label="Light mode" aria-pressed="' + (currentTheme() !== 'dark') + '">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>' +
@@ -345,7 +345,10 @@
       '<section class="reveal"><div class="sec"><h2>Free this week</h2><span class="sub">' + free.length + ' events</span></div><div class="rail">' + (free.length ? free : soon.slice().reverse()).slice(0, 12).map(card).join('') + '</div></section>' +
       '<section class="reveal"><div class="sec"><h2>This week, all together</h2><span class="sub">' + Math.min(8, soon.length) + ' picks</span></div><div class="grid">' + soon.slice(0, 8).map(card).join('') + '</div></section>' +
       '<section class="reveal"><div class="sec"><h2>Campuses</h2><span class="sub">5 universities</span></div><div class="campuses">' +
-      S.campuses.map(function (c) { return '<button class="campus" data-campus="' + esc(c.id) + '"><img src="' + esc(c.logo) + '" alt=""><span>' + esc(c.short) + '</span></button>'; }).join('') + '</div></section>';
+      S.campuses.map(function (c) { return '<button class="campus" data-campus="' + esc(c.id) + '"><img src="' + esc(c.logo) + '" alt=""><span>' + esc(c.short) + '</span></button>'; }).join('') + '</div></section>' +
+      '<footer class="sitefoot"><span><b>UniLoop</b> · a student-built campus events app</span><span class="sp"></span>' +
+      '<span>Loading animation by <a href="https://github.com/XXIWEN/uniloop-loading" target="_blank" rel="noopener">@XXIWEN</a></span>' +
+      '<span><a href="https://github.com/12345666ddwa/uniloop" target="_blank" rel="noopener">Source on GitHub</a></span></footer>';
   }
 
   /* ---------------- 活动页（路由） ---------------- */

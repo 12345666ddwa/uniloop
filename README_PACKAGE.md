@@ -27,6 +27,18 @@ Same accounts as below. This is a Cloudflare quick tunnel — it stays up only w
 host machine and the `cloudflared` process are running, and the address changes if the
 tunnel is restarted. For a permanent URL, run your own tunnel or deploy the folder.
 
+## Team and credits
+
+UniLoop is a co-created student project.
+
+| Who | Contribution |
+|---|---|
+| **@XXIWEN** | Five-university loading animation — [XXIWEN/uniloop-loading](https://github.com/XXIWEN/uniloop-loading). The rotating crest ring, the progress-aware rounded star connections between USYD → UNSW → WSU → MQ → UTS, and the `window.setUniLoopLoadingProgress()` hook that this app calls at boot. |
+| **UniLoop team** | Events and society data, search and filters, RSVP rules, member pricing, tickets and QR check-in, organiser dashboard, friends and messaging, Node server and the static build. |
+
+- Source: [12345666ddwa/uniloop](https://github.com/12345666ddwa/uniloop)
+- Live: [12345666ddwa.github.io/uniloop](https://12345666ddwa.github.io/uniloop/)
+
 ## Static build (GitHub Pages / Netlify)
 
 `public/` is a complete static site: `public/index.html` redirects to `public/v3/`,
