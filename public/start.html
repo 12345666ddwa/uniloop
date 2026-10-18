@@ -139,12 +139,12 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
   background:rgba(255,253,248,.94);display:grid;place-items:center;color:var(--ink2)}
 .card .save svg{width:15px;height:15px}
 .card .body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:3px}
-.card .cat{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.card .chipcat{position:absolute;left:8px;bottom:8px;background:rgba(255,253,248,.93);color:var(--forest);
+  font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:6px;backdrop-filter:blur(4px)}
 .card .title{font-size:14px;font-weight:700;line-height:1.26;margin:1px 0 4px;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card .when{font-size:11.5px;font-weight:650;color:var(--ink2);display:flex;align-items:center;gap:5px}
-.card .where{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
-.card .when svg,.card .where svg{width:11px;height:11px;opacity:.5;flex:none}
+.card .meta{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
+.card .meta svg{width:11px;height:11px;opacity:.45;flex:none}
 .card .foot{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:6px}
 .card .price{font-size:13px;font-weight:750;font-variant-numeric:tabular-nums}
 .card .seats{font-size:10.5px;font-weight:700;color:var(--muted)}
@@ -169,8 +169,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
 .row .rhumb{width:84px;height:84px;border-radius:12px;overflow:hidden;flex:none;background:var(--sage)}
 .row .rhumb img{width:100%;height:100%;object-fit:cover}
 .row .rmain{flex:1;min-width:0}
-.row .rcat{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
-.row .rtitle{font-size:14.5px;font-weight:700;line-height:1.28;margin:2px 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row .rtitle{font-size:14.5px;font-weight:700;line-height:1.28;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .row .rmeta{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row .rfoot{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
 .row .rprice{font-size:13px;font-weight:750}
@@ -210,6 +209,13 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
 .opt{display:flex;align-items:center;gap:12px;width:100%;padding:11px 13px;border:1px solid var(--line);
   background:var(--surface);border-radius:12px;margin-bottom:8px;text-align:left;min-height:54px}
 .opt .ico{width:34px;height:34px;border-radius:9px;background:var(--sage);display:grid;place-items:center;flex:none;color:var(--forest)}
+.opt .crest{width:34px;height:34px;border-radius:9px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex:none}
+.opt .crest img{width:100%;height:100%;object-fit:contain;padding:5px}
+.opt .crest svg{width:17px;height:17px;fill:none;stroke:var(--forest);stroke-width:1.7}
+.opt .badge{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;
+  font-size:9.5px;font-weight:800;letter-spacing:.02em;flex:none}
+.opt .dot{width:10px;height:10px;border-radius:50%;flex:none;margin:0 12px 0 2px}
+.opt .cnt{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:650;padding-left:8px}
 .opt .ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .opt .t{font-size:14px;font-weight:650;display:block}
 .opt .d{font-size:11.5px;color:var(--muted);display:block;margin-top:1px}
@@ -241,7 +247,47 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
 .sheet.search .foot .count{font-size:12.5px;color:var(--muted);flex:1}
 .sheet.search .foot .show{height:48px;padding:0 20px;border-radius:14px;border:0;background:var(--forest);color:#fff;font-weight:700;font-size:14px}
 
-/* 活动详情抽屉 */
+/* ================= 活动详情（整页，不是小抽屉） ================= */
+.eventpage{position:absolute;inset:0;background:var(--paper);z-index:22;display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .30s cubic-bezier(.22,.8,.24,1)}
+.eventpage.on{transform:none}
+.ep-scroll{flex:1;overflow-y:auto;padding-bottom:104px}
+.ep-hero{position:relative;height:300px;background:#DCD7C8;flex:none}
+.ep-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.ep-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,18,14,.45) 0%,rgba(10,18,14,.06) 38%,transparent 60%)}
+.ep-top{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:12px;display:flex;justify-content:space-between;z-index:3}
+.ep-top button{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,253,248,.94);
+  display:grid;place-items:center;color:var(--ink);box-shadow:0 6px 18px -8px rgba(10,18,14,.5)}
+.ep-body{padding:16px}
+.ep-cat{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--coral);font-weight:800}
+.ep-body h1{font-family:var(--serif);font-weight:400;font-size:27px;line-height:1.12;letter-spacing:-.01em;margin:6px 0 12px}
+.ep-host{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ep-host img{width:38px;height:38px;object-fit:contain}
+.ep-host b{font-size:13.5px;display:block}
+.ep-host span{font-size:11.5px;color:var(--muted)}
+.ep-meta{display:flex;flex-direction:column;gap:10px;margin:16px 0}
+.ep-meta .mrow{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink2);line-height:1.4}
+.ep-meta .mrow svg{width:16px;height:16px;flex:none;color:var(--muted);margin-top:1px}
+.ep-meta .mrow b{display:block;font-size:13.5px;color:var(--ink)}
+.ep-meta .mrow span{font-size:12px;color:var(--muted)}
+.ep-desc{font-size:14px;line-height:1.62;color:var(--ink2);margin:6px 0 18px}
+.ep-sec{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:20px 0 10px}
+.ep-bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:8px 0 6px}
+.ep-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--forest),#3C7B60)}
+.ep-map iframe{width:100%;height:180px;border:0;border-radius:14px;display:block;background:#E7E2D4}
+.ep-map .mapbtns{display:flex;gap:8px;margin-top:8px}
+.ep-map .mapbtns a{flex:1;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;font-weight:650;color:var(--ink);text-decoration:none}
+.ep-cta{position:absolute;left:0;right:0;bottom:0;padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  background:rgba(255,253,248,.96);border-top:1px solid var(--line);backdrop-filter:blur(14px);
+  display:flex;align-items:center;gap:12px;z-index:3}
+.ep-cta .p{display:flex;flex-direction:column;min-width:88px}
+.ep-cta .p b{font-size:17px;font-variant-numeric:tabular-nums}
+.ep-cta .p span{font-size:11px;color:var(--muted)}
+.ep-cta .p span.low{color:var(--coral);font-weight:700}
+.ep-cta .rsvp{flex:1;height:50px;border-radius:14px;border:0;background:var(--forest);color:#fff;font-weight:700;font-size:15px}
+.ep-cta .rsvp[disabled]{background:var(--line2);color:#fff}
+
 .sheet.event .pic{height:172px;margin:10px 16px 0;border-radius:16px;overflow:hidden;background:var(--sage);flex:none}
 .sheet.event .pic img{width:100%;height:100%;object-fit:cover}
 .sheet.event .content{padding:16px 16px 0;overflow-y:auto}
@@ -362,22 +408,53 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
     <div class="foot"><span class="count" id="searchCount"></span><button class="show" id="searchShow">Show events</button></div>
   </section>
 
-  <section class="sheet event" id="eventSheet" role="dialog" aria-modal="true" aria-labelledby="esTitle">
-    <div class="grab"></div>
-    <div class="pic"><img id="esImg" alt=""></div>
-    <div class="content">
-      <div class="cat" id="esCat"></div>
-      <h3 id="esTitle">Event</h3>
-      <p class="smeta" id="esMeta"></p>
-      <p class="sdesc" id="esDesc"></p>
-      <div class="facts">
-        <div class="fact"><div class="k">Price</div><div class="v" id="esPrice">—</div></div>
-        <div class="fact"><div class="k">Going</div><div class="v" id="esGoing">—</div></div>
+  <section class="eventpage" id="eventPage" role="dialog" aria-modal="true" aria-labelledby="esTitle">
+    <div class="ep-scroll" id="epScroll">
+      <div class="ep-hero">
+        <img id="esImg" alt="">
+        <div class="ep-top">
+          <button id="esBack" aria-label="Back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+          <button id="esSave" aria-label="Save">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="actions">
-        <button class="btn" id="esSave">☆ Save</button>
-        <a class="btn primary" id="esOpen" href="#">Open event ↗</a>
+      <div class="ep-body">
+        <div class="ep-cat" id="esCat"></div>
+        <h1 id="esTitle"></h1>
+        <div class="ep-host">
+          <img id="esCrest" alt="">
+          <div><b id="esSoc"></b><span id="esSocMeta"></span></div>
+        </div>
+        <div class="ep-meta">
+          <div class="mrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>
+            <div><b id="esWhen"></b><span id="esWhenSub"></span></div>
+          </div>
+          <div class="mrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            <div><b id="esWhere"></b><span id="esWhereSub"></span></div>
+          </div>
+        </div>
+        <p class="ep-desc" id="esDesc"></p>
+        <div class="ep-sec">Spots</div>
+        <div class="ep-bar"><span id="esBar"></span></div>
+        <div id="esSpots" class="meta" style="font-size:12px;color:var(--muted)"></div>
+        <div class="ep-sec">Where</div>
+        <div class="ep-map">
+          <iframe id="esMap" title="Map" loading="lazy" referrerpolicy="no-referrer"></iframe>
+          <div class="mapbtns">
+            <a id="esGmaps" target="_blank" rel="noopener">Google directions</a>
+            <a id="esApple" target="_blank" rel="noopener">Apple Maps</a>
+          </div>
+        </div>
       </div>
+    </div>
+    <div class="ep-cta">
+      <div class="p"><b id="esPrice">—</b><span id="esSeats"></span></div>
+      <button class="rsvp" id="esRsvp">RSVP</button>
     </div>
   </section>
 </div>
@@ -496,19 +573,17 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
     return '<button class="card" data-id="'+esc(e.id)+'" aria-label="Open '+esc(e.title)+'">'+
       '<div class="thumb"><img src="'+esc(e.cover_image_url)+'" alt="" loading="lazy">'+
       '<span class="date">'+MONTHS[d.getMonth()].toUpperCase()+' '+d.getDate()+'</span>'+
+      '<span class="chipcat">'+esc(CATS[e.category]||'Event')+'</span>'+
       '<span class="save" data-save="'+esc(e.id)+'" role="button" aria-label="Save" aria-pressed="'+(!!S.saved[e.id])+'">'+
         '<svg viewBox="0 0 24 24" fill="'+(S.saved[e.id]?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg></span></div>'+
-      '<div class="body"><div class="cat">'+esc(CATS[e.category]||'Event')+' · '+esc((e.campus_name||'').split(' ')[0])+'</div>'+
-      '<div class="title">'+esc(e.title)+'</div>'+
-      '<div class="when">'+ICON.cal.replace('<svg','<svg viewBox="0 0 24 24"')+fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at)+'</div>'+
-      '<div class="where">'+ICON.pin.replace('<svg','<svg viewBox="0 0 24 24"')+esc(String(e.venue).split(',')[0])+'</div>'+
+      '<div class="body"><div class="title">'+esc(e.title)+'</div>'+
+      '<div class="meta">'+ICON.cal+' '+fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at)+' · '+esc(String(e.venue).split(',')[0])+'</div>'+
       '<div class="foot"><span class="price">'+money(e.your_price)+'</span>'+seatsTag(e)+'</div></div></button>';
   }
   function rowHTML(e){
     return '<button class="row" data-id="'+esc(e.id)+'">'+
       '<span class="rhumb"><img src="'+esc(e.cover_image_url)+'" alt="" loading="lazy"></span>'+
-      '<span class="rmain"><div class="rcat">'+esc(CATS[e.category]||'Event')+' · '+esc((e.campus_name||'').split(' ')[0])+'</div>'+
-      '<div class="rtitle">'+esc(e.title)+'</div>'+
+      '<span class="rmain"><div class="rtitle">'+esc(e.title)+'</div>'+
       '<div class="rmeta">'+fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at)+' · '+esc(String(e.venue).split(',')[0])+'</div>'+
       '<div class="rfoot"><span class="rprice">'+money(e.your_price)+'</span>'+seatsTag(e)+
       '<span class="rtag">'+esc(e.society_name)+'</span></div></span></button>';
@@ -559,28 +634,45 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
         '<input id="qInput" placeholder="Search events, societies, venues" value="'+esc(S.pending.q||'')+'"></div>'+
         '<div class="popular"><span class="lbl">Popular</span>'+
         ['careers','walk','coffee','hike'].map(function(t){return '<button data-pop="'+t+'">'+t+'</button>';}).join('')+'</div>';
-      var opts=[{k:'any',t:'Anywhere',d:'All of Sydney',i:'globe'}].concat(S.campuses.map(function(c){return {k:c.id,t:c.name,d:c.short+' campus',i:'pin'};}));
+      var CC={mq_sydney:'#1F4A3B',usyd_camperdown:'#D8583A',unsw_kensington:'#2E5E8C',uts_haymarket:'#B4622E',wsu_parramatta:'#7A3E6B'};
+      var opts=[{k:'any',t:'Anywhere',d:'All of Sydney',short:'ALL',c:'linear-gradient(135deg,#1F4A3B,#D8583A)'}]
+        .concat(S.campuses.map(function(c){return {k:c.id,t:c.name,d:c.short+' campus',short:c.short,c:CC[c.id]||'#1F4A3B'};}));
       $('#searchOpts').innerHTML=opts.map(function(x){
         var on=(S.pending.where||'any')===x.k;
-        return '<button class="opt" data-opt="where" data-k="'+esc(x.k)+'" aria-pressed="'+on+'"><span class="ico">'+ICON[x.i]+'</span><span><span class="t">'+esc(x.t)+'</span><span class="d">'+esc(x.d)+'</span></span><span class="tick"></span></button>';
+        var cnt=S.events.filter(function(e){return x.k==='any'||e.campus_id===x.k;}).length;
+        var ic='<span class="badge" style="background:'+x.c+'">'+esc(x.short)+'</span>';
+        return '<button class="opt" data-opt="where" data-k="'+esc(x.k)+'" aria-pressed="'+on+'">'+ic+'<span><span class="t">'+esc(x.t)+'</span><span class="d">'+esc(x.d)+'</span></span><span class="cnt">'+cnt+'</span><span class="tick"></span></button>';
       }).join('');
     } else if(st===2){
       $('#searchTitle').textContent='When?';$('#searchSub').textContent='Pick a window — or a specific day.';
-      var ws=[['any','Any day','No date filter','cal'],['today','Today','Before midnight','cal'],['tomorrow','Tomorrow','The next day','cal'],['weekend','This weekend','Sat & Sun','cal'],['7d','Next 7 days','Rolling week','cal']];
+      var now=new Date();
+      var ws=[['any','Any day','No date filter'],['today','Today','Before midnight'],['tomorrow','Tomorrow','The next day'],['weekend','This weekend','Sat & Sun'],['7d','Next 7 days','Rolling week']];
       $('#searchOpts').innerHTML=ws.map(function(x){
         var on=(S.pending.when||'any')===x[0]&&!S.pending.date;
-        return '<button class="opt" data-opt="when" data-k="'+x[0]+'" aria-pressed="'+on+'"><span class="ico">'+ICON.cal+'</span><span><span class="t">'+x[1]+'</span><span class="d">'+x[2]+'</span></span><span class="tick"></span></button>';
+        var cnt=S.events.filter(function(e){
+          var d=new Date(e.starts_at);
+          if(x[0]==='any')return true;
+          if(x[0]==='today')return sameDay(d,now);
+          if(x[0]==='tomorrow')return sameDay(d,new Date(now.getTime()+86400000));
+          if(x[0]==='weekend')return d.getDay()===0||d.getDay()===6;
+          if(x[0]==='7d')return d.getTime()<=now.getTime()+7*86400000;
+          return true;
+        }).length;
+        return '<button class="opt" data-opt="when" data-k="'+x[0]+'" aria-pressed="'+on+'"><span><span class="t">'+x[1]+'</span><span class="d">'+x[2]+'</span></span><span class="cnt">'+cnt+'</span><span class="tick"></span></button>';
       }).join('')+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 2px 8px"><span style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Pick a day</span></div>'+
       '<div class="datestrip" id="dateStrip">'+dateChips()+'</div>';
     } else {
       $('#searchTitle').textContent='What?';$('#searchSub').textContent='Pick a type, or keep it open.';
-      var ws2=[['all','Anything','All event types','all']].concat(Object.keys(CATS).map(function(k){return [k,CATS[k],'','tag'];}));
+      var COL={outdoors:'#1F4A3B',social:'#D8583A',creative:'#B4622E',sport:'#2E5E8C',careers:'#7A3E6B',other:'#6B7280'};
+      var ws2=[['all','Anything','All event types']].concat(Object.keys(CATS).map(function(k){return [k,CATS[k],''];}));
       $('#searchOpts').innerHTML=ws2.map(function(x){
         var on=(S.pending.what||'all')===x[0];
-        return '<button class="opt" data-opt="what" data-k="'+x[0]+'" aria-pressed="'+on+'"><span class="ico">'+ICON[x[3]||'tag']+'</span><span><span class="t">'+x[1]+'</span>'+(x[2]?'<span class="d">'+x[2]+'</span>':'')+'</span><span class="tick"></span></button>';
+        var cnt=S.events.filter(function(e){return x[0]==='all'||e.category===x[0];}).length;
+        var dot=x[0]==='all'?'<span class="dot" style="background:linear-gradient(135deg,#1F4A3B,#D8583A)"></span>':'<span class="dot" style="background:'+COL[x[0]]+'"></span>';
+        return '<button class="opt" data-opt="what" data-k="'+x[0]+'" aria-pressed="'+on+'">'+dot+'<span><span class="t">'+x[1]+'</span>'+(x[2]?'<span class="d">'+x[2]+'</span>':'')+'</span><span class="cnt">'+cnt+'</span><span class="tick"></span></button>';
       }).join('')+
-      '<button class="opt" data-opt="free" data-k="1" aria-pressed="'+(!!S.pending.free)+'"><span class="ico">'+ICON.free+'</span><span><span class="t">Free only</span><span class="d">No ticket price</span></span><span class="tick"></span></button>';
+      '<button class="opt" data-opt="free" data-k="1" aria-pressed="'+(!!S.pending.free)+'"><span class="dot" style="background:#E9EFE8;border:1px solid #C9D6CC"></span><span><span class="t">Free only</span><span class="d">No ticket price</span></span><span class="cnt">'+S.events.filter(function(e){return e.price_public===0;}).length+'</span><span class="tick"></span></button>';
     }
     var n=previewCount();
     $('#searchCount').textContent=n+(n===1?' event matches':' events match');
@@ -610,17 +702,36 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
   function openEvent(id){
     var e=S.events.filter(function(x){return x.id===id;})[0];if(!e)return;
     $('#esImg').src=e.cover_image_url;$('#esImg').alt=e.title;
-    $('#esCat').textContent=(CATS[e.category]||'Event').toUpperCase()+' · '+(e.campus_name||'');
+    $('#esCat').textContent=(CATS[e.category]||'Event').toUpperCase();
     $('#esTitle').textContent=e.title;
-    $('#esMeta').textContent=fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at)+' · '+e.venue;
+    $('#esCrest').src=e.society_logo||'';
+    $('#esSoc').textContent=e.society_name;
+    $('#esSocMeta').textContent=(e.society_rating?('★ '+e.society_rating+' · '):'')+(e.campus_name||'');
+    $('#esWhen').textContent=fmtDay(e.starts_at)+' · '+fmtTime(e.starts_at);
+    $('#esWhenSub').textContent=(new Date(e.ends_at)-new Date(e.starts_at))/3600000+' hours · '+(e.audience_scope==='CAMPUS_ONLY'?'Own campus only':'Open to all campuses');
+    $('#esWhere').textContent=String(e.venue).split(',')[0];
+    $('#esWhereSub').textContent=(e.venue_coords?e.venue_coords[0].toFixed(4)+', '+e.venue_coords[1].toFixed(4):'');
     $('#esDesc').textContent=e.description;
+    var pct=e.capacity?Math.min(100,Math.round(e.rsvp_count/e.capacity*100)):0;
+    $('#esBar').style.width=pct+'%';
+    $('#esSpots').textContent=e.rsvp_count+' going'+(e.capacity?(' · '+Math.max(0,e.capacity-e.rsvp_count)+' of '+e.capacity+' spots left'):'');
     $('#esPrice').textContent=money(e.your_price);
-    $('#esGoing').textContent=e.rsvp_count+' going'+(e.capacity?' / '+e.capacity:'');
-    $('#esOpen').href='/#/event/'+encodeURIComponent(e.id);
-    $('#esSave').textContent=S.saved[e.id]?'★ Saved':'☆ Save';
-    $('#scrim').classList.add('on');$('#eventSheet').classList.add('on');
+    var seats=$('#esSeats');
+    if(e.seats_left==null){seats.textContent='No cap';seats.className='';}
+    else if(e.seats_left===0){seats.textContent='Full';seats.className='low';}
+    else {seats.textContent=e.seats_left+' left';seats.className=e.seats_left<=5?'low':'';}
+    var btn=$('#esRsvp');
+    if(e.my_rsvp){btn.textContent="You're in";btn.disabled=true;}
+    else if(e.seats_left===0){btn.textContent='Full';btn.disabled=true;}
+    else {btn.textContent='RSVP'+(e.your_price?' · '+money(e.your_price):' free');btn.disabled=false;}
+    if(e.map){$('#esMap').src=e.map.osm_embed;$('#esGmaps').href=e.map.google_directions;$('#esApple').href=e.map.apple_maps;}
+    $('#esSave').setAttribute('aria-pressed',String(!!S.saved[e.id]));
+    $('#esSave').querySelector('svg').setAttribute('fill',S.saved[e.id]?'currentColor':'none');
+    $('#epScroll').scrollTop=0;
+    $('#eventPage').classList.add('on');
+    S.openEventId=e.id;
   }
-  function closeEvent(){$('#scrim').classList.remove('on');$('#eventSheet').classList.remove('on');}
+  function closeEvent(){$('#eventPage').classList.remove('on');S.openEventId=null;}
 
   /* ---------- 事件 ---------- */
   document.addEventListener('click',function(ev){
@@ -647,7 +758,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
     if(camp){S.where=camp.dataset.campus;S.when='any';S.date='';S.what='all';S.free=false;S.radius=0;render();return;}
     var see=ev.target.closest('[data-see]');if(see){toast('See all — next screen');return;}
     var proto=ev.target.closest('[data-proto]');if(proto){toast(proto.dataset.proto+' — next screen');return;}
-    if(ev.target.id==='scrim'){closeSearch();closeEvent();}
+    if(ev.target.id==='scrim'){closeSearch();}
   });
   document.addEventListener('input',function(ev){
     if(ev.target.id==='qInput'){S.pending.q=ev.target.value;var n=previewCount();
@@ -659,7 +770,18 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2F6B
   $('#searchGo').onclick=function(){openSearch(1);};
   $('#searchClose').onclick=closeSearch;
   $('#searchShow').onclick=function(){if(S.step<3){S.step++;renderStep();}else applySearch();};
-  $('#esSave').onclick=function(){this.textContent=this.textContent.indexOf('Saved')>-1?'☆ Save':'★ Saved';};
+  $('#esBack').onclick=closeEvent;
+  $('#esSave').onclick=function(){
+    var id=S.openEventId;if(!id)return;
+    S.saved[id]=!S.saved[id];
+    this.setAttribute('aria-pressed',String(!!S.saved[id]));
+    this.querySelector('svg').setAttribute('fill',S.saved[id]?'currentColor':'none');
+  };
+  $('#esRsvp').onclick=function(){
+    var id=S.openEventId;if(!id)return;
+    var e=S.events.filter(function(x){return x.id===id;})[0];
+    toast('RSVP flow — next build'); 
+  };
   $('#clearBtn').onclick=function(){S.q='';S.where='any';S.when='any';S.date='';S.what='all';S.free=false;S.radius=0;render();};
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeSearch();closeEvent();}});
 
