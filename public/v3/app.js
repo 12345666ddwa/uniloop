@@ -32,6 +32,14 @@
     pending: {}, step: 1, route: { name: 'home' }, heroIdx: 0, openEventId: null, org: null, orgDash: null, socTab: 'upcoming', socData: null
   };
 
+  var THEME_KEY = 'uniloop.theme';
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+    try { localStorage.setItem(THEME_KEY, t); } catch (e) { }
+  }
+  function currentTheme() { return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'; }
+  function toggleTheme() { applyTheme(currentTheme() === 'dark' ? 'light' : 'dark'); route(); }
+
   async function api(path, opts) {
     opts = opts || {};
     var res = await fetch(path, { method: opts.method || 'GET', credentials: 'include', headers: opts.body ? { 'content-type': 'application/json' } : {}, body: opts.body ? JSON.stringify(opts.body) : undefined });
@@ -114,6 +122,12 @@
   function isFiltering() { return !!(S.q.trim() || S.where !== 'any' || S.when !== 'any' || S.date || S.what !== 'all' || S.free || S.radius > 0); }
 
   /* ---------------- 组件 ---------------- */
+  function setSavedLocal(id, on) {
+    S.events.forEach(function (e) { if (e.id === id) e.is_saved = on; });
+    if (on) { if (!S.savedEvents.some(function (e) { return e.id === id; })) { var ev = S.events.filter(function (e) { return e.id === id; })[0]; if (ev) S.savedEvents.unshift(ev); } }
+    else S.savedEvents = S.savedEvents.filter(function (e) { return e.id !== id; });
+  }
+
   function seatsTag(e) {
     if (e.seats_left == null) return '';
     if (e.seats_left === 0) return '<span class="seats low">Full</span>';
@@ -173,6 +187,7 @@
       (socs.length ? '<div class="sblock"><h4>My societies</h4><div class="chips">' + socs.map(function (m) {
         return '<button data-soc-link="' + esc(m.society_id) + '">' + esc(m.society_name) + '</button>';
       }).join('') + '</div></div>' : '') +
+      '<button class="themebtn" id="themeBtn">' + (currentTheme() === 'dark' ? '☀ Light mode' : '☾ Dark mode') + '</button>' +
       '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a></div>';
   }
   function tabs() {
@@ -267,7 +282,7 @@
   function closeEvent() { $('#eventPage').classList.remove('on'); S.openEventId = null; }
 
   async function rsvp(id) {
-    if (!S.me) { openAuth(); return; }
+    if (!S.me) { S.pending = { type: 'rsvp', id: id }; openAuth(); return; }
     try {
       await api('/api/events/' + encodeURIComponent(id) + '/rsvp', { method: 'POST', body: { card: '4242424242424242' } });
       toast('You are on the list.'); await loadMe(); await loadEvents(); route();
@@ -323,6 +338,7 @@
   function viewMy() {
     if (!S.me) return '<div class="empty"><b>Sign in to see your stuff</b><div style="margin-top:12px"><button class="filter" id="loginBtn">Log in</button></div></div>';
     return '<div class="sec" style="padding-top:28px"><h2>My stuff</h2><span class="sub">' + esc(S.me.campus_name) + '</span></div>' +
+      '<div style="padding:0 16px 6px"><button class="themebtn" id="themeBtn2" style="margin-top:0">' + (currentTheme() === 'dark' ? '☀ Switch to light' : '☾ Switch to dark') + '</button></div>' +
       '<div style="padding:0 16px 8px"><div class="kpis" style="padding:0"><div class="kpi"><div class="k">Tickets</div><div class="v">' + S.myRsvps.length + '</div><div class="n">upcoming</div></div>' +
       '<div class="kpi"><div class="k">Societies</div><div class="v">' + S.myMemberships.length + '</div><div class="n">memberships</div></div>' +
       '<div class="kpi"><div class="k">Saved</div><div class="v">' + money(S.savedMoney) + '</div><div class="n">with member prices</div></div>' +
@@ -462,7 +478,14 @@
         : { name: $('#auName').value.trim(), email: $('#auEmail').value.trim(), password: $('#auPass').value, campus_id: $('#auCampus').value };
       var r = await api('/api/auth/' + authMode, { method: 'POST', body: payload });
       closeAuth(); toast('Signed in as ' + r.user.name.split(' ')[0]);
-      await loadMe(); await loadEvents(); await loadSocieties(); route();
+      await loadMe(); await loadEvents(); await loadSocieties();
+      var pending = S.pending; S.pending = null;
+      if (pending && pending.type === 'save') {
+        try { await api('/api/events/' + encodeURIComponent(pending.id) + '/save', { method: pending.on ? 'DELETE' : 'POST' }); setSavedLocal(pending.id, !pending.on); await loadMe(); toast(pending.on ? 'Removed from saved' : 'Saved'); } catch (e) { toast(e.message); }
+      } else if (pending && pending.type === 'rsvp') {
+        await rsvp(pending.id); return;
+      }
+      route();
     } catch (e) { err.textContent = e.message; err.classList.remove('is-hidden'); }
   }
 
@@ -530,10 +553,13 @@
     $$('[data-save]').forEach(function (b) {
       b.addEventListener('click', async function (ev) {
         ev.stopPropagation();
-        if (!S.me) return openAuth();
         var id = b.dataset.save, on = b.getAttribute('aria-pressed') === 'true';
-        try { await api('/api/events/' + encodeURIComponent(id) + '/save', { method: on ? 'DELETE' : 'POST' }); b.setAttribute('aria-pressed', String(!on)); toast(on ? 'Removed' : 'Saved'); await loadMe(); }
-        catch (e) { toast(e.message); }
+        if (!S.me) { S.pending = { type: 'save', id: id, on: on }; openAuth(); return; }
+        try {
+          await api('/api/events/' + encodeURIComponent(id) + '/save', { method: on ? 'DELETE' : 'POST' });
+          b.setAttribute('aria-pressed', String(!on)); setSavedLocal(id, !on);
+          toast(on ? 'Removed from saved' : 'Saved'); await loadMe(); route();
+        } catch (e) { toast(e.message); }
       });
     });
     $$('[data-soc]').forEach(function (el) {
@@ -564,6 +590,8 @@
     if (sg) sg.onclick = function () { openSearch(1); };
     $$('[data-campus]').forEach(function (b) { b.onclick = function () { S.where = b.dataset.campus; S.when = 'any'; S.date = ''; S.what = 'all'; S.free = false; S.radius = 0; route(); }; });
     var ca = $('#clearAll'); if (ca) ca.onclick = function () { S.q = ''; S.where = 'any'; S.when = 'any'; S.date = ''; S.what = 'all'; S.free = false; S.radius = 0; route(); };
+    var tb = $('#themeBtn'); if (tb) tb.onclick = toggleTheme;
+    var tb2 = $('#themeBtn2'); if (tb2) tb2.onclick = toggleTheme;
     var lb = $('#loginBtn'); if (lb) lb.onclick = openAuth;
     var av = $('#avatarBtn'); if (av) av.onclick = function () { if (S.me) location.hash = '#/my'; else openAuth(); };
     $$('#sidebar [data-side]').forEach(function (b) {
@@ -577,7 +605,7 @@
       var id = S.openEventId, on = this.getAttribute('aria-pressed') === 'true';
       await api('/api/events/' + encodeURIComponent(id) + '/save', { method: on ? 'DELETE' : 'POST' });
       this.setAttribute('aria-pressed', String(!on)); this.querySelector('svg').setAttribute('fill', !on ? 'currentColor' : 'none');
-      await loadMe(); toast(on ? 'Removed' : 'Saved');
+      setSavedLocal(id, !on); await loadMe(); toast(on ? 'Removed from saved' : 'Saved');
     };
     var pgRsvp = $('#pgRsvp'); if (pgRsvp) pgRsvp.onclick = function () { if (S.openEventId) rsvp(S.openEventId); };
     var oc = $('#openCreate'); if (oc) oc.onclick = openCreate;
@@ -614,6 +642,9 @@
 
   /* ---------------- 启动 ---------------- */
   (async function boot() {
+    var savedTheme = 'light';
+    try { savedTheme = localStorage.getItem(THEME_KEY) || 'light'; } catch (e) { }
+    applyTheme(savedTheme);
     await Promise.all([loadCampuses(), loadMe()]);
     await loadEvents();
     await loadSocieties();

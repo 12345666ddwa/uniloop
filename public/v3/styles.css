@@ -414,3 +414,81 @@ a{color:inherit}
   .list{padding:0 40px;max-width:1180px}
   .hero-dots{right:40px;bottom:70px}
 }
+
+/* ==========================================================================
+   v3.1 — 修复：底部导航 / 层级 / 桌面筛选条 / 深色侧栏 / 图片统一 / 深色主题
+   ========================================================================== */
+
+/* 1) 底部导航只在手机出现 */
+.tabs{display:none}
+@media (max-width:899px){ .tabs{display:grid} }
+
+/* 2) 层级：活动页 < 遮罩 < 面板（之前登录面板被活动页盖住 → 点收藏像"没反应"） */
+.page{z-index:50}
+.scrim{z-index:60}
+.sheet{z-index:61}
+.toast-el{z-index:90}
+
+/* 3) 桌面筛选条：居中 + 分割线，不用胶囊 */
+@media (min-width:900px){
+  .filters{position:relative;justify-content:center;align-items:center;gap:0;margin:16px 0 0;padding:12px 0;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);max-width:none}
+  .filter{flex:0 0 auto;border:0;background:transparent;height:auto;padding:4px 26px;border-radius:0;
+    font-size:13px;font-weight:600;color:var(--ink2);position:relative}
+  .filter + .filter::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:1px;height:14px;background:var(--line2)}
+  .filter:hover{color:var(--ink)}
+  .filter[data-active="true"]{background:transparent;border:0;color:var(--ink);font-weight:700}
+  .filter[data-active="true"]::after{content:"";position:absolute;left:26px;right:26px;bottom:-12px;height:2px;background:var(--coral)}
+  .filter svg{display:none}
+}
+
+/* 4) 深色侧栏（层次感） */
+@media (min-width:900px){
+  .sidebar{background:var(--dark);border-right:0;color:#E9EFE8}
+  .sidebar .brand{color:#fff}.sidebar .brand svg{color:#fff}
+  .snav a{color:rgba(255,255,255,.74)}
+  .snav a:hover{background:rgba(255,255,255,.06);color:#fff}
+  .snav a[aria-current="page"]{background:rgba(255,255,255,.12);color:#fff}
+  .sblock h4{color:rgba(255,255,255,.45)}
+  .sblock .chips button{border-color:rgba(255,255,255,.18);color:rgba(255,255,255,.78)}
+  .sblock .chips button:hover{border-color:rgba(255,255,255,.4);color:#fff}
+  .sblock .chips button[aria-pressed="true"]{background:#F4F1E7;border-color:#F4F1E7;color:#14201B}
+  .sfoot{color:rgba(255,255,255,.5)}
+  .sfoot b{color:#fff}
+}
+
+/* 5) 活动图片统一：统一比例 + 轻微调色 + 底部渐隐（让日期/类别标签稳定可读） */
+.card .thumb{aspect-ratio:16/10;height:auto}
+.card .thumb::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(10,18,14,.10) 0%,transparent 32%,transparent 60%,rgba(10,18,14,.24) 100%)}
+.card .thumb img{filter:saturate(.97) contrast(1.02)}
+
+/* 6) 深色主题 */
+html[data-theme="dark"]{
+  --paper:#0F1613;--surface:#16201B;--ink:#F2EFE6;--ink2:#CBD5CD;--muted:#93A198;
+  --line:#243029;--line2:#33423A;--sage:#1E2A24;--coral-soft:#3A2019;
+}
+html[data-theme="dark"] body{background:radial-gradient(900px 520px at 50% -8%,#16211C 0%,#0F1613 60%,#0B110E 100%)}
+html[data-theme="dark"] .sidebar{background:#0B110E}
+html[data-theme="dark"] .appframe{background:var(--paper)}
+html[data-theme="dark"] .searchbar,html[data-theme="dark"] .sheet,html[data-theme="dark"] .searchfield,
+html[data-theme="dark"] .opt,html[data-theme="dark"] .card,html[data-theme="dark"] .soc,
+html[data-theme="dark"] .kpi,html[data-theme="dark"] .chartcard,html[data-theme="dark"] .review,
+html[data-theme="dark"] .hub-stats .cell,html[data-theme="dark"] .pg-aside .kpi{background:var(--surface);border-color:var(--line)}
+html[data-theme="dark"] .seg:hover{background:#1B2721}
+html[data-theme="dark"] .filter{background:var(--surface);border-color:var(--line);color:var(--ink2)}
+html[data-theme="dark"] .opt[aria-pressed="true"]{background:#1E2A24;border-color:#3C7B60}
+html[data-theme="dark"] .auth input,html[data-theme="dark"] .create input,html[data-theme="dark"] .create select,
+html[data-theme="dark"] .create textarea{background:#0F1613;border-color:var(--line);color:var(--ink)}
+html[data-theme="dark"] .page{background:var(--paper)}
+html[data-theme="dark"] .pg-cta{background:rgba(15,22,19,.96);border-color:var(--line)}
+html[data-theme="dark"] .tabs{background:rgba(15,22,19,.94);border-color:var(--line)}
+html[data-theme="dark"] .avatar{background:rgba(255,255,255,.12)}
+
+/* 主题切换按钮 */
+.themebtn{display:flex;align-items:center;gap:8px;width:100%;height:38px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.18);background:transparent;color:rgba(255,255,255,.82);
+  font-size:12.5px;font-weight:600;padding:0 10px;margin-top:12px}
+.themebtn:hover{border-color:rgba(255,255,255,.42);color:#fff}
+.themebtn svg{width:15px;height:15px;opacity:.85}
+@media (max-width:899px){.themebtn{border-color:var(--line);color:var(--ink2);background:var(--surface)}}
