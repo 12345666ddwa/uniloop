@@ -79,6 +79,7 @@
   async function loadSocieties() {
     try { var r = await api('/api/societies'); S.societies = r.societies || []; } catch (e) { S.societies = []; }
   }
+  async function ensureSocieties() { if (!S.societies.length) await loadSocieties(); }
   async function loadCampuses() {
     try { var r = await api('/api/campuses'); S.campuses = r.campuses || []; } catch (e) { S.campuses = []; }
   }
@@ -695,11 +696,11 @@
       try { var d = await api('/api/societies/' + encodeURIComponent(p[1])); S.socData = d; $('#view').innerHTML = viewSociety(d); }
       catch (e) { $('#view').innerHTML = '<div class="empty"><b>' + esc(e.message) + '</b></div>'; }
     } else if (p[0] === 'societies') {
-      S.route = { name: 'societies' }; if (!S.societies.length) await loadSocieties(); $('#view').innerHTML = viewSocieties();
+      S.route = { name: 'societies' }; await ensureSocieties(); $('#view').innerHTML = viewSocieties();
     } else if (p[0] === 'saved') {
       S.route = { name: 'saved' }; await loadMe(); $('#view').innerHTML = viewSaved();
     } else if (p[0] === 'my') {
-      S.route = { name: 'my' }; await loadMe(); if (!S.societies.length) await loadSocieties(); $('#view').innerHTML = viewMy();
+      S.route = { name: 'my' }; await loadMe(); await ensureSocieties(); $('#view').innerHTML = viewMy();
     } else if (p[0] === 'scan') {
       S.route = { name: 'scan' }; await loadMe(); $('#view').innerHTML = viewScan();
     } else if (p[0] === 'members') {
@@ -879,15 +880,22 @@
   }
 
   /* ---------------- 启动 ---------------- */
+  function loaderProgress(v) {
+    try { if (typeof window.setUniLoopLoadingProgress === 'function') window.setUniLoopLoadingProgress(v); } catch (e) { }
+  }
+
   (async function boot() {
     var savedTheme = 'light';
     try { savedTheme = localStorage.getItem(THEME_KEY) || 'light'; } catch (e) { }
     applyTheme(savedTheme);
+    loaderProgress(10);
     await Promise.all([loadCampuses(), loadMe()]);
+    loaderProgress(38);
     await loadEvents();
-    await loadSocieties();
+    loaderProgress(78);
     window.addEventListener('hashchange', route);
     await route();
+    loaderProgress(100);
     setInterval(function () {
       var soon = S.events.slice().sort(function (a, b) { return new Date(a.starts_at) - new Date(b.starts_at); }).slice(0, 4);
       if (!soon.length) return;

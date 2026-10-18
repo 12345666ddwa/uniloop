@@ -2,12 +2,120 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* 尽早应用主题，避免加载页在深色模式下闪白 */
+try{var t=localStorage.getItem('uniloop.theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}
+document.documentElement.classList.add('is-loading');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>UniLoop</title>
 <link rel="stylesheet" href="/v3/styles.css">
 <link rel="icon" href="/assets/favicon.png">
+<style id="uniloop-loader-css">
+
+:root{--ink:#14201B;--coral:#D8583A;--orbit-radius:clamp(68px,26vmin,200px)}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0}
+body{display:grid;place-items:center;overflow:hidden;background:#F4F1E7;color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.loader{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;overflow:hidden;background:#F4F1E7;opacity:1;visibility:visible;transition:opacity .7s ease,visibility .7s ease}
+.loader.is-fading{opacity:0;visibility:hidden;pointer-events:none}
+.scene{position:relative;width:min(100vw,100vh);height:min(100vw,100vh);min-width:320px;min-height:320px;max-width:760px;max-height:760px;isolation:isolate}
+.opera{position:absolute;inset:6% 0 3%;z-index:0;width:100%;height:91%;pointer-events:none;color:#4A5A52;opacity:.13}
+.waves{position:absolute;left:0;bottom:-1%;z-index:0;width:100%;height:25%;pointer-events:none;opacity:.42}
+.wave{fill:none;stroke:#CFC9B8;stroke-width:1.5;stroke-linecap:round}
+.canvas-layer{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
+.orbit{--r:var(--orbit-radius);--wheel-angle:0deg;position:absolute;left:50%;top:50%;z-index:2;width:calc(var(--r)*2);height:calc(var(--r)*2);transform:translate(-50%,-50%) rotate(var(--wheel-angle));transform-origin:center}
+.badge{position:absolute;left:50%;top:50%;width:0;height:0;transform:rotate(var(--angle)) translateX(var(--r)) rotate(calc(0deg - var(--angle)));transform-origin:0 0}
+.badge:before,.badge:after{content:"";position:absolute;left:0;top:0;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none}
+.badge:before{width:clamp(58px,10vmin,68px);height:clamp(58px,10vmin,68px);background:#fff;border:1px solid #E4DFD2;box-shadow:0 5px 15px rgba(20,32,27,.10)}
+.badge:after{width:clamp(68px,11.5vmin,78px);height:clamp(68px,11.5vmin,78px);border:1px solid #D8583A80;opacity:0;transform:translate(-50%,-50%) scale(.86)}
+.badge.is-active:after{animation:badgePulse 1s ease-out both}
+.badge img{position:absolute;left:0;top:0;width:clamp(45px,7.8vmin,53px);height:clamp(45px,7.8vmin,53px);object-fit:contain;transform:translate(-50%,-50%) rotate(calc(0deg - var(--wheel-angle)))}
+.badge.is-active img{animation:badgeBloom 1s ease-out both}
+.badge.mq:before,.badge.uts:before{display:none}
+.badge.mq img,.badge.uts img{border-radius:50%;object-fit:cover}
+.badge.usyd img{width:clamp(57px,9.4vmin,64px);height:clamp(57px,9.4vmin,64px)}
+.badge.wsu:before{display:block}
+.badge.wsu img{width:clamp(48px,8.5vmin,58px);height:clamp(41px,7.2vmin,50px);object-fit:contain;border-radius:0}
+.center{position:absolute;left:50%;top:50%;z-index:5;display:flex;align-items:center;flex-direction:column;gap:10px;transform:translateX(-50%)}
+.mark{width:clamp(88px,19vmin,132px);height:clamp(88px,19vmin,132px);margin-top:calc(clamp(88px,19vmin,132px)/-2);overflow:visible;animation:logoBreathe 3.6s ease-in-out infinite}
+.logo-halo{fill:none;stroke:#D8583A66;stroke-width:1.7;transform-box:fill-box;transform-origin:center;animation:haloPulse 3.6s ease-in-out infinite}
+.earth-lines{transform-box:fill-box;transform-origin:center;animation:earthDrift 12s ease-in-out infinite alternate}
+.word{color:var(--ink);font-size:clamp(25px,5.6vmin,37px);font-weight:720;letter-spacing:-1.4px}
+.word span{color:var(--coral)}
+.progress{position:absolute;left:50%;bottom:5.5%;z-index:6;width:clamp(160px,42vw,230px);margin:0;transform:translateX(-50%)}
+.progress-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#74817A;font-size:9px;font-weight:750;letter-spacing:2px}
+.progress-meta output{color:var(--ink);font-size:10px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+.progress-track{height:5px;overflow:hidden;border-radius:999px;background:#E4DFD2;box-shadow:inset 0 1px 2px #14201B12}
+.progress-fill{display:block;width:0;min-width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#D8583A,#E08A6B);transition:width .12s linear}
+@keyframes badgeBloom{0%,100%{transform:translate(-50%,-50%) rotate(calc(0deg - var(--wheel-angle))) scale(1)}40%{transform:translate(-50%,-50%) rotate(calc(0deg - var(--wheel-angle))) scale(1.16)}}
+@keyframes badgePulse{0%{transform:translate(-50%,-50%) scale(.86);opacity:.36}100%{transform:translate(-50%,-50%) scale(1.72);opacity:0}}
+@keyframes logoBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@keyframes haloPulse{0%,100%{opacity:.1;transform:scale(.98)}50%{opacity:.24;transform:scale(1.055)}}
+@keyframes earthDrift{0%{transform:rotate(-1.5deg)}100%{transform:rotate(1.5deg)}}
+@media(max-width:480px){.progress{bottom:7%}.waves{height:21%}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+
+/* ---- 深色主题适配 ---- */
+html[data-theme="dark"] .loader{background:#0F1613}
+html[data-theme="dark"] .badge:before{background:#16201B;border-color:#243029;box-shadow:0 5px 15px rgba(0,0,0,.35)}
+html[data-theme="dark"] .progress-track{background:#243029;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+html[data-theme="dark"] .progress-meta{color:#93A198}
+html[data-theme="dark"] .word{color:#F2EFE6}
+html[data-theme="dark"] .opera{color:#8CA79F;opacity:.10}
+html[data-theme="dark"] .wave{stroke:#33423A}
+/* 加载中禁止页面滚动，避免底下内容先滚动 */
+html.is-loading, html.is-loading body{overflow:hidden}
+
+</style>
 </head>
 <body>
+<div class="loader" id="loader" role="status" aria-label="UniLoop 正在加载">
+  <main class="scene">
+    <!-- 悉尼歌剧院剪影与浅色海浪继续作为品牌背景。 -->
+    <svg class="opera" viewBox="0 0 760 590" fill="currentColor" aria-hidden="true">
+      <path d="M142 444c58-11 112-14 169-9 47 4 68 1 94-13-18 20-42 30-75 32-67 4-120-2-188 8v-18Z"/>
+      <path d="M308 421c9-34 20-71 43-112 21-38 45-65 70-79 5 33-3 67-21 101-20 37-49 68-92 90Z"/>
+      <path d="M364 420c18-38 36-78 66-118 28-37 59-61 91-70-2 34-16 67-42 100-30 37-68 66-115 88Z"/>
+      <path d="M432 423c25-32 54-66 90-93 34-25 69-38 100-36-11 29-33 56-64 79-37 27-79 44-126 50Z"/>
+      <path d="M219 435c72-13 143-17 214-13 85 5 158-1 222-18l-15 20c-67 17-138 23-214 18-71-4-139 0-203 15l-4-22Z"/>
+      <path d="M106 468c100-17 203-20 307-13 91 6 174 1 250-14v11c-77 17-161 23-253 17-105-7-207-3-304 15v-16Z"/>
+      <path d="M58 506c126-17 249-21 369-12 102 8 191 4 269-10v9c-80 18-170 23-271 16-120-9-241-5-367 15v-18Z"/>
+    </svg>
+    <svg class="waves" viewBox="0 0 1000 180" preserveAspectRatio="none" aria-hidden="true">
+      <path class="wave" d="M-20 64 C120 34 220 94 360 70 S610 38 760 67 930 98 1020 60"/>
+      <path class="wave" d="M-20 103 C110 76 250 126 390 101 S650 77 790 105 940 130 1020 98"/>
+      <path class="wave" d="M-20 142 C140 116 250 158 420 137 S690 116 830 143 960 160 1020 133"/>
+    </svg>
+
+    <!-- Canvas 绘制固定的五角星运行轨道。 -->
+    <canvas class="canvas-layer" id="networkCanvas" aria-hidden="true"></canvas>
+
+    <div class="orbit" id="schoolOrbit" aria-hidden="true">
+      <div class="badge mq" data-school="0" style="--angle:0deg"><img src="/assets/schools/mq.png" alt="Macquarie University"></div>
+      <div class="badge usyd" data-school="1" style="--angle:72deg"><img src="/assets/schools/usyd.svg" alt="University of Sydney"></div>
+      <div class="badge unsw" data-school="2" style="--angle:144deg"><img src="/assets/schools/unsw.png" alt="UNSW"></div>
+      <div class="badge uts" data-school="3" style="--angle:216deg"><img src="/assets/schools/uts.svg" alt="UTS"></div>
+      <div class="badge wsu" data-school="4" style="--angle:288deg"><img src="/v3/assets/wsu-crest.png" alt="Western Sydney University crest"></div>
+    </div>
+
+    <div class="center">
+      <svg class="mark" viewBox="0 0 100 100" fill="none" aria-label="UniLoop">
+        <circle class="logo-halo" cx="50" cy="50" r="47"/>
+        <circle cx="50" cy="50" r="43" stroke="#14201B" stroke-width="5"/>
+        <g class="earth-lines"><path d="M50 7c14 11 22 26 22 43s-8 32-22 43M15 37h70M15 63h70" stroke="#14201B" stroke-width="4" stroke-linecap="round" opacity=".82"/></g>
+        <circle cx="50" cy="50" r="7" fill="#D8583A"/>
+      </svg>
+      <div class="word">Uni<span>Loop</span></div>
+    </div>
+
+    <div class="progress">
+      <div class="progress-meta"><span id="loadingLabel">LOADING</span><output id="loadingPercent">0%</output></div>
+      <div class="progress-track" id="progressTrack" role="progressbar" aria-label="加载进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span class="progress-fill" id="progressFill"></span>
+      </div>
+    </div>
+  </main>
+</div>
+
 <div class="shell">
   <aside class="sidebar" id="sidebar"></aside>
   <div class="main" id="main">
@@ -102,6 +210,251 @@
 </section>
 
 <script src="/v3/qr.js"></script>
+<script>
+
+(() => {
+  const overlay = document.getElementById("loader");
+  const scene = document.querySelector(".scene");
+  const canvas = document.getElementById("networkCanvas");
+  const orbit = document.getElementById("schoolOrbit");
+  const ctx = canvas.getContext("2d", { alpha: true });
+  const badges = [...document.querySelectorAll(".badge")];
+  const progressFill = document.getElementById("progressFill");
+  const progressTrack = document.getElementById("progressTrack");
+  const progressLabel = document.getElementById("loadingPercent");
+  const loadingLabel = document.getElementById("loadingLabel");
+
+  const WHEEL_PERIOD = 24000;
+  const DEMO_LOAD_DURATION = 2600;
+  const MIN_DISPLAY_DURATION = 1200;
+  const COMPLETION_FADE_DELAY = 450;
+  const FALLBACK_TIMEOUT = 3600;
+  const STAR_ORDER = [0, 2, 4, 1, 3];
+
+  let width = 0;
+  let height = 0;
+  let centerX = 0;
+  let centerY = 0;
+  let orbitRadius = 0;
+  let dpr = 1;
+  let progress = 0;
+  let litStep = -1;
+  let externalProgress = false;
+  let assetsReady = false;
+  let fading = false;
+  let frameId = 0;
+  let demoStart = performance.now();
+  let fadeTimer = 0;
+
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const resize = () => {
+    const bounds = scene.getBoundingClientRect();
+    width = bounds.width;
+    height = bounds.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    centerX = width / 2;
+    centerY = height / 2;
+    orbitRadius = Number.parseFloat(getComputedStyle(scene).getPropertyValue("--orbit-radius")) || Math.min(width, height) * .26;
+  };
+
+  const campusPoints = (wheelAngle) => badges.map((badge) => {
+    const baseAngle = Number.parseFloat(badge.style.getPropertyValue("--angle")) * Math.PI / 180;
+    const angle = baseAngle + wheelAngle;
+    return { x: centerX + Math.cos(angle) * orbitRadius, y: centerY + Math.sin(angle) * orbitRadius };
+  });
+
+  // 用采样后的二次曲线给五角星尖角做圆角，并返回一条连续路径。
+  const roundedStarPolyline = (points) => {
+    const order = STAR_ORDER.map((_, step) => STAR_ORDER[step]);
+    const vertices = order.map((index) => points[index]);
+    const corners = vertices.map((point, i) => {
+      const previous = vertices[(i + vertices.length - 1) % vertices.length];
+      const next = vertices[(i + 1) % vertices.length];
+      const trim = .24;
+      return {
+        point,
+        entry: { x: point.x + (previous.x - point.x) * trim, y: point.y + (previous.y - point.y) * trim },
+        exit: { x: point.x + (next.x - point.x) * trim, y: point.y + (next.y - point.y) * trim }
+      };
+    });
+    const path = [corners[0].entry];
+    const curveSteps = 12;
+    corners.forEach((corner, i) => {
+      for (let step = 1; step <= curveSteps; step += 1) {
+        const t = step / curveSteps;
+        const u = 1 - t;
+        path.push({
+          x: u * u * corner.entry.x + 2 * u * t * corner.point.x + t * t * corner.exit.x,
+          y: u * u * corner.entry.y + 2 * u * t * corner.point.y + t * t * corner.exit.y
+        });
+      }
+      path.push(corners[(i + 1) % corners.length].entry);
+    });
+    return path;
+  };
+
+  const measurePolyline = (points) => {
+    let length = 0;
+    for (let i = 1; i < points.length; i += 1) {
+      length += Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+    }
+    return length;
+  };
+
+  const strokePolyline = (points, maxLength, color, lineWidth) => {
+    if (!points.length || maxLength <= 0) return;
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    let remaining = maxLength;
+    for (let i = 1; i < points.length; i += 1) {
+      const a = points[i - 1];
+      const b = points[i];
+      const segment = Math.hypot(b.x - a.x, b.y - a.y);
+      if (remaining >= segment) {
+        ctx.lineTo(b.x, b.y);
+        remaining -= segment;
+      } else {
+        const t = segment ? remaining / segment : 0;
+        ctx.lineTo(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
+        break;
+      }
+    }
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = color;
+    ctx.stroke();
+  };
+
+  const draw = (time) => {
+    ctx.clearRect(0, 0, width, height);
+    const wheelAngle = ((time - demoStart) % WHEEL_PERIOD) / WHEEL_PERIOD * Math.PI * 2;
+    orbit.style.setProperty("--wheel-angle", `${wheelAngle * 180 / Math.PI}deg`);
+
+    // 校徽所在的主轨道，与 HTML 校徽位置共用同一个圆心和半径。
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, orbitRadius, 0, Math.PI * 2);
+    ctx.setLineDash([2, 7]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(31, 74, 59, .18)";
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const campuses = campusPoints(wheelAngle);
+    const star = roundedStarPolyline(campuses);
+    const starLength = measurePolyline(star);
+    strokePolyline(star, starLength, "rgba(31, 74, 59, .22)", 1.15);
+    strokePolyline(star, starLength * progress / 100, "rgba(216, 88, 58, .88)", 2.1);
+  };
+
+  const setProgress = (value) => {
+    progress = clamp(Number(value) || 0, 0, 100);
+    const rounded = Math.round(progress);
+    // 用轨道渐变绘制进度：避免 span 宽度在某些浏览器里解析为 0
+    progressTrack.style.background =
+      'linear-gradient(90deg, #D8583A 0%, #E08A6B ' + progress + '%, #E4DFD2 ' + progress + '%, #E4DFD2 100%)';
+    progressFill.style.opacity = '0';
+    progressFill.style.opacity = progress > 0 ? '1' : '1';
+    progressTrack.setAttribute("aria-valuenow", String(rounded));
+    progressLabel.value = `${rounded}%`;
+    progressLabel.textContent = `${rounded}%`;
+
+    const step = Math.min(STAR_ORDER.length - 1, Math.floor(progress / 20));
+    if (step !== litStep) {
+      if (litStep >= 0) badges[STAR_ORDER[litStep]].classList.remove("is-active");
+      litStep = step;
+      badges[STAR_ORDER[step]].classList.add("is-active");
+      window.setTimeout(() => badges[STAR_ORDER[step]].classList.remove("is-active"), 1000);
+    }
+    if (progress >= 100) finishWhenReady();
+  };
+
+  const fadeOut = () => {
+    if (fading) return;
+    fading = true;
+    overlay.classList.add("is-fading");
+    document.documentElement.classList.remove("is-loading");
+    window.cancelAnimationFrame(frameId);
+    window.setTimeout(() => overlay.remove(), 750);
+  };
+
+  const finishWhenReady = () => {
+    if (assetsReady && progress >= 100 && !fadeTimer) {
+      const elapsed = performance.now() - demoStart;
+      const minDisplayRemaining = Math.max(0, MIN_DISPLAY_DURATION - elapsed);
+      const delay = Math.max(minDisplayRemaining, COMPLETION_FADE_DELAY);
+      fadeTimer = window.setTimeout(fadeOut, delay);
+    }
+  };
+
+  // Host page 可用实际加载百分比驱动进度条和五角星描线。
+  window.setUniLoopLoadingProgress = (value) => {
+    externalProgress = true;
+    setProgress(value);
+  };
+  window.addEventListener("uniloop:loading-progress", (event) => {
+    const value = event.detail && typeof event.detail === "object" ? event.detail.progress : event.detail;
+    window.setUniLoopLoadingProgress(value);
+  });
+
+  const animate = (time) => {
+    if (fading) return;
+    draw(time);
+    frameId = window.requestAnimationFrame(animate);
+  };
+
+  const beginDemoProgress = () => {
+    const start = performance.now();
+    const tick = (now) => {
+      if (externalProgress || fading) return;
+      const value = Math.min(100, (now - start) / DEMO_LOAD_DURATION * 100);
+      setProgress(value);
+      if (value < 100) window.requestAnimationFrame(tick);
+    };
+    window.requestAnimationFrame(tick);
+  };
+
+  const markAssetsReady = () => {
+    if (assetsReady) return;
+    assetsReady = true;
+    finishWhenReady();
+  };
+
+  resize();
+  draw(performance.now());
+  frameId = window.requestAnimationFrame(animate);
+  window.addEventListener("resize", resize, { passive: true });
+
+  let loadedMarks = 0;
+  const marks = [...document.querySelectorAll(".badge img")];
+  const markDone = () => {
+    loadedMarks += 1;
+    if (loadedMarks === marks.length) markAssetsReady();
+  };
+  marks.forEach((image) => {
+    let counted = false;
+    const done = () => {
+      if (counted) return;
+      counted = true;
+      markDone();
+    };
+    if (image.complete) done();
+    else {
+      image.addEventListener("load", done, { once: true });
+      image.addEventListener("error", done, { once: true });
+    }
+  });
+  if (!marks.length) markAssetsReady();
+  window.addEventListener("load", markAssetsReady, { once: true });
+
+  beginDemoProgress();
+  window.setTimeout(fadeOut, FALLBACK_TIMEOUT);
+})();
+
+</script>
 <script src="/v3/app.js"></script>
 </body>
 </html>
