@@ -13,6 +13,12 @@
   function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
   function initials(n) { return String(n || '?').split(' ').map(function (p) { return p[0]; }).slice(0, 2).join('').toUpperCase(); }
 
+  var HERO_LINES = [
+    { k: 'Sydney universities', a: 'What&rsquo;s on', b: 'this week.' },
+    { k: 'Your kind of day', a: 'Make a day', b: 'of it.' },
+    { k: 'Small plans, good people', a: 'Find your', b: 'people.' },
+    { k: 'On campus this week', a: 'Something worth', b: 'showing up for.' }
+  ];
   var CATS = { outdoors: 'Outdoors', social: 'Social', creative: 'Creative', sport: 'Sport', careers: 'Careers', other: 'Other' };
   var CATCOL = { outdoors: '#1F4A3B', social: '#D8583A', creative: '#B4622E', sport: '#2E5E8C', careers: '#7A3E6B', other: '#6B7280' };
   var CAMPCOL = { mq_sydney: '#1F4A3B', usyd_camperdown: '#D8583A', unsw_kensington: '#2E5E8C', uts_haymarket: '#B4622E', wsu_parramatta: '#7A3E6B' };
@@ -197,8 +203,14 @@
       (socs.length ? '<div class="sblock"><h4>My societies</h4><div class="chips">' + socs.map(function (m) {
         return '<button data-soc-link="' + esc(m.society_id) + '">' + esc(m.society_name) + '</button>';
       }).join('') + '</div></div>' : '') +
-      '<button class="themebtn" id="themeBtn">' + (currentTheme() === 'dark' ? '☀ Light mode' : '☾ Dark mode') + '</button>' +
-      '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a></div>';
+      '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a></div>' +
+      '<div class="themerow">' +
+        '<button data-theme-set="light" aria-label="Light mode" aria-pressed="' + (currentTheme() !== 'dark') + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>' +
+        '</button>' +
+        '<button data-theme-set="dark" aria-label="Dark mode" aria-pressed="' + (currentTheme() === 'dark') + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2Z"/></svg>' +
+        '</button></div>';
   }
   function tabs() {
     if (!window.matchMedia('(hover:none) and (pointer:coarse)').matches) return '';
@@ -219,7 +231,7 @@
       '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.2c3 2.4 4.6 5.6 4.6 8.8S15 18.4 12 20.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4.2 9.2h15.6M4.2 14.8h15.6" stroke="currentColor" stroke-width="1.4" opacity=".55"/></svg>UniLoop</a>' +
       '<span class="city">Sydney</span><span class="sp"></span>' +
       '<button class="avatar" id="avatarBtn">' + (S.me ? esc(initials(S.me.name)) : 'Log in') + '</button></header>' +
-      '<div class="hero-body"><p class="kicker">Sydney universities</p><h1>What&rsquo;s on<br>this week.</h1>' +
+      '<div class="hero-body"><p class="kicker">' + HERO_LINES[S.heroIdx % HERO_LINES.length].k + '</p><h1>' + HERO_LINES[S.heroIdx % HERO_LINES.length].a + '<br>' + HERO_LINES[S.heroIdx % HERO_LINES.length].b + '</h1>' +
       '<p class="hero-meta">' + (e.title ? '<b>' + esc(e.society_name) + '</b><span class="dot"></span><span>' + fmtDay(e.starts_at) + ' · ' + fmtTime(e.starts_at) + '</span><span class="dot"></span><span>' + esc(String(e.venue).split(',')[0]) + '</span>' : '') + '</p></div>' +
       '<div class="hero-dots">' + [0, 1, 2, 3].map(function (i) { return '<i class="' + (i === S.heroIdx ? 'on' : '') + '"></i>'; }).join('') + '</div></section>';
   }
@@ -764,7 +776,9 @@
     if (sg) sg.onclick = function () { openSearch(1); };
     $$('[data-campus]').forEach(function (b) { b.onclick = function () { S.where = b.dataset.campus; S.when = 'any'; S.date = ''; S.what = 'all'; S.free = false; S.radius = 0; route(); }; });
     var ca = $('#clearAll'); if (ca) ca.onclick = function () { S.q = ''; S.where = 'any'; S.when = 'any'; S.date = ''; S.what = 'all'; S.free = false; S.radius = 0; route(); };
-    var tb = $('#themeBtn'); if (tb) tb.onclick = toggleTheme;
+    $$('[data-theme-set]').forEach(function (b) {
+      b.onclick = function () { applyTheme(b.dataset.themeSet); route(); };
+    });
     var tb2 = $('#themeBtn2'); if (tb2) tb2.onclick = toggleTheme;
     var lb = $('#loginBtn'); if (lb) lb.onclick = openAuth;
     var av = $('#avatarBtn'); if (av) av.onclick = function () { if (S.me) location.hash = '#/my'; else openAuth(); };
@@ -882,6 +896,17 @@
         var dots = $$('.hero-dots i'); dots.forEach(function (d, i) { d.classList.toggle('on', i === S.heroIdx); });
         var e = soon[S.heroIdx];
         var meta = $('.hero-meta'); if (meta && e) meta.innerHTML = '<b>' + esc(e.society_name) + '</b><span class="dot"></span><span>' + fmtDay(e.starts_at) + ' · ' + fmtTime(e.starts_at) + '</span><span class="dot"></span><span>' + esc(String(e.venue).split(',')[0]) + '</span>';
+        var heroEl = document.querySelector('.hero');
+        if (heroEl) {
+          heroEl.classList.add('swap');
+          setTimeout(function () {
+            var line = HERO_LINES[S.heroIdx % HERO_LINES.length];
+            var k = document.querySelector('.hero .kicker'), h1 = document.querySelector('.hero h1');
+            if (k) k.textContent = line.k;
+            if (h1) h1.innerHTML = line.a + '<br>' + line.b;
+            heroEl.classList.remove('swap');
+          }, 260);
+        }
       }
     }, 8000);
   })();

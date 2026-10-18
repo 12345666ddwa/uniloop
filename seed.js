@@ -53,7 +53,8 @@ function buildSeed(hashPassword) {
       },
       createdAt: iso(now - (400 - (i % 300)) * DAY),
     }));
-    events = real.events.map((e, i) => ({
+    const EXCLUDE = /sym ai open|inter-uni hackathon/i;
+    events = real.events.filter((e) => !EXCLUDE.test(e.title || '') && !/5abvtld3/.test(e.source || '')).map((e, i) => ({
       id: e.id,
       title: e.title,
       description: e.description || '',

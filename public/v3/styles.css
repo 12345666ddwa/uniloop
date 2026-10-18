@@ -600,3 +600,50 @@ html[data-theme="dark"] .avatar{background:rgba(255,255,255,.12)}
 .livedot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--coral);margin-right:6px;
   animation:pulse 1.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ==========================================================================
+   v3.5 — 浮层彻底隐藏 / 卡片等高 / 主题切换按钮 / 标题轮换
+   ========================================================================== */
+
+/* 1) 浮层：未打开时不可见、不可点、完全移出视口 */
+.sheet{
+  visibility:hidden;opacity:0;pointer-events:none;
+  transform:translateY(calc(100% + 60px));
+  transition:transform .28s cubic-bezier(.22,.8,.24,1),opacity .22s ease,visibility .28s;
+}
+.sheet.on{visibility:visible;opacity:1;pointer-events:auto;transform:none}
+@media (min-width:900px){
+  .sheet{transform:translate(-50%,calc(100% + 80px))}
+  .sheet.on{transform:translate(-50%,0)}
+}
+#searchSheet:not(.on), #authSheet:not(.on), #createSheet:not(.on){display:none}
+
+/* 2) 卡片等高：标题固定两行高、正文撑满、底部信息贴底 */
+.card{height:100%}
+.card .body{flex:1 1 auto;display:flex;flex-direction:column}
+.card .title{min-height:2.52em}
+.card .foot{margin-top:auto}
+.grid{grid-auto-rows:1fr}
+.grid .card{height:100%}
+.rail{align-items:stretch}
+.rail .card{height:auto;align-self:stretch}
+@media (max-width:899px){
+  .card .title{min-height:2.6em}
+}
+
+/* 3) 主题切换：侧栏右下角，日/月图标 */
+.themerow{display:flex;gap:6px;justify-content:flex-end;align-items:center;margin-top:auto;padding:12px 0 2px}
+.themerow button{width:38px;height:38px;border-radius:11px;border:1px solid rgba(255,255,255,.18);
+  background:transparent;color:rgba(255,255,255,.7);display:grid;place-items:center;transition:.15s}
+.themerow button:hover{border-color:rgba(255,255,255,.45);color:#fff}
+.themerow button[aria-pressed="true"]{background:#F4F1E7;border-color:#F4F1E7;color:#14201B}
+.themerow svg{width:17px;height:17px}
+@media (max-width:899px){
+  .themerow{padding:6px 16px 12px;justify-content:flex-end}
+  .themerow button{border-color:var(--line);color:var(--ink2);background:var(--surface)}
+  .themerow button[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:#fff}
+}
+
+/* 4) 标题轮换淡入 */
+.hero h1,.hero .kicker{transition:opacity .28s ease}
+.hero.swap h1,.hero.swap .kicker{opacity:0}

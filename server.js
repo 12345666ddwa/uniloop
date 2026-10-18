@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { buildSeed } = require('./seed');
+const CAMPUS_COORDS = { mq_sydney: [-33.7738, 151.1126], usyd_camperdown: [-33.8894, 151.1874], unsw_kensington: [-33.9173, 151.2313], uts_haymarket: [-33.8825, 151.2000], wsu_parramatta: [-33.8120, 150.9940] };
 
 const PORT = Number(process.env.PORT) || 3000;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '.sym-data');
@@ -505,7 +506,7 @@ route('POST', '/api/exec/events', async ({ user, body }) => {
   const e = {
     id: 'evt_' + nextId('event'), title: title.slice(0, 120), description: String(body.description || '').slice(0, 800),
     category: cat, campusId: club.campusId, campusName: campusOf(club.campusId).name,
-    venue, venueCoords: v ? v.coords : (db.venues[0] || {}).coords,
+    venue, venueCoords: v ? v.coords : (CAMPUS_COORDS[club.campusId] || [-33.87, 151.21]),
     startsAt: starts.toISOString(), endsAt: new Date(starts.getTime() + Math.min(12, Math.max(0.5, Number(body.duration_hours) || 2)) * 3600000).toISOString(),
     audienceScope: body.audience_scope === 'CAMPUS_ONLY' ? 'CAMPUS_ONLY' : 'OPEN_TO_ALL',
     societyId: club.id, societyName: club.name,
