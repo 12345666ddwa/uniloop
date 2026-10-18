@@ -647,3 +647,95 @@ html[data-theme="dark"] .avatar{background:rgba(255,255,255,.12)}
 /* 4) 标题轮换淡入 */
 .hero h1,.hero .kicker{transition:opacity .28s ease}
 .hero.swap h1,.hero.swap .kicker{opacity:0}
+
+/* ==========================================================================
+   v3.8 — 桌面端满屏 + 宽度固定不随内容变化
+   根因 1：body 是 flex 容器，.shell 作为 flex item 会被内容宽度撑缩（筛到少量结果时 1440→1178）
+   根因 2：.shell 有 max-width:1440px，宽屏两侧留白
+   ========================================================================== */
+:root{ --gutter: clamp(24px, 3vw, 56px); }
+
+@media (min-width:900px){
+  /* 1) 让 shell 永远是满宽，不再被内容撑缩 */
+  body{display:block;padding:0;background:var(--paper)}
+  .shell{width:100%;max-width:none;min-height:100dvh;margin:0;border-radius:0;
+    box-shadow:none;background:var(--paper);display:flex}
+  .main{flex:1 1 auto;min-width:0;height:100dvh;overflow-y:auto;scrollbar-gutter:stable both-edges}
+  .appframe{min-height:100dvh;width:100%}
+
+  /* 2) Hero 撑满并随屏幕高度舒展 */
+  .hero{height:clamp(420px, 52vh, 640px)}
+  .hero-top{padding:22px var(--gutter) 0}
+  .hero-body{left:var(--gutter);right:var(--gutter);max-width:none;bottom:clamp(48px,6vh,84px)}
+  .hero h1{font-size:clamp(42px, 4.2vw, 66px)}
+  .hero-dots{right:var(--gutter);bottom:clamp(54px,6.5vh,90px)}
+
+  /* 3) 搜索与筛选：满宽 + 与内容同一条左边缘 */
+  .searchwrap{margin:-34px var(--gutter) 0;max-width:none}
+  .searchbar{max-width:none;height:66px}
+  .filters{max-width:none}
+
+  /* 4) 各区块去掉 max-width，统一用 --gutter */
+  .sec{padding:34px var(--gutter) 12px;max-width:none}
+  .rail{padding:2px var(--gutter) 14px;scroll-padding-left:var(--gutter)}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:18px;
+    padding:2px var(--gutter) 12px;max-width:none}
+  .campuses{grid-template-columns:repeat(5,minmax(0,1fr));padding:0 var(--gutter) 12px;max-width:none}
+  .results{padding:22px var(--gutter) 0;max-width:none}
+  .rows{grid-template-columns:repeat(auto-fill,minmax(430px,1fr));gap:12px}
+  .socgrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;
+    padding:0 var(--gutter) 10px;max-width:none}
+  .campus-head{padding:26px var(--gutter) 8px;max-width:none}
+  .hub-head{padding:0 var(--gutter)}
+  .hub-stats{padding:18px var(--gutter);grid-template-columns:repeat(4,1fr);max-width:none}
+  .tabs2{padding:0 var(--gutter)}
+  .gallery{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));padding:14px var(--gutter);max-width:none}
+  .reviews{padding:14px var(--gutter);max-width:none}
+  .kpis{grid-template-columns:repeat(4,1fr);gap:12px;padding:18px var(--gutter);max-width:none}
+  .chartcard{margin:0 var(--gutter);max-width:none}
+  .list{padding:0 var(--gutter);max-width:none}
+
+  /* 5) 活动页也满宽 */
+  .evpage{max-width:none;padding:22px var(--gutter) 70px}
+  .evgrid{grid-template-columns:minmax(0,1fr) 380px;gap:38px}
+  .evhero{max-height:none;aspect-ratio:21/9}
+}
+
+/* 6) 任何滚动容器都预留滚动条位置，切换筛选时内容宽度不变 */
+.main, .scroll, .page-scroll{scrollbar-gutter:stable}
+
+/* ==========================================================================
+   v3.8b — 全局修正：shell 永远满宽，不被内容撑缩；移动端改为块级布局
+   ========================================================================== */
+html, body{max-width:100%;overflow-x:hidden}
+body{display:block !important;padding:0 !important;background:var(--paper)}
+.shell{display:flex;width:100% !important;max-width:100% !important;min-height:100dvh;
+  margin:0 !important;border-radius:0 !important;box-shadow:none !important;background:var(--paper)}
+.main{flex:1 1 auto;min-width:0;max-width:100%}
+.appframe{width:100%;max-width:100%;min-height:100dvh;overflow-x:hidden}
+#view{min-width:0;max-width:100%}
+.rail, .grid, .rows, .socgrid, .campuses, .kpis, .gallery{max-width:100%}
+@media (max-width:899px){
+  .shell{display:block}
+  .sidebar{display:none !important}
+  .main{height:100dvh;overflow-y:auto;scrollbar-gutter:stable}
+  .appframe{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .scroll{flex:1;overflow-y:auto}
+  .tabs{position:absolute}
+}
+
+/* v3.8c — 滚动条常驻（宽度零跳动）+ 网格自适应更密 */
+@media (min-width:900px){
+  .main{overflow-y:scroll !important;scrollbar-gutter:stable both-edges}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  .rows{grid-template-columns:repeat(auto-fill,minmax(400px,1fr))}
+}
+.scroll{scrollbar-gutter:stable both-edges}
+/* v3.8d — 根元素滚动条常驻，彻底消除 15px 抖动 */
+html{overflow-y:scroll !important;overflow-x:hidden}
+html[data-theme]{scrollbar-color:#C9C3B2 transparent}
+/* v3.8e — appframe 不再作为滚动容器（overflow-x:hidden 会派生纵向滚动条，造成 15px 差） */
+@media (min-width:900px){
+  .appframe{overflow:visible !important}
+  .main{overflow-y:auto !important;height:100dvh}
+}
