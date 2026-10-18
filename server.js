@@ -28,12 +28,14 @@ fs.mkdirSync(DATA_DIR, { recursive: true });
 let db;
 if (fs.existsSync(DB_FILE)) db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
 else { db = buildSeed(hashPassword); save(); }
+db.friendships = db.friendships || [];
+db.messages = db.messages || [];
 function save() {
   const tmp = DB_FILE + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(db));
   fs.renameSync(tmp, DB_FILE);
 }
-const nextId = (k) => ++db.seq[k];
+const nextId = (k) => (db.seq[k] = (Number(db.seq[k]) || 0) + 1);
 const iso = () => new Date().toISOString();
 const byId = (arr, id) => arr.find((x) => String(x.id) === String(id));
 const campusOf = (id) => db.campuses.find((c) => c.id === id) || {};
@@ -221,7 +223,8 @@ route('GET', '/api/me', ({ user }) => {
     .sort((a, b) => new Date(a.event.starts_at) - new Date(b.event.starts_at));
   const saved = (user.savedEvents || []).map((id) => byId(db.events, id)).filter(Boolean).map((e) => eventOut(e, user));
   const savedMoney = rsvps.reduce((s, r) => s + (r.ticket_type === 'member' ? Math.max(0, r.event.price_public - r.price_paid) : 0), 0);
-  return { user: publicUser(user), memberships, rsvps, saved_events: saved, saved: savedMoney, society: user.societyId ? byId(db.societies, user.societyId) : null };
+  const unread = db.messages.filter((m) => m.toId === user.id && !m.readAt).length;
+  return { user: publicUser(user), memberships, rsvps, saved_events: saved, saved: savedMoney, unread_messages: unread, society: user.societyId ? byId(db.societies, user.societyId) : null };
 });
 route('PATCH', '/api/me', async ({ user, body }) => {
   needUser(user);
@@ -535,6 +538,148 @@ route('POST', '/api/dev/reset', ({ user }) => {
   fresh.sessions = db.sessions;
   db = fresh; save();
   return { ok: true };
+});
+
+
+/* ---------- 好友与私信 ---------- */
+function userLite(u) {
+  if (!u) return null;
+  const c = campusOf(u.campusId);
+  return { id: u.id, name: u.name, username: u.username || null, campus_id: u.campusId, campus_name: c.name, campus_logo: c.logo, role: u.role };
+}
+function friendshipBetween(a, b) {
+  return db.friendships.find((f) => (f.requesterId === a && f.addresseeId === b) || (f.requesterId === b && f.addresseeId === a));
+}
+function relationOf(a, b) {
+  const f = friendshipBetween(a, b);
+  if (!f) return 'none';
+  if (f.status === 'accepted') return 'friends';
+  return f.requesterId === a ? 'requested_out' : 'requested_in';
+}
+function friendIdsOf(userId) {
+  return db.friendships.filter((f) => f.status === 'accepted' && (f.requesterId === userId || f.addresseeId === userId))
+    .map((f) => (f.requesterId === userId ? f.addresseeId : f.requesterId));
+}
+function threadSummary(userId, peerId) {
+  const msgs = db.messages.filter((m) => (m.fromId === userId && m.toId === peerId) || (m.fromId === peerId && m.toId === userId));
+  const last = msgs[msgs.length - 1] || null;
+  const unread = msgs.filter((m) => m.toId === userId && !m.readAt).length;
+  return { last, unread, count: msgs.length };
+}
+
+route('GET', '/api/users/search', ({ user, query }) => {
+  needUser(user);
+  const q = String(query.q || '').trim().toLowerCase().replace(/^@/, '');
+  if (!q) return { users: [] };
+  const out = db.users
+    .filter((u) => u.id !== user.id)
+    .filter((u) => (u.name || '').toLowerCase().includes(q) || (u.username || '').toLowerCase().includes(q))
+    .slice(0, 12)
+    .map((u) => Object.assign(userLite(u), { relation: relationOf(user.id, u.id) }));
+  return { users: out };
+});
+
+route('GET', '/api/friends', ({ user }) => {
+  needUser(user);
+  const friends = [], incoming = [], outgoing = [];
+  for (const f of db.friendships) {
+    if (f.requesterId !== user.id && f.addresseeId !== user.id) continue;
+    const otherId = f.requesterId === user.id ? f.addresseeId : f.requesterId;
+    const other = userLite(byId(db.users, otherId));
+    if (!other) continue;
+    if (f.status === 'accepted') {
+      const t = threadSummary(user.id, otherId);
+      friends.push({ friendship_id: f.id, user: other, since: f.respondedAt || f.createdAt, last_message: t.last ? { text: t.last.text, created_at: t.last.createdAt, from_me: t.last.fromId === user.id } : null, unread: t.unread });
+    } else if (f.addresseeId === user.id) {
+      incoming.push({ id: f.id, user: other, created_at: f.createdAt });
+    } else {
+      outgoing.push({ id: f.id, user: other, created_at: f.createdAt });
+    }
+  }
+  friends.sort((a, b) => new Date((b.last_message || {}).created_at || b.since) - new Date((a.last_message || {}).created_at || a.since));
+  const unread = db.messages.filter((m) => m.toId === user.id && !m.readAt).length;
+  return { friends, incoming, outgoing, unread };
+});
+
+route('POST', '/api/friends/request', ({ user, body }) => {
+  needUser(user);
+  const target = byId(db.users, String(body.user_id || ''));
+  if (!target) fail(404, 'User not found.');
+  if (target.id === user.id) fail(400, 'You cannot add yourself.');
+  const existing = friendshipBetween(user.id, target.id);
+  if (existing) {
+    if (existing.status === 'accepted') fail(409, 'You are already friends.');
+    if (existing.requesterId === user.id) fail(409, 'Request already sent.');
+    // 对方已经发过请求 → 直接成为好友
+    existing.status = 'accepted'; existing.respondedAt = iso(); save();
+    return { ok: true, status: 'accepted' };
+  }
+  const f = { id: 'fr_' + nextId('friend'), requesterId: user.id, addresseeId: target.id, status: 'pending', createdAt: iso(), respondedAt: null };
+  db.friendships.push(f); save();
+  return { ok: true, status: 'pending', friendship: { id: f.id } };
+});
+
+route('POST', '/api/friends/respond', ({ user, body }) => {
+  needUser(user);
+  const f = byId(db.friendships, String(body.id || ''));
+  if (!f || f.addresseeId !== user.id) fail(404, 'Request not found.');
+  if (f.status !== 'pending') fail(409, 'This request was already handled.');
+  if (body.accept) { f.status = 'accepted'; f.respondedAt = iso(); }
+  else { f.status = 'declined'; f.respondedAt = iso(); }
+  save();
+  return { ok: true, status: f.status };
+});
+
+route('DELETE', '/api/friends/:id', ({ user, params }) => {
+  needUser(user);
+  const f = byId(db.friendships, params.id);
+  if (!f || (f.requesterId !== user.id && f.addresseeId !== user.id)) fail(404, 'Friendship not found.');
+  db.friendships = db.friendships.filter((x) => x.id !== f.id);
+  save();
+  return { ok: true };
+});
+
+route('GET', '/api/messages', ({ user }) => {
+  needUser(user);
+  const ids = friendIdsOf(user.id);
+  const threads = ids.map((pid) => {
+    const peer = userLite(byId(db.users, pid));
+    if (!peer) return null;
+    const t = threadSummary(user.id, pid);
+    return { peer, last_message: t.last ? { text: t.last.text, created_at: t.last.createdAt, from_me: t.last.fromId === user.id } : null, unread: t.unread, count: t.count };
+  }).filter(Boolean).sort((a, b) => new Date((b.last_message || {}).created_at || 0) - new Date((a.last_message || {}).created_at || 0));
+  return { threads };
+});
+
+route('GET', '/api/messages/unread', ({ user }) => {
+  if (!user) return { unread: 0 };
+  return { unread: db.messages.filter((m) => m.toId === user.id && !m.readAt).length };
+});
+
+route('GET', '/api/messages/:peerId', ({ user, params }) => {
+  needUser(user);
+  const peer = byId(db.users, params.peerId);
+  if (!peer) fail(404, 'User not found.');
+  if (relationOf(user.id, peer.id) !== 'friends') fail(403, 'You can only message friends.');
+  const msgs = db.messages
+    .filter((m) => (m.fromId === user.id && m.toId === peer.id) || (m.fromId === peer.id && m.toId === user.id))
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  let changed = false;
+  msgs.forEach((m) => { if (m.toId === user.id && !m.readAt) { m.readAt = iso(); changed = true; } });
+  if (changed) save();
+  return { peer: userLite(peer), messages: msgs.map((m) => ({ id: m.id, from_me: m.fromId === user.id, text: m.text, created_at: m.createdAt, read: !!m.readAt })) };
+});
+
+route('POST', '/api/messages/:peerId', ({ user, params, body }) => {
+  needUser(user);
+  const peer = byId(db.users, params.peerId);
+  if (!peer) fail(404, 'User not found.');
+  if (relationOf(user.id, peer.id) !== 'friends') fail(403, 'You can only message friends.');
+  const text = String(body.text || '').trim().slice(0, 2000);
+  if (!text) fail(400, 'Type a message first.');
+  const m = { id: 'msg_' + nextId('message'), fromId: user.id, toId: peer.id, text, createdAt: iso(), readAt: null };
+  db.messages.push(m); save();
+  return { ok: true, message: { id: m.id, from_me: true, text: m.text, created_at: m.createdAt, read: false } };
 });
 
 /* ---------- 服务器 ---------- */

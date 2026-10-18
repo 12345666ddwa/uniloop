@@ -1,0 +1,1609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UniLoop — find your kind of day</title>
+<meta name="description" content="Campus events, society memberships, maps and member prices — in one place.">
+<link rel="icon" href="/assets/favicon.png">
+<style>/* ============================================================
+   UniLoop · 版本 A —— 杂志编辑气质
+   两个色相：森林墨绿（结构）+ 珊瑚（唯一主操作）
+   一种卡片骨架：图在上、文在下、页脚放动作
+   ============================================================ */
+:root{
+  --paper:#F7F5EF;
+  --surface:#FFFDF8;
+  --ink:#1B2A24;
+  --ink2:#3F5049;
+  --muted:#78867E;
+  --line:#E3E1D6;
+  --line2:#CFCDBE;
+  --forest:#1F4A3B;
+  --forest-deep:#15332A;
+  --coral:#D8583A;
+  --coral-dark:#BF472B;
+  --r-lg:16px; --r-md:10px; --r-sm:7px;
+  --shadow:0 1px 2px rgba(27,42,36,.05), 0 14px 34px -18px rgba(27,42,36,.22);
+  --sans:'Inter',-apple-system,'Segoe UI',system-ui,sans-serif;
+  --serif:'Instrument Serif',Georgia,'Songti SC',serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--paper);color:var(--ink);
+  font:15px/1.5 var(--sans);
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+.is-hidden{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- 通用排版 ---------- */
+.eyebrow{
+  font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 14px
+}
+h1{font-family:var(--serif);font-weight:400;letter-spacing:-.01em}
+.h1{font-size:clamp(30px,3.2vw,46px);line-height:1.04;margin:0;letter-spacing:-.015em}
+.lede{margin:12px 0 0;color:var(--ink2);font-size:15px;max-width:46ch}
+h2{font-size:19px;font-weight:650;letter-spacing:-.01em;margin:0}
+.meta{font-size:12.5px;color:var(--muted);letter-spacing:0}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 18px;border-radius:var(--r-md);
+  font-size:13.5px;font-weight:600;letter-spacing:-.005em;
+  transition:background .16s,color .16s,border-color .16s,transform .16s;
+  white-space:nowrap
+}
+.btn-primary{background:var(--coral);color:#fff}
+.btn-primary:hover{background:var(--coral-dark)}
+.btn-ghost{border:1px solid var(--line2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink);background:#fff}
+.btn-quiet{color:var(--forest);font-weight:600;padding:8px 2px;font-size:13px}
+.btn-quiet:hover{text-decoration:underline;text-underline-offset:3px}
+.btn-sm{padding:9px 14px;font-size:13px}
+.btn:disabled{opacity:.6;cursor:default}
+.btn-done{background:transparent;border:1px solid var(--line2);color:var(--ink2)}
+
+/* ---------- 顶栏 ---------- */
+.topbar{
+  position:sticky;top:0;z-index:30;
+  background:rgba(247,245,239,.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{
+  max-width:1220px;margin:0 auto;padding:0 32px;height:66px;
+  display:flex;align-items:center;gap:30px
+}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.brand svg{width:24px;height:24px}
+.mainnav{display:flex;gap:4px;margin-right:auto}
+.mainnav a{
+  padding:8px 13px;border-radius:var(--r-sm);font-size:13.5px;font-weight:500;color:var(--ink2)
+}
+.mainnav a:hover{background:#EDEAE0;color:var(--ink)}
+.mainnav a[aria-current]{color:var(--ink);font-weight:600;background:#EDEAE0}
+.topright{display:flex;align-items:center;gap:12px}
+.seg{display:inline-flex;background:#EDEAE0;border-radius:var(--r-md);padding:3px}
+.seg button{
+  padding:7px 13px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--ink2)
+}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--forest);box-shadow:0 1px 3px rgba(27,42,36,.12)}
+.iconbtn{
+  width:36px;height:36px;border-radius:50%;border:1px solid var(--line2);
+  display:grid;place-items:center;color:var(--ink2)
+}
+.iconbtn:hover{border-color:var(--ink);color:var(--ink)}
+.avatar{
+  width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  background:var(--forest);color:#F2EFE4;font-size:11.5px;font-weight:700;letter-spacing:.02em
+}
+
+/* ---------- 页面容器 ---------- */
+.wrap{max-width:1220px;margin:0 auto;padding:44px 32px 72px}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:36px;margin-bottom:26px}
+.search{
+  display:flex;align-items:center;gap:9px;width:320px;height:44px;padding:0 14px;
+  background:var(--surface);border:1px solid var(--line2);border-radius:var(--r-md);
+  color:var(--muted);flex:none
+}
+.search:focus-within{border-color:var(--forest);box-shadow:0 0 0 3px rgba(31,74,59,.09)}
+.search input{flex:1;border:0;outline:0;background:none;font-size:13.5px;color:var(--ink)}
+.search input::placeholder{color:var(--muted)}
+
+/* ---------- 筛选 ---------- */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:26px 0 28px;flex-wrap:wrap}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{
+  padding:8px 15px;border-radius:999px;border:1px solid var(--line2);
+  background:var(--surface);font-size:13px;font-weight:500;color:var(--ink2)
+}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:#F4F1E7;font-weight:600}
+.pillgroup{display:flex;gap:7px}
+.pill{
+  padding:7px 13px;border-radius:var(--r-sm);background:#EDEAE0;
+  font-size:12.5px;font-weight:500;color:var(--ink2);border:1px solid transparent
+}
+.pill:hover{border-color:var(--line2);background:var(--surface)}
+
+/* ---------- 主栅格 ---------- */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 316px;gap:34px;align-items:start}
+
+/* ---------- 主推卡片（横向） ---------- */
+.feature{
+  display:grid;grid-template-columns:300px minmax(0,1fr);
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)
+}
+.feature-media{position:relative;height:100%;min-height:240px;background:#DDD8C9;overflow:hidden}
+.feature-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.badge{
+  position:absolute;left:14px;top:14px;background:rgba(255,253,248,.94);
+  border-radius:var(--r-sm);padding:6px 9px;text-align:center;line-height:1.05;
+  color:var(--forest)
+}
+.badge .b-m{display:block;font-size:10px;font-weight:700;letter-spacing:.1em}
+.badge .b-d{display:block;font-size:17px;font-weight:700;letter-spacing:-.03em;margin-top:2px}
+.feature-body{padding:26px 28px 22px;display:flex;flex-direction:column}
+.scope{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--forest)
+}
+.scope::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--forest)}
+.scope.is-closed{color:#8A5A2B}
+.scope.is-closed::before{background:#8A5A2B}
+.feature h3{font-size:26px;font-weight:650;letter-spacing:-.025em;margin:12px 0 8px;line-height:1.15}
+.feature .host{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+.feature p.desc{font-size:13.5px;line-height:1.55;color:var(--ink2);margin:0 0 auto;max-width:44ch}
+.feature-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin-top:22px;padding-top:16px;border-top:1px solid var(--line)
+}
+.going{font-size:13px;color:var(--ink2)}
+.going b{font-weight:650;color:var(--ink)}
+
+/* ---------- 卡片网格（统一骨架） ---------- */
+.sectionhead{display:flex;align-items:baseline;justify-content:space-between;margin:38px 0 16px}
+.sectionhead .count{font-size:12.5px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:border-color .16s,box-shadow .16s,transform .16s
+}
+.card:hover{border-color:var(--line2);box-shadow:var(--shadow);transform:translateY(-1px)}
+.card-media{aspect-ratio:16/10;background:#DDD8C9;position:relative;overflow:hidden}
+.card-media img{width:100%;height:100%;object-fit:cover}
+.card-media .badge{left:12px;top:12px;padding:5px 8px}
+.card-media .badge .b-d{font-size:15px}
+.card-body{padding:16px 17px 15px;display:flex;flex-direction:column;flex:1}
+.card-body h3{font-size:16.5px;font-weight:650;letter-spacing:-.015em;margin:0 0 6px;line-height:1.25}
+.card-body .when{font-size:12.5px;color:var(--ink2);margin:0 0 3px}
+.card-body .where{font-size:12.5px;color:var(--muted);margin:0}
+.card-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-top:14px;padding-top:12px;border-top:1px solid var(--line)
+}
+.card-foot .going{font-size:12.5px}
+
+/* ---------- 右栏 ---------- */
+.rail-stack{display:grid;gap:26px;position:sticky;top:92px}
+.ai{
+  background:var(--forest);color:#EFEADC;border-radius:var(--r-lg);
+  padding:26px 24px 24px;overflow:hidden;position:relative
+}
+.ai::after{
+  content:"";position:absolute;right:-90px;top:-110px;width:210px;height:210px;
+  border:1px solid rgba(247,245,239,.14);border-radius:50%;
+  box-shadow:0 0 0 26px rgba(247,245,239,.05),0 0 0 56px rgba(247,245,239,.035)
+}
+.ai-label{
+  font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:#A9BFA9;margin:0 0 12px;display:flex;align-items:center;gap:7px
+}
+.ai h3{
+  font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.1;
+  margin:0 0 10px;letter-spacing:-.005em;position:relative;z-index:1
+}
+.ai p.ai-sub{font-size:13px;line-height:1.5;color:#C3D0BE;margin:0 0 16px;position:relative;z-index:1}
+.ai-form{display:flex;flex-direction:column;gap:9px;position:relative;z-index:1}
+.ai-input{
+  height:42px;border-radius:var(--r-md);border:1px solid rgba(247,245,239,.28);
+  background:rgba(247,245,239,.07);padding:0 12px;color:#F2EFE4;font-size:13px;outline:0
+}
+.ai-input::placeholder{color:#9FB2A2}
+.ai-input:focus{border-color:rgba(247,245,239,.6);background:rgba(247,245,239,.11)}
+.ai .btn-primary{background:#E4664A}
+.ai .btn-primary:hover{background:#CF5236}
+.ai-result{
+  margin-top:16px;padding-top:16px;border-top:1px solid rgba(247,245,239,.16);
+  position:relative;z-index:1
+}
+.ai-result .ar-title{font-size:14px;font-weight:600;color:#F4F1E7;margin:0 0 7px}
+.ai-result ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ai-result li{font-size:12.5px;color:#C3D0BE;display:flex;gap:8px;align-items:flex-start}
+.ai-result li svg{flex:none;margin-top:2px;color:#9EC49B}
+.ai-result .ar-link{font-size:12.5px;color:#EFEADC;text-decoration:underline;text-underline-offset:3px;display:inline-block;margin-top:10px}
+.ai-note{font-size:11.5px;color:#93A795;margin:12px 0 0;position:relative;z-index:1}
+
+.pulse{padding-top:4px}
+.pulse h4{
+  font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 12px
+}
+.pulse-row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:11px 0;border-bottom:1px solid var(--line);font-size:13px
+}
+.pulse-row:first-of-type{border-top:1px solid var(--line)}
+.pulse-row span{color:var(--ink2)}
+.pulse-row b{font-weight:650;letter-spacing:-.01em}
+.pulse-row b em{font-style:normal;color:var(--muted);font-weight:500;font-size:12px;margin-left:5px}
+
+.foot{
+  margin-top:56px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;gap:16px
+}
+
+/* ============================================================
+   主办方后台
+   ============================================================ */
+.org{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+.orgnav{
+  background:var(--forest-deep);color:#DCE6DC;padding:26px 18px 20px;
+  display:flex;flex-direction:column;gap:26px;position:sticky;top:0;height:100vh
+}
+.orgnav .brand{color:#F4F1E7;font-size:17px}
+.orgnav .brand svg{color:#F4F1E7}
+.society{
+  border:1px solid rgba(220,230,220,.16);border-radius:var(--r-md);
+  padding:11px 12px;font-size:13px;font-weight:600;color:#F4F1E7;line-height:1.3
+}
+.society span{display:block;font-size:11.5px;font-weight:400;color:#93A795;margin-top:2px}
+.orgnav nav{display:grid;gap:2px}
+.orgnav nav a{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-sm);
+  font-size:13.5px;color:#B9C9BB
+}
+.orgnav nav a:hover{background:rgba(220,230,220,.07);color:#F4F1E7}
+.orgnav nav a[aria-current]{background:rgba(220,230,220,.12);color:#F4F1E7;font-weight:600}
+.orgnav nav svg{width:16px;height:16px;opacity:.9}
+.orgnav-foot{margin-top:auto;display:grid;gap:14px}
+.orgnav .tip{font-size:11.5px;line-height:1.5;color:#82968A;border-top:1px solid rgba(220,230,220,.12);padding-top:14px}
+.orguser{display:flex;align-items:center;gap:10px}
+.orguser .avatar{background:rgba(220,230,220,.16);color:#F4F1E7;width:30px;height:30px}
+.orguser .nm{font-size:12.5px;font-weight:600;color:#F4F1E7;line-height:1.25}
+.orguser .rl{font-size:11px;color:#93A795}
+.orgmain{padding:26px 38px 64px;min-width:0}
+.orgtop{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:30px}
+.crumb{font-size:12.5px;color:var(--muted)}
+.crumb b{color:var(--ink2);font-weight:500}
+.orghead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:26px}
+.orghead h1{font-size:clamp(28px,2.6vw,38px);margin:0}
+.orghead p{margin:10px 0 0;color:var(--ink2);font-size:14px}
+
+.eventstrip{
+  display:flex;align-items:center;gap:16px;padding:14px 18px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:22px
+}
+.eventstrip img{width:64px;height:52px;object-fit:cover;border-radius:var(--r-sm);flex:none}
+.eventstrip .es-main{min-width:0}
+.eventstrip .es-title{font-size:14.5px;font-weight:650;letter-spacing:-.01em;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.eventstrip .es-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.tag{
+  font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  padding:3px 7px;border-radius:4px;background:#EDEAE0;color:var(--ink2)
+}
+.tag.live{background:#E3EDE4;color:var(--forest)}
+.eventstrip .es-action{margin-left:auto}
+
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px}
+.kpi .k-label{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+.kpi .k-val{font-size:32px;font-weight:650;letter-spacing:-.035em;line-height:1;display:flex;align-items:baseline;gap:6px}
+.kpi .k-val small{font-size:15px;font-weight:500;color:var(--muted);letter-spacing:0}
+.kpi .k-note{font-size:12px;color:var(--forest);margin-top:9px}
+.kpi .k-note.muted{color:var(--muted)}
+
+.orgcols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 22px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.panel-head h2{font-size:15.5px;font-weight:650;letter-spacing:-.01em}
+.panel-head .hint{font-size:12px;color:var(--muted)}
+
+.chartwrap{padding-top:4px}
+.chart{width:100%;height:190px;display:block;overflow:visible}
+.chart .gridline{stroke:var(--line);stroke-width:1}
+.chart .axislab{font-size:10.5px;fill:var(--muted);font-family:var(--sans)}
+.chart .line{fill:none;stroke:var(--forest);stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round}
+.chart .area{fill:url(#gA)}
+.chart .dot{fill:var(--coral);stroke:var(--surface);stroke-width:2.5}
+
+.est{border-left:3px solid var(--coral)}
+.est .e-label{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);margin-bottom:10px
+}
+.est .e-num{font-size:26px;font-weight:650;letter-spacing:-.03em;line-height:1.1;margin-bottom:8px}
+.est p{font-size:12.5px;line-height:1.55;color:var(--ink2);margin:0}
+.est .btn{width:100%;margin-top:14px}
+.est .e-foot{font-size:11px;color:var(--muted);margin-top:10px}
+
+.table{width:100%;border-collapse:collapse}
+.table th{
+  text-align:left;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);padding:0 10px 10px;border-bottom:1px solid var(--line)
+}
+.table td{
+  font-size:13px;padding:13px 10px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:middle
+}
+.table tbody tr:last-child td{border-bottom:0}
+.table tbody tr:hover{background:#FAF8F2}
+.table .who{display:flex;align-items:center;gap:10px}
+.table .who .avatar{width:28px;height:28px;font-size:10.5px;background:#E4E1D4;color:var(--ink2)}
+.table .who b{font-weight:600;color:var(--ink);font-size:13px}
+.table .who span{display:block;font-size:11.5px;color:var(--muted);font-weight:400}
+.status{font-size:11.5px;font-weight:600;color:var(--forest);display:inline-flex;align-items:center;gap:5px}
+.status::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--forest)}
+.table-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:12px;color:var(--muted)}
+
+/* ---------- 弹层 ---------- */
+.scrim{
+  position:fixed;inset:0;background:rgba(21,51,42,.55);z-index:60;
+  display:grid;place-items:center;padding:24px;
+  opacity:0;pointer-events:none;transition:opacity .18s
+}
+.scrim.open{opacity:1;pointer-events:auto}
+.modal{
+  width:min(540px,100%);background:var(--surface);border-radius:var(--r-lg);
+  padding:26px 28px;box-shadow:0 30px 80px -20px rgba(21,51,42,.45);
+  transform:translateY(6px);transition:transform .18s
+}
+.scrim.open .modal{transform:none}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+.modal-head h2{font-family:var(--serif);font-weight:400;font-size:26px;letter-spacing:-.01em}
+.modal-head p{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field label{font-size:12px;font-weight:600;color:var(--ink2)}
+.field input,.field select,.field textarea{
+  border:1px solid var(--line2);border-radius:var(--r-md);background:#fff;
+  padding:10px 12px;font-size:13.5px;outline:0;width:100%
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--forest);box-shadow:0 0 0 3px rgba(31,74,59,.09)
+}
+.field textarea{min-height:66px;resize:vertical}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);
+  background:var(--forest-deep);color:#F4F1E7;font-size:13px;
+  padding:11px 18px;border-radius:var(--r-md);z-index:70;
+  opacity:0;pointer-events:none;transition:opacity .18s,transform .18s
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- 手机导航 ---------- */
+.tabbar{display:none}
+
+/* ============================================================
+   响应式
+   ============================================================ */
+@media (max-width:1080px){
+  .cols{grid-template-columns:1fr;gap:30px}
+  .rail-stack{position:static;grid-template-columns:1fr 1fr;display:grid}
+  .orgcols{grid-template-columns:1fr}
+  .org{grid-template-columns:200px minmax(0,1fr)}
+  .orgmain{padding:22px 24px 56px}
+}
+@media (max-width:860px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .feature{grid-template-columns:1fr}
+  .feature-media{min-height:0;height:auto;aspect-ratio:16/10}
+  .org{grid-template-columns:1fr}
+  .orgnav{position:static;height:auto;flex-direction:row;align-items:center;gap:16px;padding:14px 18px;overflow-x:auto}
+  .orgnav nav{display:flex;gap:4px}
+  .orgnav .society,.orgnav-foot{display:none}
+}
+@media (max-width:720px){
+  .topbar-in{height:58px;padding:0 16px;gap:12px}
+  .mainnav{display:none}
+  .topright .seg{display:none}
+  .topright{gap:8px;margin-left:auto}
+  .wrap{padding:26px 16px 96px}
+  .pagehead{display:block;margin-bottom:18px}
+  .pagehead .search{width:100%;margin-top:18px}
+  .lede{font-size:14px}
+  .toolbar{margin:20px 0 22px;gap:12px}
+  .chips{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;flex:none}
+  .pillgroup{display:none}
+  .feature h3{font-size:21px}
+  .feature-body{padding:18px 18px 16px}
+  .feature p.desc{margin-bottom:14px}
+  .feature-foot{margin-top:16px;padding-top:14px}
+  .grid{grid-template-columns:1fr;gap:14px}
+  .sectionhead{margin:26px 0 12px}
+  .rail-stack{grid-template-columns:1fr;gap:20px}
+  .ai{padding:22px 20px}
+  .ai h3{font-size:23px}
+  .foot{flex-direction:column;gap:6px;margin-top:34px;font-size:11px}
+  .orgmain{padding:18px 16px 96px}
+  .orghead{display:block}
+  .orghead .btn{margin-top:16px;width:100%}
+  .orgcols{gap:16px}
+  .eventstrip{flex-wrap:wrap;padding:12px}
+  .eventstrip .es-action{margin-left:0;width:100%}
+  .eventstrip .es-action .btn{width:100%}
+  .kpis{gap:10px}
+  .kpi{padding:14px 15px}
+  .kpi .k-val{font-size:26px}
+  .panel{padding:16px}
+  .table th:nth-child(2),.table td:nth-child(2){display:none}
+  .table th,.table td{padding:11px 6px}
+  .tabbar{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;
+    height:64px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+    background:rgba(255,253,248,.94);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);justify-content:space-around
+  }
+  .tabbar a{
+    display:grid;justify-items:center;align-content:center;gap:3px;
+    color:var(--muted);font-size:10.5px;font-weight:500;min-width:60px
+  }
+  .tabbar a[aria-current]{color:var(--forest)}
+  .tabbar a[aria-current] svg{color:var(--coral)}
+  .scrim{padding:16px}
+  .modal{padding:20px}
+  .field-row{grid-template-columns:1fr}
+  .toast{width:max-content;max-width:92vw;text-align:center;bottom:80px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+<style>/* ==========================================================================
+   UniLoop v2 — 在模板 A 之上的扩展样式（只加新组件，不改模板原有类）
+   设计 token 沿用 docs/design-tokens.json：paper #F7F5EF / forest #1F4A3B / coral #D8583A
+   ========================================================================== */
+:root{ --ink-3:#5A6A62; --radius-pill:999px; }
+
+.is-hidden{display:none !important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.muted{color:var(--muted)}
+.tiny{font-size:11.5px}
+.small{font-size:12.5px}
+.nowrap{white-space:nowrap}
+.spacer{flex:1}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row.tight{gap:6px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.block{width:100%}
+
+/* ---------- 顶部筛选条 ---------- */
+.filterbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:12px 14px;margin:0 0 20px;
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 1px 2px rgba(27,42,36,.05);
+}
+.filterbar label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.filterbar select,.filterbar input{
+  height:38px;border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:0 10px;font:inherit;font-size:14px;color:var(--ink);
+}
+.filterbar select:focus,.filterbar input:focus{outline:2px solid #DCE7DF;border-color:var(--forest)}
+.filterbar .grow{flex:1;min-width:200px}
+.filterbar .toggle{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2);text-transform:none;letter-spacing:0}
+.chipset{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:#fff}
+
+/* ---------- 活动卡片 v2 ---------- */
+.card.ev2{display:flex;flex-direction:column;cursor:pointer;overflow:hidden;transition:transform .12s ease,box-shadow .12s ease}
+.card.ev2:hover{transform:translateY(-2px);box-shadow:0 14px 34px -18px rgba(27,42,36,.32)}
+.ev2 .ev2-media{position:relative;aspect-ratio:16/10;overflow:hidden;background:#EDEAE0}
+.ev2 .ev2-media img{width:100%;height:100%;object-fit:cover;display:block}
+.ev2 .ev2-body{padding:14px 15px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+.ev2 h3{font-size:16.5px;font-weight:650;line-height:1.25;margin:0}
+.ev2 .ev2-desc{font-size:13px;color:var(--ink-3);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev2 .ev2-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.ev2 .ev2-foot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+.ev2 .ev2-price{font-weight:700;font-size:15px}
+.ev2 .ev2-price small{font-weight:600;color:var(--muted);font-size:11.5px}
+.gone{font-size:12.5px;color:var(--muted)}
+.icon-save{
+  width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#fff;
+  display:grid;place-items:center;cursor:pointer;color:var(--ink-2);flex:none
+}
+.icon-save[aria-pressed="true"]{background:#FDF0EC;border-color:#F0C4B6;color:var(--coral-dark)}
+.icon-save svg{width:16px;height:16px}
+
+/* 只对"仅本校"给一条低调提示；OPEN TO ALL 不再显示标签 */
+.scope-note{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted)}
+.scope-note::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--coral)}
+
+/* ---------- 详情页 ---------- */
+.detail2{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:26px;align-items:start}
+@media (max-width:900px){.detail2{grid-template-columns:1fr}}
+.detail2 .hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;display:block}
+.detail2 h1{margin:16px 0 6px}
+.detail2 .sub{color:var(--muted);margin:0 0 14px}
+.detail2 .desc{max-width:64ch;line-height:1.6}
+.panel2{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 1px 2px rgba(27,42,36,.05)}
+.panel2 h2{font-size:17px;margin:0 0 12px}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:6px 0}
+.kv b{font-variant-numeric:tabular-nums}
+.bar2{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin:10px 0}
+.bar2 span{display:block;height:100%;background:linear-gradient(90deg,var(--forest),#3C7B60)}
+.mapcard{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.mapcard iframe{width:100%;height:220px;border:0;display:block;background:#EDEAE0}
+.mapcard .map-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-top:1px solid var(--line)}
+.mapcard .map-addr{font-size:12.5px;color:var(--muted);flex:1;min-width:140px}
+.btn-mini{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 11px;font-size:12.5px;font-weight:650;color:var(--ink-2);cursor:pointer;text-decoration:none}
+.btn-mini:hover{border-color:var(--forest);color:var(--forest)}
+.btn-mini.primary{background:var(--forest);border-color:var(--forest);color:#fff}
+
+/* ---------- 校徽 / 社团 ---------- */
+.campus-head{display:flex;align-items:center;gap:12px;margin:26px 0 14px}
+.campus-head img{height:34px;width:auto;max-width:120px;object-fit:contain}
+.campus-head .nm{font-weight:700;font-size:15px}
+.campus-head .lbl{font-size:12px;color:var(--muted)}
+.soc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.soc3{display:flex;flex-direction:column;gap:8px;padding:16px;cursor:pointer;transition:transform .12s}
+.soc3:hover{transform:translateY(-2px)}
+.soc3 .top{display:flex;align-items:center;gap:10px}
+.soc3 .mark{width:42px;height:42px;border-radius:12px;background:#F2EFE4;display:grid;place-items:center;overflow:hidden;flex:none}
+.soc3 .mark img{width:100%;height:100%;object-fit:contain;padding:5px}
+.soc3 .nm{font-weight:700;font-size:15.5px;line-height:1.2}
+.soc3 .meta{font-size:12px;color:var(--muted)}
+.soc3 .blurb{font-size:12.5px;color:var(--ink-3);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.soc3 .foot{display:flex;align-items:center;gap:8px;margin-top:6px}
+.stars{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;color:var(--ink-2);font-weight:650}
+.stars .s{color:#C9822B;letter-spacing:-1px}
+.badge-soft{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:7px;background:#F1F4F0;color:var(--forest)}
+.badge-member{background:#E7F0EA;color:#1F4A3B}
+
+/* 社团主页 */
+.hub-cover{height:170px;border-radius:16px;overflow:hidden;position:relative;background:#EDEAE0}
+.hub-cover img{width:100%;height:100%;object-fit:cover;filter:saturate(.9)}
+.hub-head{display:flex;gap:16px;align-items:flex-end;margin-top:-38px;padding:0 6px;position:relative}
+.hub-logo{width:76px;height:76px;border-radius:18px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;box-shadow:0 6px 18px rgba(27,42,36,.12)}
+.hub-logo img{width:100%;height:100%;object-fit:contain;padding:10px}
+.hub-title{flex:1;padding-bottom:6px}
+.hub-title h1{margin:0;font-size:30px}
+.hub-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:18px 0}
+.hub-stats .cell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.hub-stats .n{font-size:20px;font-weight:750;font-variant-numeric:tabular-nums}
+.hub-stats .l{font-size:11.5px;color:var(--muted);margin-top:2px}
+.tabs2{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:22px 0 16px;overflow-x:auto}
+.tabs2 button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;font:inherit;font-weight:650;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs2 button[aria-selected="true"]{color:var(--forest);border-bottom-color:var(--forest)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.gallery a{display:block}.gallery figure{margin:0;border-radius:12px;overflow:hidden;position:relative;background:#EDEAE0}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:18px 10px 8px;font-size:11.5px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+.reviews{display:flex;flex-direction:column;gap:10px}
+.review{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.review .top{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.review .who{font-weight:650;font-size:13.5px}
+.review .txt{font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+.review-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.review-form select,.review-form input{height:36px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font:inherit;font-size:13px}
+
+/* ---------- 主办方 ---------- */
+.kpis2{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 18px}
+@media (max-width:900px){.kpis2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi2 .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.kpi2 .v{font-size:24px;font-weight:750;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi2 .v small{font-size:12px;color:var(--muted);font-weight:600}
+.kpi2 .n{font-size:11.5px;color:var(--muted);margin-top:4px}
+.chartcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.chartcard h2{font-size:16px;margin:0 0 2px}
+.chartcard .cap{font-size:12px;color:var(--muted);margin-bottom:8px}
+.chart-legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin-top:6px}
+.chart-legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.org-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:16px;align-items:start}
+@media (max-width:960px){.org-grid{grid-template-columns:1fr}}
+.list-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.list-row:last-child{border-bottom:0}
+.list-row img{width:64px;height:44px;border-radius:8px;object-fit:cover;flex:none}
+.list-row .t{font-weight:650;font-size:13.5px}
+.list-row .m{font-size:11.5px;color:var(--muted)}
+
+/* ---------- 竖版预览 ---------- */
+.phone-wrap{display:grid;place-items:center;padding:24px 0 40px}
+.phone{width:390px;height:844px;border-radius:44px;background:#0F1A16;padding:12px;box-shadow:0 30px 80px -30px rgba(15,26,22,.6);position:relative}
+.phone .screen{width:100%;height:100%;border-radius:34px;overflow:hidden;background:var(--paper);position:relative}
+.phone .screen iframe{width:390px;height:820px;border:0;display:block}
+.phone .notch{position:absolute;top:16px;left:50%;transform:translateX(-50%);width:110px;height:22px;background:#0F1A16;border-radius:0 0 14px 14px;z-index:3}
+.phone-hint{text-align:center;color:var(--muted);font-size:12.5px;margin-top:14px}
+
+/* ---------- 空状态 / toast ---------- */
+.empty2{padding:36px 16px;text-align:center;color:var(--muted)}
+.empty2 b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+.err-inline{margin-top:8px;font-size:13px;color:var(--coral-dark);background:#FDECE6;border-radius:8px;padding:8px 10px}
+.skel{background:linear-gradient(90deg,#EDEAE0 25%,#F5F3EA 37%,#EDEAE0 63%);background-size:400% 100%;animation:sk 1.4s ease infinite;border-radius:12px}
+@keyframes sk{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.skel-card{aspect-ratio:16/10;border-radius:14px}
+
+/* ---------- 移动端 ---------- */
+@media (max-width:720px){
+  .filterbar{padding:10px;gap:8px}
+  .filterbar label{flex:1;min-width:120px}
+  .ev2 .ev2-body{padding:12px 13px 13px}
+  .hub-head{margin-top:-28px}
+  .hub-logo{width:60px;height:60px;border-radius:14px}
+  .hub-title h1{font-size:23px}
+  .phone{width:100%;height:auto;padding:0;border-radius:0;box-shadow:none;background:transparent}
+  .phone .screen{border-radius:0}
+  .phone .screen iframe{width:100%;height:80vh}
+  .phone .notch{display:none}
+}
+
+/* ---------- 好友 / 私信 ---------- */
+.avatar.lg{width:40px;height:40px;font-size:13px}
+.avatar.sm{width:28px;height:28px;font-size:10.5px}
+.nav-badge{display:inline-block;min-width:17px;height:17px;padding:0 5px;margin-left:6px;border-radius:999px;background:var(--coral);color:#fff;font-size:10.5px;font-weight:700;line-height:17px;text-align:center;vertical-align:1px}
+.msg-shell{display:grid;grid-template-columns:336px minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;height:calc(100vh - 262px);min-height:540px;box-shadow:var(--shadow)}
+.msg-side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:#FBF9F3}
+.msg-sidehead{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+.msg-sidehead h2{font-size:16px;display:flex;align-items:center;gap:8px}
+.msg-search{display:flex;align-items:center;gap:8px;margin-top:12px;padding:0 11px;height:38px;border:1px solid var(--line2);border-radius:9px;background:var(--surface)}
+.msg-search:focus-within{border-color:var(--forest);box-shadow:0 0 0 3px rgba(31,74,59,.08)}
+.msg-search input{flex:1;border:0;outline:0;background:none;font-size:13px;color:var(--ink)}
+.msg-scroll{overflow:auto;flex:1;min-height:0;padding:8px}
+.msg-sec{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 8px 6px}
+.thread{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;cursor:pointer}
+.thread:hover{background:#F1EEE4}
+.thread.is-active{background:#EDEAE0}
+.thread .body{flex:1;min-width:0}
+.thread .nm{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.thread .prev{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.thread .time{font-size:10.5px;color:var(--muted);flex:none;align-self:flex-start;padding-top:2px}
+.dot-unread{min-width:16px;height:16px;border-radius:999px;background:var(--coral);color:#fff;font-size:10px;font-weight:700;display:inline-grid;place-items:center;padding:0 4px;line-height:1}
+.msg-main{display:flex;flex-direction:column;min-height:0}
+.msg-empty{flex:1;display:grid;place-items:center;text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.msg-empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:6px}
+.req{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:10px;background:#F4F1E6;margin-bottom:4px}
+.req .body{flex:1;min-width:0}
+.req .nm{font-size:13px;font-weight:600}
+.req .meta{font-size:11.5px;color:var(--muted)}
+.req .acts{display:flex;gap:6px}
+.btn-xs{padding:6px 10px;font-size:12px;border-radius:8px}
+.people-row{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:10px}
+.people-row:hover{background:#F1EEE4}
+.people-row .body{flex:1;min-width:0}
+.people-row .nm{font-size:13px;font-weight:600}
+.people-row .meta{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-page{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);height:calc(100vh - 250px);min-height:460px;max-width:860px;margin:10px auto 0}
+.chat-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.chat-head .nm{font-weight:650;font-size:14.5px}
+.chat-body{flex:1;overflow:auto;padding:20px 18px;background:#FDFBF6;min-height:0}
+.chat-hint{text-align:center;font-size:11.5px;color:var(--muted);margin:10px 0 16px}
+.bubble-row{display:flex;margin-bottom:10px}
+.bubble-row.me{justify-content:flex-end}
+.bubble{max-width:min(74%,520px);padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.45;background:#EFECE2;border-bottom-left-radius:5px;white-space:pre-wrap;word-break:break-word}
+.bubble-row.me .bubble{background:var(--forest);color:#F7F5EF;border-bottom-left-radius:14px;border-bottom-right-radius:5px}
+.bubble-meta{font-size:10.5px;color:var(--muted);margin:3px 6px 0}
+.bubble-row.me .bubble-meta{text-align:right}
+.chat-form{display:flex;gap:9px;padding:12px 14px;border-top:1px solid var(--line);background:var(--surface)}
+.chat-form input{flex:1;height:42px;padding:0 13px;border:1px solid var(--line2);border-radius:10px;background:#fff;outline:0;font-size:13.5px;color:var(--ink)}
+.chat-form input:focus{border-color:var(--forest);box-shadow:0 0 0 3px rgba(31,74,59,.08)}
+.field .hint-line{font-size:11.5px;margin:5px 0 0;color:var(--muted)}
+.field .hint-line.ok{color:#2F6B4F}
+.field .hint-line.bad{color:var(--coral-dark)}
+@media (max-width:860px){
+  .msg-shell{grid-template-columns:1fr;height:auto;min-height:0}
+  .msg-side{border-right:0}
+  .msg-main{display:none}
+  .chat-page{height:calc(100vh - 200px);min-height:380px;border-radius:14px}
+}
+</style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- 登录 / 注册 -->
+  <div class="scrim" id="authScrim" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-head">
+        <div><h2 id="authTitle">Welcome back</h2><p>Save your spot, get member prices.</p></div>
+        <button class="iconbtn" type="button" id="authClose" aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="tabs" style="display:flex;gap:6px;margin-bottom:14px">
+        <button type="button" data-auth="login" aria-pressed="true" style="flex:1">Log in</button>
+        <button type="button" data-auth="signup" aria-pressed="false" style="flex:1">Sign up</button>
+      </div>
+      <form id="authForm">
+        <div class="field" id="nameField" style="display:none"><label for="auName">Name</label><input id="auName" autocomplete="name" placeholder="Jamie Chen"></div>
+        <div class="field" id="usernameField" style="display:none"><label for="auUsername">Username</label><input id="auUsername" autocomplete="username" placeholder="jamie.chen" maxlength="20" spellcheck="false"><p class="hint-line" id="auUsernameHint">3–20 characters · letters, numbers, dots or underscores. Friends find you by this.</p></div>
+        <div class="field"><label for="auEmail">Email</label><input id="auEmail" type="email" autocomplete="email" required placeholder="student@uniloop.demo"></div>
+        <div class="field" id="campusField" style="display:none"><label for="auCampus">Campus</label><select id="auCampus"></select></div>
+        <div class="field"><label for="auPass">Password</label><input id="auPass" type="password" autocomplete="current-password" required placeholder="demo1234"></div>
+        <p class="err-inline is-hidden" id="authErr"></p>
+        <div class="modal-actions"><button class="btn btn-ghost" type="button" id="authCancel">Not now</button><button class="btn btn-primary" type="submit" id="authSubmit">Log in</button></div>
+      </form>
+      <div class="row" style="margin-top:12px">
+        <button class="btn-mini" type="button" data-demo="student@uniloop.demo">Student demo</button>
+        <button class="btn-mini" type="button" data-demo="exec@uniloop.demo">Organiser demo</button>
+      </div>
+      <p class="tiny muted" style="margin-top:10px">Demo password: <b>demo1234</b> · sample data only</p>
+    </div>
+  </div>
+
+  <!-- 支付 -->
+  <div class="scrim" id="payScrim" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+    <form class="modal" id="payForm" style="max-width:420px">
+      <div class="modal-head">
+        <div><h2 id="payTitle">Confirm and pay</h2><p id="paySub">Test mode — no real charge.</p></div>
+        <button class="iconbtn" type="button" id="payClose" aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div id="payLines" style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0"></div>
+      <div class="field"><label for="payCard">Card (test)</label><input id="payCard" value="4242 4242 4242 4242" inputmode="numeric"></div>
+      <p class="err-inline is-hidden" id="payErr"></p>
+      <div class="modal-actions"><button class="btn btn-ghost" type="button" id="payCancel">Cancel</button><button class="btn btn-primary" type="submit">Pay &amp; RSVP</button></div>
+    </form>
+  </div>
+
+  <!-- 发布活动 -->
+  <div class="scrim" id="createScrim" role="dialog" aria-modal="true" aria-labelledby="createTitle">
+    <form class="modal" id="createForm" style="max-width:560px">
+      <div class="modal-head">
+        <div><h2 id="createTitle">Create an event</h2><p>Published straight into Discover.</p></div>
+        <button class="iconbtn" type="button" id="createClose" aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="field"><label for="evTitle">Event name</label><input id="evTitle" required placeholder="e.g. Sunset sketch club"></div>
+      <div class="field"><label for="evDesc">Short description</label><textarea id="evDesc" placeholder="One or two sentences a student would actually read."></textarea></div>
+      <div class="field-row">
+        <div class="field"><label for="evCat">Category</label><select id="evCat"><option value="social">Social</option><option value="outdoors">Outdoors</option><option value="creative">Creative</option><option value="sport">Sport</option><option value="careers">Careers</option><option value="other">Other</option></select></div>
+        <div class="field"><label for="evScope">Who can join</label><select id="evScope"><option value="OPEN_TO_ALL">Open to all campuses</option><option value="CAMPUS_ONLY">Own campus only</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="evDate">Date</label><input id="evDate" type="date" required></div>
+        <div class="field"><label for="evTime">Start</label><input id="evTime" type="time" value="17:00"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="evPlace">Where</label><input id="evPlace" placeholder="Macquarie University" required></div>
+        <div class="field"><label for="evCap">Capacity</label><input id="evCap" type="number" min="1" value="40"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="evPM">Member price ($)</label><input id="evPM" type="number" min="0" value="0"></div>
+        <div class="field"><label for="evPP">Public price ($)</label><input id="evPP" type="number" min="0" value="0"></div>
+      </div>
+      <p class="err-inline is-hidden" id="createErr"></p>
+      <div class="modal-actions"><button class="btn btn-ghost" type="button" id="createCancel">Not yet</button><button class="btn btn-primary" type="submit">Publish event</button></div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>/* app.js v2 — UniLoop：学生端/社团主页/主办方 Hub/地图/收藏/评价/竖版预览 */
+(function () {
+  'use strict';
+  var S = {
+    me: null, campuses: [], events: [], societies: [], saved: [], myRsvps: [], myMemberships: [], savedMoney: 0,
+    filter: { campus: '', when: 'week', category: 'all', free: false, q: '' },
+    route: { name: 'discover' }, org: null, orgEventId: null, poll: null, loading: true, ai: { busy: false, results: null, text: '' },
+    unread: 0, friends: null, chat: null, chatPeer: null, chatErr: null, people: [], peopleQ: ''
+  };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var money = function (n) { n = Number(n) || 0; return n === 0 ? 'Free' : '$' + (n % 1 ? n.toFixed(2) : n); };
+  var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  function d(iso) { return new Date(iso); }
+  function fmtDay(iso) { var x = d(iso); return DAYS[x.getDay()] + ' ' + x.getDate() + ' ' + x.toLocaleString('en-AU', { month: 'short' }); }
+  function fmtTime(iso) { return d(iso).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true }); }
+  function fmtRange(a, b) { return fmtDay(a) + ' · ' + fmtTime(a) + (b ? '–' + fmtTime(b) : ''); }
+  function initials(n) { return String(n || '?').split(' ').map(function (p) { return p[0]; }).slice(0, 2).join('').toUpperCase(); }
+  function rel(iso) { var days = Math.round((d(iso) - Date.now()) / 86400000); return days === 0 ? 'today' : days === 1 ? 'tomorrow' : 'in ' + days + ' days'; }
+
+  var toastEl = $('#toast'), toastT;
+  function toast(m) { toastEl.textContent = m; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('show'); }, 2600); }
+
+  async function api(path, opts) {
+    opts = opts || {};
+    var res = await fetch(path, { method: opts.method || 'GET', credentials: 'include', headers: opts.body ? { 'content-type': 'application/json' } : {}, body: opts.body ? JSON.stringify(opts.body) : undefined });
+    var data = {}; try { data = await res.json(); } catch (e) { }
+    if (!res.ok) { var err = new Error(data.error || ('HTTP ' + res.status)); err.status = res.status; err.data = data; throw err; }
+    return data;
+  }
+
+  /* ============ 认证 ============ */
+  var authMode = 'login';
+  function openAuth(mode) { authMode = mode || 'login'; $('#authScrim').classList.add('open'); syncAuth(); setTimeout(function () { $('#auEmail').focus(); }, 80); }
+  function closeAuth() { $('#authScrim').classList.remove('open'); $('#authErr').classList.add('is-hidden'); }
+  function syncAuth() {
+    var isLogin = authMode === 'login';
+    $('#authTitle').textContent = isLogin ? 'Welcome back' : 'Join UniLoop';
+    $('#nameField').style.display = isLogin ? 'none' : '';
+    $('#usernameField').style.display = isLogin ? 'none' : '';
+    $('#campusField').style.display = isLogin ? 'none' : '';
+    $('#authSubmit').textContent = isLogin ? 'Log in' : 'Create account';
+    $$('[data-auth]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.auth === authMode)); });
+    if (!isLogin && !$('#auCampus').options.length) $('#auCampus').innerHTML = S.campuses.map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join('');
+  }
+  /* 用户名实时查重（后端 /api/username-available） */
+  var unameT = null;
+  var uInput = $('#auUsername');
+  if (uInput) uInput.addEventListener('input', function () {
+    var v = uInput.value.replace(/^@/, '').toLowerCase();
+    uInput.value = v;
+    var hint = $('#auUsernameHint');
+    clearTimeout(unameT);
+    if (!v) { hint.className = 'hint-line'; hint.textContent = '3–20 characters · letters, numbers, dots or underscores. Friends find you by this.'; return; }
+    hint.className = 'hint-line'; hint.textContent = 'Checking…';
+    unameT = setTimeout(async function () {
+      try {
+        var r = await api('/api/username-available?u=' + encodeURIComponent(v));
+        hint.className = 'hint-line ' + (r.available ? 'ok' : 'bad');
+        hint.textContent = r.available ? '@' + v + ' is available' : r.reason;
+      } catch (e) { hint.className = 'hint-line'; hint.textContent = 'Could not check right now — you can still sign up.'; }
+    }, 260);
+  });
+  $$('[data-auth]').forEach(function (b) { b.addEventListener('click', function () { authMode = b.dataset.auth; syncAuth(); }); });
+  $('#authClose').addEventListener('click', closeAuth);
+  $('#authCancel').addEventListener('click', closeAuth);
+  $('#authScrim').addEventListener('click', function (e) { if (e.target === $('#authScrim')) closeAuth(); });
+  $$('#authScrim [data-demo]').forEach(function (b) {
+    b.addEventListener('click', function () { $('#auEmail').value = b.dataset.demo; $('#auPass').value = 'demo1234'; authMode = 'login'; syncAuth(); $('#authForm').requestSubmit(); });
+  });
+  $('#authForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); var errEl = $('#authErr'); errEl.classList.add('is-hidden');
+    try {
+      var payload = authMode === 'login'
+        ? { email: $('#auEmail').value.trim(), password: $('#auPass').value }
+        : { name: $('#auName').value.trim(), username: $('#auUsername').value.trim(), email: $('#auEmail').value.trim(), password: $('#auPass').value, campus_id: $('#auCampus').value || 'mq_sydney' };
+      var r = await api('/api/auth/' + authMode, { method: 'POST', body: payload });
+      S.me = r.user; closeAuth(); toast('Signed in as ' + r.user.name.split(' ')[0]);
+      await loadMe(); await loadEvents(); render();
+    } catch (err) { errEl.textContent = err.message; errEl.classList.remove('is-hidden'); }
+  });
+
+  /* ============ 支付 ============ */
+  var payResolve = null;
+  function openPay(title, sub, lines) {
+    $('#payTitle').textContent = title; $('#paySub').textContent = sub || 'Test mode — no real charge.';
+    $('#payLines').innerHTML = lines.map(function (l) { return '<div class="kv' + (l.hl ? ' hl' : '') + '"><span>' + esc(l.k) + '</span><b>' + esc(l.v) + '</b></div>'; }).join('');
+    $('#payErr').classList.add('is-hidden'); $('#payScrim').classList.add('open');
+    return new Promise(function (res) { payResolve = res; });
+  }
+  function closePay(v) { $('#payScrim').classList.remove('open'); if (payResolve) { var r = payResolve; payResolve = null; r(v); } }
+  $('#payClose').addEventListener('click', function () { closePay(null); });
+  $('#payCancel').addEventListener('click', function () { closePay(null); });
+  $('#payScrim').addEventListener('click', function (e) { if (e.target === $('#payScrim')) closePay(null); });
+  $('#payForm').addEventListener('submit', function (e) {
+    e.preventDefault(); var c = $('#payCard').value;
+    if (String(c).replace(/\D/g, '').length < 12) { $('#payErr').textContent = 'Use 4242 4242 4242 4242.'; $('#payErr').classList.remove('is-hidden'); return; }
+    closePay(c);
+  });
+
+  /* ============ 发布活动 ============ */
+  function openCreate() {
+    if (!S.me) return openAuth('login');
+    if (S.me.role !== 'exec') { toast('Organiser demo account only'); return openAuth('login'); }
+    var x = new Date(); x.setDate(x.getDate() + 7);
+    $('#evDate').value = x.toISOString().slice(0, 10);
+    $('#createErr').classList.add('is-hidden'); $('#createScrim').classList.add('open');
+    setTimeout(function () { $('#evTitle').focus(); }, 80);
+  }
+  function closeCreate() { $('#createScrim').classList.remove('open'); }
+  $('#createClose').addEventListener('click', closeCreate);
+  $('#createCancel').addEventListener('click', closeCreate);
+  $('#createScrim').addEventListener('click', function (e) { if (e.target === $('#createScrim')) closeCreate(); });
+  $('#createForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); var errEl = $('#createErr'); errEl.classList.add('is-hidden');
+    try {
+      var r = await api('/api/exec/events', { method: 'POST', body: {
+        title: $('#evTitle').value.trim(), description: $('#evDesc').value.trim(), category: $('#evCat').value,
+        audience_scope: $('#evScope').value, venue: $('#evPlace').value.trim(),
+        starts_at: new Date($('#evDate').value + 'T' + ($('#evTime').value || '17:00') + ':00').toISOString(),
+        capacity: Number($('#evCap').value) || null,
+        price_member: Number($('#evPM').value) || 0, price_public: Number($('#evPP').value) || 0
+      } });
+      closeCreate(); $('#createForm').reset(); toast('Published. It is in Discover now.');
+      await loadEvents(); if (S.route.name === 'organiser') await loadOrg(); render();
+    } catch (err) { errEl.textContent = err.message; errEl.classList.remove('is-hidden'); }
+  });
+
+  /* ============ 数据 ============ */
+  async function loadMe() {
+    try { var r = await api('/api/me'); S.me = r.user; S.myRsvps = r.rsvps || []; S.myMemberships = r.memberships || []; S.savedMoney = r.saved || 0; S.savedEventsData = r.saved_events || []; S.saved = S.savedEventsData.map(function (e) { return e.id; }); S.unread = r.unread_messages || 0; }
+    catch (e) { S.me = null; S.myRsvps = []; S.myMemberships = []; S.saved = []; }
+  }
+  function eventQuery() {
+    var q = new URLSearchParams();
+    if (S.filter.campus) q.set('campus_id', S.filter.campus);
+    if (S.filter.when) q.set('when', S.filter.when);
+    if (S.filter.category && S.filter.category !== 'all') q.set('category', S.filter.category);
+    if (S.filter.free) q.set('free', '1');
+    if (S.filter.q) q.set('q', S.filter.q);
+    return q.toString();
+  }
+  async function loadEvents() {
+    try { var r = await api('/api/events?' + eventQuery()); S.events = r.events || []; } catch (e) { S.events = []; }
+  }
+  async function loadSocieties() {
+    if (S.societies.length) return;
+    try { S.societies = (await api('/api/societies')).societies || []; } catch (e) { S.societies = []; }
+  }
+  async function loadOrg(eventId) {
+    try { S.org = await api('/api/exec/hub'); if (eventId) S.orgDash = await api('/api/exec/dashboard?event_id=' + encodeURIComponent(eventId)); else S.orgDash = await api('/api/exec/dashboard'); S.orgEventId = (S.orgDash.event || {}).id; }
+    catch (e) { S.org = { error: e.message, status: e.status }; S.orgDash = null; }
+  }
+
+  /* ============ 通用组件 ============ */
+  function stars(rating) {
+    if (rating == null) return '<span class="stars"><span class="s">☆☆☆☆☆</span> <span class="tiny muted">no reviews</span></span>';
+    var full = Math.round(rating);
+    return '<span class="stars"><span class="s">' + '★★★★★'.slice(0, full) + '☆☆☆☆☆'.slice(0, 5 - full) + '</span> ' + rating.toFixed(1) + '</span>';
+  }
+  function saveBtn(e) {
+    return '<button class="icon-save" data-save="' + esc(e.id) + '" aria-pressed="' + (e.is_saved ? 'true' : 'false') + '" aria-label="' + (e.is_saved ? 'Remove from saved' : 'Save event') + '" title="Save">' +
+      '<svg viewBox="0 0 24 24" fill="' + (e.is_saved ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 4.5h12a1 1 0 0 1 1 1V21l-7-4.2L5 21V5.5a1 1 0 0 1 1-1Z"/></svg></button>';
+  }
+  function rsvpBtn(e, big) {
+    var cls = 'btn ' + (big ? 'btn-primary' : 'btn-sm btn-primary');
+    if (e.past) return '<span class="gone">Finished</span>';
+    if (e.my_rsvp) return '<span class="badge-soft badge-member">You\'re in · ' + (e.my_rsvp.ticket_type === 'member' ? 'member' : 'general') + '</span>';
+    if (e.capacity != null && e.seats_left === 0) return '<button class="btn btn-sm" disabled>Full</button>';
+    if (e.audience_scope === 'CAMPUS_ONLY' && !e.can_rsvp && S.me && S.me.campus_id !== e.campus_id) return '<button class="btn btn-sm" disabled>Campus only</button>';
+    var label = e.your_price > 0 ? 'RSVP · ' + money(e.your_price) : 'RSVP free';
+    return '<button class="' + cls + '" data-rsvp="' + esc(e.id) + '">' + label + '</button>';
+  }
+  function evCard(e) {
+    var campusNote = e.audience_scope === 'CAMPUS_ONLY' ? '<span class="scope-note">Own campus only</span>' : '';
+    return '<article class="card ev2" data-open="' + esc(e.id) + '" tabindex="0" role="button" aria-label="Open ' + esc(e.title) + '">' +
+      '<div class="ev2-media"><img src="' + esc(e.cover_image_url) + '" alt="' + esc(e.title) + '" loading="lazy"></div>' +
+      '<div class="ev2-body">' +
+      '<h3>' + esc(e.title) + '</h3>' +
+      '<p class="ev2-desc">' + esc(e.description) + '</p>' +
+      '<div class="ev2-meta"><span>' + esc(fmtRange(e.starts_at, e.ends_at)) + '</span><span>·</span><span>' + esc(String(e.venue).split(',')[0]) + '</span></div>' +
+      '<div class="ev2-meta"><span>' + esc(e.society_name) + '</span>' + campusNote + '</div>' +
+      '<div class="ev2-foot"><div class="ev2-price">' + money(e.your_price) + (e.price_member < e.price_public ? ' <small>member</small>' : '') + '</div>' +
+      '<span class="small muted">' + (e.seats_left == null ? 'no cap' : e.seats_left + ' left') + '</span><span class="spacer"></span>' +
+      saveBtn(e) + rsvpBtn(e) + '</div></div></article>';
+  }
+  function mapCard(e) {
+    if (!e.map) return '';
+    var m = e.map;
+    return '<div class="mapcard">' +
+      '<iframe title="Map of ' + esc(e.venue) + '" loading="lazy" referrerpolicy="no-referrer" src="' + esc(m.osm_embed) + '"></iframe>' +
+      '<div class="map-foot"><span class="map-addr">' + esc(e.venue) + '<br><span class="tiny">' + m.lat.toFixed(4) + ', ' + m.lng.toFixed(4) + '</span></span>' +
+      '<a class="btn-mini primary" target="_blank" rel="noopener" href="' + esc(m.google_directions) + '">Google 导航 ↗</a>' +
+      '<a class="btn-mini" target="_blank" rel="noopener" href="' + esc(m.apple_maps) + '">Apple Maps</a>' +
+      '<a class="btn-mini" target="_blank" rel="noopener" href="' + esc(m.osm_page) + '">大地图</a></div></div>';
+  }
+  function topbar(active) {
+    var nav = [['discover', '#/', 'Discover'], ['societies', '#/societies', 'Societies'], ['saved', '#/saved', 'Saved'], ['messages', '#/messages', 'Messages'], ['my', '#/my', 'My stuff']];
+    var isOrg = S.route.name.indexOf('organiser') === 0;
+    return '<header class="topbar"><div class="topbar-in">' +
+      '<a class="brand" href="#/"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.2c3 2.4 4.6 5.6 4.6 8.8S15 18.4 12 20.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4.2 9.2h15.6M4.2 14.8h15.6" stroke="currentColor" stroke-width="1.4" opacity=".55"/></svg>UniLoop</a>' +
+      '<nav class="mainnav">' + nav.map(function (n) { return '<a href="' + n[1] + '"' + (active === n[0] ? ' aria-current="page"' : '') + '>' + n[2] + (n[0] === 'messages' && S.unread ? '<span class="nav-badge">' + (S.unread > 9 ? '9+' : S.unread) + '</span>' : '') + '</a>'; }).join('') + '</nav>' +
+      '<div class="topright"><div class="seg" role="group" aria-label="Switch role"><button data-role="student" aria-pressed="' + (!isOrg) + '">Student</button><button data-role="organiser" aria-pressed="' + isOrg + '">Organiser</button></div>' +
+      (S.me ? '<span class="avatar" title="' + esc(S.me.name) + '">' + esc(initials(S.me.name)) + '</span><button class="btn btn-sm btn-ghost" id="logoutBtn" aria-label="Log out" title="Log out">Log out</button>'
+        : '<button class="btn btn-sm btn-primary" id="loginBtn">Log in</button>') + '</div></div></header>';
+  }
+  function tabbar(active) {
+    return '<nav class="tabbar"><a href="#/"' + (active === 'discover' ? ' aria-current="page"' : '') + '>Discover</a>' +
+      '<a href="#/societies"' + (active === 'societies' ? ' aria-current="page"' : '') + '>Societies</a>' +
+      '<a href="#/saved"' + (active === 'saved' ? ' aria-current="page"' : '') + '>Saved</a>' +
+      '<a href="#/messages"' + (active === 'messages' ? ' aria-current="page"' : '') + '>Messages' + (S.unread ? '<span class="nav-badge">' + (S.unread > 9 ? '9+' : S.unread) + '</span>' : '') + '</a>' +
+      '<a href="#/my"' + (active === 'my' ? ' aria-current="page"' : '') + '>My stuff</a></nav>';
+  }
+
+  /* ============ 学生端：Discover ============ */
+  function filterBar() {
+    var campuses = [{ id: '', name: 'All campuses' }].concat(S.campuses);
+    return '<div class="filterbar">' +
+      '<label>Campus<select id="fCampus">' + campuses.map(function (c) { return '<option value="' + esc(c.id) + '"' + (S.filter.campus === c.id ? ' selected' : '') + '>' + esc(c.name) + '</option>'; }).join('') + '</select></label>' +
+      '<label>When<select id="fWhen">' +
+        [['week', 'This week'], ['7d', 'Next 7 days'], ['month', 'This month'], ['all', 'Any time']].map(function (o) { return '<option value="' + o[0] + '"' + (S.filter.when === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+      '<label class="grow">Search<input id="fQ" type="search" placeholder="Search events, societies, venues" value="' + esc(S.filter.q) + '"></label>' +
+      '<label class="toggle"><input type="checkbox" id="fFree"' + (S.filter.free ? ' checked' : '') + '> Free only</label>' +
+      '</div>' +
+      '<div class="chipset" style="margin:-8px 0 18px">' +
+      [['all', 'Everything'], ['outdoors', 'Outdoors'], ['social', 'Social'], ['creative', 'Creative'], ['sport', 'Sport'], ['careers', 'Careers'], ['other', 'Other']].map(function (c) {
+        return '<button class="chip" data-cat="' + c[0] + '" aria-pressed="' + (S.filter.category === c[0]) + '">' + c[1] + '</button>';
+      }).join('') + '</div>';
+  }
+  function aiPanel() {
+    var chips = ['Free Saturday morning', 'Something creative this week', 'Cheap food nearby', 'Outdoors, under $15'];
+    var r = S.ai.results;
+    return '<section class="ai"><p class="ai-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.1 6.3L20.5 10l-6.4 1.7L12 18l-2.1-6.3L3.5 10l6.4-1.7L12 2z"/></svg>Loop AI</p>' +
+      '<h3>Tell us your gap.<br>We check the fit.</h3>' +
+      '<p class="ai-sub">Time window, campus access and travel time are checked by rules — no guessing.</p>' +
+      '<div class="chipset" style="margin:0 0 10px">' + chips.map(function (c) { return '<button class="chip" data-ai-chip="' + esc(c) + '">' + esc(c) + '</button>'; }).join('') + '</div>' +
+      '<form class="ai-form" id="aiForm"><label class="sr" for="aiInput">Describe your free time</label>' +
+      '<input class="ai-input" id="aiInput" placeholder="free Saturday morning…" value="' + esc(S.ai.text) + '">' +
+      '<select id="aiWhen" class="ai-select" aria-label="Time window"><option value="morning">Morning</option><option value="afternoon">Afternoon</option><option value="evening">Evening</option></select>' +
+      '<button class="btn btn-primary" type="submit"' + (S.ai.busy ? ' disabled' : '') + '>' + (S.ai.busy ? 'Checking…' : 'Find my plans') + '</button></form>' +
+      (r ? aiResults(r) : '') +
+      '<p class="ai-note">Rules pick the events. The model only explains why.</p></section>';
+  }
+  function aiResults(r) {
+    if (!r.results.length) {
+      return '<div class="ai-result"><p class="ar-title">Nothing fits that window</p><ul><li><span>Try another day part, or a wider campus filter.</span></li></ul>' +
+        '<p class="tiny muted">Checked ' + r.considered + ' events · ' + r.excluded.length + ' excluded by rules.</p></div>';
+    }
+    return '<div class="ai-result"><p class="ar-title">' + r.results.length + ' thing' + (r.results.length === 1 ? '' : 's') + ' fit</p><ul>' +
+      r.results.slice(0, 3).map(function (x) {
+        return '<li><span><a href="#/event/' + esc(x.event_id) + '" style="font-weight:650">' + esc(x.event.title) + '</a><br><span class="tiny muted">' + esc(x.match_reason) + ' · travel ' + x.travel_minutes + ' min</span></span></li>';
+      }).join('') + '</ul><p class="tiny muted">Checked ' + r.considered + ' · excluded ' + r.excluded.length + ' (time window / campus / interests)</p></div>';
+  }
+  function viewDiscover() {
+    var list = S.events, lead = list[0], rest = list.slice(1);
+    return topbar('discover') + '<div class="wrap">' +
+      '<div class="pagehead"><div><p class="eyebrow">' + new Date().toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · Sydney</p>' +
+      '<h1 class="h1">Find your kind of day.</h1>' +
+      '<p class="lede">' + (S.me ? 'Good morning, ' + esc(S.me.name.split(' ')[0]) + '. ' : '') + (list.length ? list.length + ' events match your filters.' : 'Nothing matches yet — loosen the filters.') + '</p></div></div>' +
+      filterBar() +
+      '<div class="cols"><div class="col-main">' +
+      (S.loading ? '<div class="skel skel-card" style="margin-bottom:20px"></div>' + '<div class="grid">' + Array.from({ length: 4 }).map(function () { return '<div class="skel skel-card"></div>'; }).join('') + '</div>'
+        : (lead ? '<article class="card ev2" data-open="' + esc(lead.id) + '" style="margin-bottom:22px">' +
+          '<div class="ev2-media"><img src="' + esc(lead.cover_image_url) + '" alt="' + esc(lead.title) + '"></div>' +
+          '<div class="ev2-body"><h3 style="font-size:22px">' + esc(lead.title) + '</h3><p class="ev2-desc" style="font-size:14px;-webkit-line-clamp:3">' + esc(lead.description) + '</p>' +
+          '<div class="ev2-meta"><span>' + esc(fmtRange(lead.starts_at, lead.ends_at)) + '</span><span>·</span><span>' + esc(lead.venue) + '</span><span>·</span><span>' + esc(lead.society_name) + '</span></div>' +
+          '<div class="ev2-foot"><div class="ev2-price">' + money(lead.your_price) + '</div><span class="small muted">' + (lead.seats_left == null ? '' : lead.seats_left + ' spots left') + '</span><span class="spacer"></span>' + saveBtn(lead) + rsvpBtn(lead) + '</div></div></article>'
+          : '<div class="empty2"><b>No events match these filters.</b><button class="btn-quiet" id="clearFilters">Clear filters</button></div>') +
+        '<div class="sectionhead"><h2>Also this week</h2><span class="count">' + rest.length + ' more</span></div>' +
+        (rest.length ? '<div class="grid">' + rest.map(evCard).join('') + '</div>' : '')) +
+      '</div><aside class="rail-stack">' + aiPanel() + '</aside></div>' +
+      '<footer class="foot"><span>Sample campus events · photos are placeholders · all times AEST</span><a href="#/preview" style="color:var(--forest);font-weight:650">竖版预览 ↗</a></footer>' +
+      '</div>' + tabbar('discover');
+  }
+
+  /* ============ 事件详情 ============ */
+  function viewEvent(data) {
+    if (!data) return topbar('discover') + '<div class="wrap"><div class="empty2"><b>Event not found</b><a class="btn-quiet" href="#/">Back to Discover</a></div></div>';
+    var e = data.event, soc = data.society;
+    var memberLine = e.price_member < e.price_public ? '<div class="kv"><span>Member price</span><b>' + money(e.price_member) + '</b></div>' : '';
+    return topbar('discover') + '<div class="wrap"><p style="margin:20px 0 0"><a class="btn-quiet" href="#/">← Back to Discover</a></p>' +
+      '<div class="detail2" style="margin-top:12px"><div>' +
+      '<img class="hero-img" src="' + esc(e.cover_image_url) + '" alt="' + esc(e.title) + '">' +
+      '<h1 class="h1">' + esc(e.title) + '</h1>' +
+      '<p class="sub">' + esc(e.society_name) + ' · ' + esc(fmtRange(e.starts_at, e.ends_at)) + ' · ' + esc(e.venue) + '</p>' +
+      (e.audience_scope === 'CAMPUS_ONLY' ? '<p class="scope-note" style="margin:-6px 0 12px">Only for ' + esc(e.campus_name) + ' students</p>' : '') +
+      '<p class="desc">' + esc(e.description) + '</p>' +
+      '<h2 style="font-size:17px;margin:22px 0 10px">Where</h2>' + mapCard(e) +
+      '<h2 style="font-size:17px;margin:24px 0 10px">From ' + esc(e.society_name) + '</h2>' +
+      '<a class="card soc3" href="#/society/' + esc(soc.id) + '" style="text-decoration:none">' +
+      '<div class="top"><span class="mark"><img src="' + esc(soc.campus_logo) + '" alt=""></span><div><div class="nm">' + esc(soc.name) + '</div><div class="meta">' + esc(soc.campus_name) + ' · ' + soc.member_count + ' members</div></div>' +
+      '<span class="spacer"></span>' + stars(soc.rating) + '</div>' +
+      '<p class="blurb">' + esc(soc.blurb) + '</p><span class="btn-quiet">Open society page →</span></a>' +
+      '</div><aside class="stack">' +
+      '<div class="panel2"><h2>Get a spot</h2>' +
+      '<div class="kv"><span>Price</span><b>' + money(e.your_price) + '</b></div>' + memberLine +
+      '<div class="kv"><span>Going</span><b>' + e.rsvp_count + (e.capacity ? ' / ' + e.capacity : '') + '</b></div>' +
+      (e.capacity ? '<div class="bar2"><span style="width:' + Math.min(100, Math.round(e.rsvp_count / e.capacity * 100)) + '%"></span></div><p class="tiny muted">' + Math.max(0, e.capacity - e.rsvp_count) + ' spots left</p>' : '') +
+      '<div class="stack" style="margin-top:12px">' + rsvpBtn(e, true) +
+      (S.me && !e.is_member && soc.membership_price >= 0 ? '<button class="btn btn-sm btn-ghost block" id="joinSociety" data-society="' + esc(soc.id) + '" data-price="' + soc.membership_price + '">Join ' + esc(soc.name) + ' · ' + money(soc.membership_price) + ' for member price</button>' : '') +
+      '<button class="btn btn-sm btn-ghost block" data-save="' + esc(e.id) + '" aria-pressed="' + (e.is_saved ? 'true' : 'false') + '">' + (e.is_saved ? '★ Saved' : '☆ Save for later') + '</button>' +
+      (e.my_rsvp ? '<button class="btn btn-sm btn-ghost block" id="cancelRsvp" data-id="' + esc(e.id) + '">Cancel my RSVP</button>' : '') +
+      '</div><p class="tiny muted" style="margin-top:10px">Test payments only — no real charge.</p></div>' +
+      '</aside></div></div>' + tabbar('discover');
+  }
+
+  /* ============ 社团目录 ============ */
+  function viewSocieties() {
+    var groups = {};
+    S.societies.forEach(function (s) { (groups[s.campus_id] = groups[s.campus_id] || []).push(s); });
+    return topbar('societies') + '<div class="wrap">' +
+      '<div class="pagehead"><div><p class="eyebrow">Across Sydney</p><h1 class="h1">Societies.</h1><p class="lede">Join once — member prices all year. Rated by students.</p></div></div>' +
+      S.campuses.filter(function (c) { return groups[c.id]; }).map(function (c) {
+        return '<div class="campus-head"><img src="' + esc(c.logo) + '" alt="' + esc(c.name) + '"><div><div class="nm">' + esc(c.name) + '</div><div class="lbl">' + groups[c.id].length + ' societies</div></div></div>' +
+          '<div class="soc-grid">' + groups[c.id].map(function (s) {
+            return '<article class="card soc3" data-soc="' + esc(s.id) + '">' +
+              '<div class="top"><span class="mark"><img src="' + esc(s.campus_logo) + '" alt=""></span><div><div class="nm">' + esc(s.name) + '</div><div class="meta">' + s.member_count + ' members · ' + s.followers + ' followers</div></div></div>' +
+              '<p class="blurb">' + esc(s.blurb) + '</p>' +
+              '<div class="row tight">' + stars(s.rating) + '<span class="tiny muted">(' + s.review_count + ')</span><span class="spacer"></span>' +
+              (s.is_member ? '<span class="badge-soft badge-member">Member</span>' : '<span class="badge-soft">' + money(s.membership_price) + ' to join</span>') + '</div>' +
+              '<div class="foot"><a class="btn-quiet" href="#/society/' + esc(s.id) + '">Open →</a><span class="spacer"></span><span class="tiny muted">' + s.upcoming_events + ' upcoming</span></div>' +
+              '</article>';
+          }).join('') + '</div>';
+      }).join('') + '</div>' + tabbar('societies');
+  }
+
+  /* ============ 社团主页 ============ */
+  function viewSociety(data) {
+    if (!data) return topbar('societies') + '<div class="wrap"><div class="empty2"><b>Society not found</b></div></div>';
+    var s = data.society, tab = S.socTab || 'upcoming';
+    var cover = (data.upcoming[0] || data.past[0] || {}).cover_image_url || '/assets/events/ev1.jpg';
+    function tabBody() {
+      if (tab === 'upcoming') return data.upcoming.length ? '<div class="grid">' + data.upcoming.map(evCard).join('') + '</div>' : '<div class="empty2"><b>Nothing scheduled yet.</b></div>';
+      if (tab === 'past') return data.gallery.length ? '<div class="gallery">' + data.gallery.map(function (g) { return '<a href="#/event/' + esc(g.id) + '"><figure><img src="' + esc(g.image) + '" alt="' + esc(g.title) + '"><figcaption>' + esc(g.title) + ' · ' + fmtDay(g.date) + '</figcaption></figure></a>'; }).join('') + '</div>' : '<div class="empty2"><b>No past events yet.</b></div>';
+      return '<div class="reviews">' + (data.reviews.length ? data.reviews.map(function (r) {
+        return '<div class="review"><div class="top"><span class="who">' + esc(r.display_name) + '</span><span class="stars"><span class="s">' + '★★★★★'.slice(0, r.rating) + '☆☆☆☆☆'.slice(0, 5 - r.rating) + '</span></span></div><div class="txt">' + esc(r.text) + '</div></div>';
+      }).join('') : '<div class="empty2"><b>No reviews yet.</b>Be the first.</div>') +
+        (S.me ? '<form class="review-form" id="reviewForm"><select id="rvRating"><option value="5">5 ★</option><option value="4">4 ★</option><option value="3">3 ★</option><option value="2">2 ★</option><option value="1">1 ★</option></select><input id="rvText" placeholder="How was it?"><button class="btn btn-sm btn-primary" type="submit">Post review</button></form>' : '') + '</div>';
+    }
+    return topbar('societies') + '<div class="wrap"><p style="margin:20px 0 0"><a class="btn-quiet" href="#/societies">← All societies</a></p>' +
+      '<div class="hub-cover"><img src="' + esc(cover) + '" alt=""></div>' +
+      '<div class="hub-head"><div class="hub-logo"><img src="' + esc(s.campus_logo) + '" alt="' + esc(s.campus_name) + '"></div>' +
+      '<div class="hub-title"><h1>' + esc(s.name) + '</h1><p class="sub" style="margin:2px 0 0">' + esc(s.campus_name) + ' · ' + esc((s.tags || []).join(' · ')) + '</p></div>' +
+      (s.is_member ? '<span class="badge-soft badge-member">Member</span>' : '<button class="btn btn-primary" id="joinSoc" data-society="' + esc(s.id) + '" data-price="' + s.membership_price + '">Join · ' + money(s.membership_price) + '</button>') + '</div>' +
+      '<p class="desc" style="margin:14px 0 0">' + esc(s.blurb) + '</p>' +
+      '<div class="hub-stats">' +
+      '<div class="cell"><div class="n">' + (s.rating == null ? '—' : s.rating.toFixed(1)) + '</div><div class="l">Rating (' + s.review_count + ' reviews)</div></div>' +
+      '<div class="cell"><div class="n">' + s.member_count + '</div><div class="l">Members</div></div>' +
+      '<div class="cell"><div class="n">' + s.followers + '</div><div class="l">Followers</div></div>' +
+      '<div class="cell"><div class="n">' + (data.upcoming.length + data.past.length) + '</div><div class="l">Events hosted</div></div></div>' +
+      '<div class="tabs2" role="tablist">' +
+      ['upcoming', 'past', 'reviews'].map(function (t) { return '<button role="tab" data-soctab="' + t + '" aria-selected="' + (tab === t) + '">' + (t === 'upcoming' ? 'Upcoming' : t === 'past' ? 'Past & photos' : 'Reviews') + '</button>'; }).join('') + '</div>' +
+      tabBody() + '</div>' + tabbar('societies');
+  }
+
+  /* ============ 我的 / 收藏 ============ */
+  function viewMy() {
+    if (!S.me) return topbar('my') + '<div class="wrap"><div class="empty2"><b>Sign in to see your stuff</b><button class="btn btn-primary" id="myLogin">Log in</button></div></div>' + tabbar('my');
+    return topbar('my') + '<div class="wrap"><div class="pagehead"><div><p class="eyebrow">' + esc(S.me.campus_name) + '</p><h1 class="h1">My stuff.</h1>' +
+      '<p class="lede">' + S.myRsvps.length + ' tickets · ' + S.myMemberships.length + ' societies · saved ' + money(S.savedMoney) + ' with member prices.</p></div></div>' +
+      '<div class="sectionhead"><h2>Tickets</h2><span class="count">' + S.myRsvps.length + '</span></div>' +
+      (S.myRsvps.length ? '<div class="grid">' + S.myRsvps.map(function (r) { return evCard(r.event); }).join('') + '</div>' : '<div class="empty2"><b>No tickets yet</b><a class="btn-quiet" href="#/">Find something</a></div>') +
+      '<div class="sectionhead" style="margin-top:30px"><h2>My societies</h2></div>' +
+      (S.myMemberships.length ? '<div class="soc-grid">' + S.myMemberships.map(function (m) {
+        return '<a class="card soc3" href="#/society/' + esc(m.society_id) + '"><div class="top"><span class="mark"><img src="' + esc((S.societies.filter(function (s) { return s.id === m.society_id; })[0] || {}).campus_logo || '/assets/schools/mq.png') + '" alt=""></span><div><div class="nm">' + esc(m.society_name) + '</div><div class="meta">Member · paid ' + money(m.price_paid) + '</div></div></div><span class="btn-quiet">Open →</span></a>';
+      }).join('') + '</div>' : '<div class="empty2"><b>No memberships yet</b>Joining unlocks member prices.</div>') + '</div>' + tabbar('my');
+  }
+  function viewSaved() {
+    var list = (S.savedEventsData && S.savedEventsData.length) ? S.savedEventsData : S.events.filter(function (e) { return S.saved.indexOf(e.id) > -1; });
+    return topbar('saved') + '<div class="wrap"><div class="pagehead"><div><p class="eyebrow">Your shortlist</p><h1 class="h1">Saved.</h1><p class="lede">' + (S.me ? list.length + ' events saved for later.' : 'Log in to keep a shortlist.') + '</p></div></div>' +
+      (list.length ? '<div class="grid">' + list.map(evCard).join('') + '</div>' : '<div class="empty2"><b>Nothing saved yet</b>Tap the bookmark on any event.<div style="margin-top:10px"><a class="btn btn-primary" href="#/">Browse events</a></div></div>') +
+      '</div>' + tabbar('saved');
+  }
+
+  /* ============ 好友 / 私信 ============ */
+  function fmtAgo(iso) {
+    if (!iso) return '';
+    var t = new Date(iso).getTime(); if (isNaN(t)) return '';
+    var s = Math.max(0, (Date.now() - t) / 1000);
+    if (s < 60) return 'now';
+    if (s < 3600) return Math.floor(s / 60) + 'm';
+    if (s < 86400) return Math.floor(s / 3600) + 'h';
+    if (s < 604800) return Math.floor(s / 86400) + 'd';
+    var x = new Date(iso); return x.getDate() + ' ' + x.toLocaleString('en-AU', { month: 'short' });
+  }
+  function personAv(u, size) { return '<span class="avatar ' + (size || '') + '">' + esc(initials(u && u.name)) + '</span>'; }
+  function relLabel(u) { return u && u.username ? '@' + esc(u.username) : esc((u && u.campus_name) || ''); }
+  async function loadSocial() {
+    if (!S.me) { S.friends = { friends: [], incoming: [], outgoing: [], unread: 0 }; S.unread = 0; return; }
+    try { var r = await api('/api/friends'); S.friends = r; S.unread = r.unread || 0; }
+    catch (e) { S.friends = { friends: [], incoming: [], outgoing: [], unread: 0 }; }
+  }
+  function threadRow(f) {
+    var u = f.user, last = f.last_message;
+    var prev = last ? (last.from_me ? 'You: ' : '') + last.text : 'Say hello';
+    return '<div class="thread' + (S.chatPeer === u.id ? ' is-active' : '') + '" data-openchat="' + esc(u.id) + '" role="button" tabindex="0">' +
+      personAv(u, 'sm') + '<div class="body"><div class="nm">' + esc(u.name) + (f.unread ? '<span class="dot-unread">' + f.unread + '</span>' : '') + '</div>' +
+      '<div class="prev">' + esc(prev) + '</div></div><span class="time">' + fmtAgo(last ? last.created_at : f.since) + '</span></div>';
+  }
+  function personRow(u) {
+    var act = u.relation === 'friends' ? '<span class="badge-soft badge-member">Friends</span>'
+      : u.relation === 'requested_out' ? '<span class="badge-soft">Requested</span>'
+        : u.relation === 'requested_in' ? '<span class="badge-soft">Wants to connect</span>'
+          : '<button class="btn btn-xs btn-primary" data-addfriend="' + esc(u.id) + '">Add</button>';
+    return '<div class="people-row">' + personAv(u, 'sm') + '<div class="body"><div class="nm">' + esc(u.name) + '</div>' +
+      '<div class="meta">' + relLabel(u) + ' · ' + esc(u.campus_name || '') + '</div></div>' + act + '</div>';
+  }
+  function viewMessages() {
+    if (!S.me) return topbar('messages') + '<div class="wrap"><div class="empty2"><b>Sign in to message people</b><div style="margin-top:12px"><button class="btn btn-primary" id="msgLogin">Log in</button></div></div></div>' + tabbar('messages');
+    var f = S.friends || { friends: [], incoming: [], outgoing: [], unread: 0 };
+    var rows = '';
+    if (f.incoming.length) {
+      rows += '<div class="msg-sec">Requests · ' + f.incoming.length + '</div>' + f.incoming.map(function (r) {
+        return '<div class="req">' + personAv(r.user, 'sm') + '<div class="body"><div class="nm">' + esc(r.user.name) + '</div>' +
+          '<div class="meta">' + relLabel(r.user) + ' wants to connect</div></div><div class="acts">' +
+          '<button class="btn btn-xs btn-primary" data-accept="' + esc(r.id) + '">Accept</button>' +
+          '<button class="btn btn-xs btn-ghost" data-decline="' + esc(r.id) + '">Decline</button></div></div>';
+      }).join('');
+    }
+    if (S.people.length) rows += '<div class="msg-sec">People</div>' + S.people.map(personRow).join('');
+    if (f.outgoing.length) rows += '<div class="msg-sec">Sent requests</div>' + f.outgoing.map(function (r) {
+      return '<div class="people-row">' + personAv(r.user, 'sm') + '<div class="body"><div class="nm">' + esc(r.user.name) + '</div><div class="meta">Waiting for them to accept</div></div></div>';
+    }).join('');
+    rows += '<div class="msg-sec">Friends · ' + f.friends.length + '</div>';
+    rows += f.friends.length ? f.friends.map(threadRow).join('') : '<p class="tiny muted" style="padding:6px 8px">No friends yet — search a classmate by name or @username above.</p>';
+    return topbar('messages') + '<div class="wrap">' +
+      '<div class="pagehead"><div><p class="eyebrow">Your people</p><h1 class="h1">Messages.</h1>' +
+      '<p class="lede">Add classmates by name or @username, then keep every plan in one thread.</p></div></div>' +
+      '<div class="msg-shell"><aside class="msg-side"><div class="msg-sidehead"><h2>Inbox' + (f.unread ? '<span class="dot-unread">' + f.unread + '</span>' : '') + '</h2>' +
+      '<label class="msg-search"><input id="peopleSearch" type="search" placeholder="Find people — name or @username" value="' + esc(S.peopleQ || '') + '" aria-label="Find people"></label></div>' +
+      '<div class="msg-scroll" id="msgScroll">' + rows + '</div></aside>' +
+      '<div class="msg-main"><div class="msg-empty"><div><b>Pick a conversation</b>Your friends and message requests are on the left.</div></div></div>' +
+      '</div></div>' + tabbar('messages');
+  }
+  function chatBubbles(msgs, peerName) {
+    if (!msgs || !msgs.length) return '<p class="chat-hint">No messages yet. Say hi to ' + esc((peerName || 'them').split(' ')[0]) + '.</p>';
+    return msgs.map(function (m) {
+      return '<div class="bubble-row' + (m.from_me ? ' me' : '') + '"><div><div class="bubble">' + esc(m.text) + '</div>' +
+        '<div class="bubble-meta">' + (m.from_me ? 'You' : esc((peerName || '').split(' ')[0])) + ' · ' + fmtAgo(m.created_at) + '</div></div></div>';
+    }).join('');
+  }
+  function viewChat(peerId) {
+    if (!S.me) return viewMessages();
+    if (S.chatErr) return topbar('messages') + '<div class="wrap"><div class="empty2"><b>' + esc(S.chatErr) + '</b><a class="btn-quiet" href="#/messages">← Back to messages</a></div></div>' + tabbar('messages');
+    var t = S.chat; if (!t || !t.peer) return topbar('messages') + '<div class="wrap"><div class="empty2"><b>Conversation not found</b><a class="btn-quiet" href="#/messages">← Back to messages</a></div></div>' + tabbar('messages');
+    var u = t.peer;
+    return topbar('messages') + '<div class="wrap"><p style="margin:18px 0 0"><a class="btn-quiet" href="#/messages">← All conversations</a></p>' +
+      '<div class="chat-page"><div class="chat-head">' + personAv(u, 'lg') +
+      '<div style="flex:1;min-width:0"><div class="nm">' + esc(u.name) + '</div><div class="meta">' + relLabel(u) + ' · ' + esc(u.campus_name || '') + '</div></div>' +
+      '<button class="btn btn-sm btn-ghost" id="unfriendBtn" data-unfriend="' + esc(peerId) + '">Remove friend</button></div>' +
+      '<div class="chat-body" id="chatBody">' + chatBubbles(t.messages, u.name) + '</div>' +
+      '<form class="chat-form" id="chatForm" data-peer="' + esc(peerId) + '"><input id="chatInput" maxlength="2000" placeholder="Write a message…" autocomplete="off" aria-label="Message"><button class="btn btn-primary" type="submit">Send</button></form>' +
+      '</div></div>' + tabbar('messages');
+  }
+
+  /* ============ 主办方 Hub ============ */
+  function cumulativeChart(series, capacity) {
+    var w = 620, h = 220, padL = 40, padR = 16, top = 18, bottom = 176;
+    var max = Math.max(capacity || 0, series[series.length - 1].cumulative || 0, 5) * 1.1;
+    var stepX = (w - padL - padR) / Math.max(1, series.length - 1);
+    var pts = series.map(function (p, i) { return [Math.round(padL + i * stepX), Math.round(bottom - (p.cumulative / max) * (bottom - top))]; });
+    var line = pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0] + ' ' + p[1]; }).join(' ');
+    var area = line + ' L' + pts[pts.length - 1][0] + ' ' + bottom + ' L' + pts[0][0] + ' ' + bottom + ' Z';
+    var capY = capacity ? Math.round(bottom - (capacity / max) * (bottom - top)) : null;
+    var last = pts[pts.length - 1];
+    return '<svg class="chart" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" role="img" aria-label="Cumulative RSVPs vs capacity">' +
+      '<defs><linearGradient id="gA" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1F4A3B" stop-opacity=".18"/><stop offset="1" stop-color="#1F4A3B" stop-opacity="0"/></linearGradient></defs>' +
+      [0, 1, 2, 3].map(function (i) { var y = top + i * ((bottom - top) / 3); return '<line class="gridline" x1="' + padL + '" y1="' + y + '" x2="' + (w - padR) + '" y2="' + y + '"/><text class="axislab" x="' + (padL - 8) + '" y="' + (y + 4) + '" text-anchor="end">' + Math.round(max - i * (max / 3)) + '</text>'; }).join('') +
+      (capY ? '<line x1="' + padL + '" y1="' + capY + '" x2="' + (w - padR) + '" y2="' + capY + '" stroke="#D8583A" stroke-width="1.5" stroke-dasharray="5 5" opacity=".8"/>' +
+        '<text class="axislab" x="' + (w - padR) + '" y="' + (capY - 5) + '" text-anchor="end" fill="#BF472B">capacity ' + capacity + '</text>' : '') +
+      '<path class="area" d="' + area + '"/><path class="line" d="' + line + '"/>' +
+      '<circle class="dot" cx="' + last[0] + '" cy="' + last[1] + '" r="4"/>' +
+      '<text class="axislab" x="' + padL + '" y="194" text-anchor="middle">' + fmtDay(series[0].date) + '</text>' +
+      '<text class="axislab" x="' + (w - padR) + '" y="194" text-anchor="end">today</text></svg>';
+  }
+  function viewOrganiser() {
+    if (!S.me) return topbar('organiser') + '<div class="wrap"><div class="empty2"><b>Organiser sign-in required</b><button class="btn btn-primary" id="orgLogin">Log in</button></div></div>';
+    if (S.me.role !== 'exec') return topbar('organiser') + '<div class="wrap"><div class="empty2"><b>This area is for society organisers</b>Use the organiser demo account.<div style="margin-top:10px"><button class="btn btn-primary" id="orgLogin">Switch account</button></div></div></div>';
+    if (!S.org || S.org.error) return topbar('organiser') + '<div class="wrap"><div class="empty2"><b>' + esc((S.org && S.org.error) || 'Loading…') + '</b></div></div>';
+    var h = S.org, st = h.stats, dash = S.orgDash || { stats: {}, series: [] }, ds = dash.stats;
+    return topbar('organiser') + '<div class="wrap" style="padding-top:22px">' +
+      '<div class="hub-head" style="margin-top:0;align-items:center">' +
+      '<div class="hub-logo" style="width:64px;height:64px"><img src="' + esc(h.society.campus_logo) + '" alt=""></div>' +
+      '<div class="hub-title"><h1 style="font-size:26px">' + esc(h.society.name) + '</h1><p class="sub" style="margin:2px 0 0">' + esc(h.society.campus_name) + ' · ' + stars(h.society.rating) + ' · ' + st.followers + ' followers · ' + st.members + ' members</p></div>' +
+      '<button class="btn btn-primary" id="openCreate">＋ New event</button></div>' +
+
+      '<div class="kpis2">' +
+      '<div class="kpi2"><div class="k">RSVPs (upcoming)</div><div class="v">' + st.rsvps_upcoming + ' <small>/ ' + st.capacity_total + '</small></div><div class="n">' + st.rsvps_24h + ' in the last 24h</div></div>' +
+      '<div class="kpi2"><div class="k">Fill rate</div><div class="v">' + (st.capacity_total ? Math.round(st.rsvps_upcoming / st.capacity_total * 100) : 0) + '<small>%</small></div><div class="n">across ' + st.events_upcoming + ' upcoming</div></div>' +
+      '<div class="kpi2"><div class="k">Page views</div><div class="v">' + (ds.page_views || 0) + '</div><div class="n">' + (ds.view_to_rsvp_rate ? (ds.view_to_rsvp_rate * 100).toFixed(1) + '% → RSVP' : 'featured event') + '</div></div>' +
+      '<div class="kpi2"><div class="k">Revenue</div><div class="v">' + money(st.revenue) + '</div><div class="n">tickets + memberships (test)</div></div></div>' +
+
+      '<div class="org-grid">' +
+      '<section class="chartcard"><h2>Will it fill?</h2><p class="cap">Cumulative RSVPs, last 14 days · capacity line · projected finish</p>' +
+      cumulativeChart(dash.series.length ? dash.series : [{ date: new Date().toISOString().slice(0, 10), cumulative: 0 }], (dash.event || {}).capacity) +
+      '<div class="chart-legend"><span><i style="background:#1F4A3B"></i>Cumulative RSVPs</span><span><i style="background:#D8583A"></i>Capacity</span></div>' +
+      '<div class="table-foot" style="border:0;padding:10px 0 0"><span>' + (ds.rsvp_count || 0) + ' of ' + ((dash.event || {}).capacity || '∞') + ' · ' +
+      ((ds.needed_to_fill == null) ? 'no cap' : (ds.needed_to_fill === 0 ? 'full' : 'needs ' + ds.needed_to_fill + ' more')) +
+      ' · projected ' + (ds.projected_final || 0) + ' by event day (' + (ds.days_to_event || 0) + ' days left)</span></div></section>' +
+
+      '<aside class="stack">' +
+      '<div class="panel2"><h2 style="font-size:15px">Featured event</h2>' +
+      (dash.event ? '<div class="list-row" style="border:0;padding:0"><img src="' + esc(dash.event.cover_image_url) + '" alt=""><div><div class="t">' + esc(dash.event.title) + '</div><div class="m">' + esc(fmtRange(dash.event.starts_at, dash.event.ends_at)) + '</div></div></div>' +
+        '<div class="row" style="margin-top:10px"><a class="btn btn-sm btn-ghost" href="#/organiser/attendees/' + esc(dash.event.id) + '">Attendees →</a><span class="spacer"></span><span class="small muted">' + (ds.rsvps_24h || 0) + ' today</span></div>' : '') + '</div>' +
+      '<div class="panel2"><h2 style="font-size:15px">Rating</h2><div class="row"><span class="n" style="font-size:26px;font-weight:750">' + (st.rating == null ? '—' : st.rating.toFixed(1)) + '</span>' + stars(st.rating) + '</div><p class="tiny muted">' + st.review_count + ' student reviews · replies coming soon</p></div>' +
+      '</aside></div>' +
+
+      '<div class="sectionhead" style="margin-top:26px"><h2>Upcoming events</h2><span class="count">' + h.upcoming.length + '</span></div>' +
+      (h.upcoming.length ? '<div class="panel2" style="padding:6px 14px">' + h.upcoming.map(function (e) {
+        return '<div class="list-row"><img src="' + esc(e.cover_image_url) + '" alt=""><div style="flex:1"><div class="t">' + esc(e.title) + '</div><div class="m">' + esc(fmtRange(e.starts_at, e.ends_at)) + ' · ' + esc(e.venue) + '</div></div>' +
+          '<div class="small"><b>' + e.rsvp_count + '</b> / ' + (e.capacity || '∞') + '</div><a class="btn-quiet" href="#/event/' + esc(e.id) + '">Open</a></div>';
+      }).join('') + '</div>' : '<div class="empty2"><b>No upcoming events</b></div>') +
+
+      '<div class="sectionhead" style="margin-top:26px"><h2>Past events & photos</h2><span class="count">' + h.past.length + '</span></div>' +
+      (h.gallery.length ? '<div class="gallery">' + h.gallery.map(function (g) { return '<a href="#/event/' + esc(g.id) + '"><figure><img src="' + esc(g.image) + '" alt="' + esc(g.title) + '"><figcaption>' + esc(g.title) + ' · ' + fmtDay(g.date) + '</figcaption></figure></a>'; }).join('') + '</div>' : '<div class="empty2"><b>No past events yet</b></div>') +
+
+      '<div class="sectionhead" style="margin-top:26px"><h2>What students said</h2><span class="count">' + h.reviews.length + '</span></div>' +
+      '<div class="reviews">' + (h.reviews.length ? h.reviews.map(function (r) {
+        return '<div class="review"><div class="top"><span class="who">' + esc(r.display_name) + '</span><span class="stars"><span class="s">' + '★★★★★'.slice(0, r.rating) + '☆☆☆☆☆'.slice(0, 5 - r.rating) + '</span></span></div><div class="txt">' + esc(r.text) + '</div></div>';
+      }).join('') : '<div class="empty2"><b>No reviews yet</b></div>') + '</div>' +
+      '</div>' + tabbar('organiser');
+  }
+  function viewAttendees(evId) {
+    if (!S.me || S.me.role !== 'exec') return viewOrganiser();
+    var dash = S.orgDash;
+    if (!dash || !dash.event || dash.event.id !== evId) return topbar('organiser') + '<div class="wrap"><div class="empty2">Loading…</div></div>';
+    var rows = dash.attendees || [];
+    return topbar('organiser') + '<div class="wrap" style="padding-top:22px"><p><a class="btn-quiet" href="#/organiser">← Back to hub</a></p>' +
+      '<div class="pagehead" style="margin-top:8px"><div><h1 class="h1">Attendees.</h1><p class="lede">' + esc(dash.event.title) + ' · ' + rows.length + ' confirmed · ' + money(dash.stats.revenue) + ' collected</p></div>' +
+      '<button class="btn btn-ghost" id="exportCsv">Export CSV</button></div>' +
+      (rows.length ? '<div class="panel2" style="padding:4px 14px"><table class="table"><thead><tr><th style="width:32%">Student</th><th style="width:28%">Email</th><th style="width:20%">RSVP’d</th><th style="width:12%">Ticket</th><th style="width:8%">Paid</th></tr></thead><tbody>' +
+        rows.map(function (a) {
+          return '<tr><td><div class="who"><span class="avatar">' + esc(initials(a.display_name)) + '</span><span><b>' + esc(a.display_name) + '</b><span>' + esc((a.campus_id || '').replace(/_/g, ' ')) + '</span></span></div></td>' +
+            '<td class="small muted">' + esc(a.email) + '</td><td class="small muted">' + esc(new Date(a.created_at).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + '</td>' +
+            '<td><span class="status">' + (a.ticket_type === 'member' ? 'Member' : 'General') + '</span></td><td>' + money(a.price_paid) + '</td></tr>';
+        }).join('') + '</tbody></table></div>' : '<div class="empty2"><b>No RSVPs yet.</b>Share the event link.</div>') + '</div>';
+  }
+
+  /* ============ 竖版预览 ============ */
+  function viewPreview() {
+    return topbar('preview') + '<div class="wrap"><div class="pagehead"><div><p class="eyebrow">Mobile check</p><h1 class="h1">竖版预览。</h1><p class="lede">390 × 844 的真实 iframe —— 手机上打开同一地址就是竖版。</p></div></div>' +
+      '<div class="phone-wrap"><div class="phone"><div class="notch"></div><div class="screen"><iframe src="/?embed=1" title="Mobile preview"></iframe></div></div></div>' +
+      '<p class="phone-hint">直接扫码/用手机访问同一网址即可；此页只是桌面端预览。</p></div>' + tabbar('preview');
+  }
+
+  /* ============ 渲染与绑定 ============ */
+  async function render() {
+    var h = location.hash.replace(/^#\/?/, ''); var parts = h.split('/'); var app = $('#app');
+    if (parts[0] === 'event' && parts[1]) {
+      S.route = { name: 'event', id: parts[1] };
+      app.innerHTML = topbar('discover') + '<div class="wrap"><div class="skel" style="height:320px;margin-top:22px"></div></div>';
+      try { var r = await api('/api/events/' + encodeURIComponent(parts[1])); app.innerHTML = viewEvent(r); } catch (e) { app.innerHTML = viewEvent(null); }
+    } else if (parts[0] === 'societies') {
+      S.route = { name: 'societies' }; await loadSocieties(); app.innerHTML = viewSocieties();
+    } else if (parts[0] === 'society' && parts[1]) {
+      S.route = { name: 'society', id: parts[1] };
+      app.innerHTML = topbar('societies') + '<div class="wrap"><div class="empty2">Loading…</div></div>';
+      try { var rs = await api('/api/societies/' + encodeURIComponent(parts[1])); S.socData = rs; app.innerHTML = viewSociety(rs); } catch (e) { app.innerHTML = viewSociety(null); }
+    } else if (parts[0] === 'saved') {
+      S.route = { name: 'saved' }; await loadMe(); await loadEvents(); app.innerHTML = viewSaved();
+    } else if (parts[0] === 'my') {
+      S.route = { name: 'my' }; await loadMe(); await loadSocieties(); app.innerHTML = viewMy();
+    } else if (parts[0] === 'preview') {
+      S.route = { name: 'preview' }; app.innerHTML = viewPreview();
+    } else if (parts[0] === 'messages') {
+      S.route = { name: 'messages' }; S.chatPeer = null; await loadMe(); await loadSocial();
+      app.innerHTML = viewMessages();
+    } else if (parts[0] === 'chat' && parts[1]) {
+      S.route = { name: 'chat', id: parts[1] }; S.chatPeer = parts[1]; S.chat = null; S.chatErr = null;
+      app.innerHTML = topbar('messages') + '<div class="wrap"><div class="empty2">Loading conversation…</div></div>' + tabbar('messages');
+      await loadMe();
+      try { S.chat = await api('/api/messages/' + encodeURIComponent(parts[1])); }
+      catch (e) { S.chatErr = e.message; }
+      await loadSocial();
+      app.innerHTML = viewChat(parts[1]);
+    } else if (parts[0] === 'organiser' && parts[1] === 'attendees' && parts[2]) {
+      S.route = { name: 'organiser-attendees', id: parts[2] }; await loadMe();
+      if (!S.orgDash || !S.orgDash.event || S.orgDash.event.id !== parts[2]) await loadOrg(parts[2]);
+      app.innerHTML = viewAttendees(parts[2]);
+    } else if (parts[0] === 'organiser') {
+      S.route = { name: 'organiser' }; await loadMe();
+      if (S.me && S.me.role === 'exec') await loadOrg(); else S.org = null;
+      app.innerHTML = viewOrganiser();
+    } else {
+      S.route = { name: 'discover' }; S.loading = true; app.innerHTML = viewDiscover();
+      await Promise.all([loadEvents(), loadMe()]); S.loading = false; app.innerHTML = viewDiscover();
+    }
+    bind();
+  }
+
+  function bind() {
+    $$('[data-role]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.dataset.role === 'organiser') {
+          if (!S.me) return openAuth('login');
+          if (S.me.role !== 'exec') { toast('Use the organiser demo account'); return openAuth('login'); }
+          location.hash = '#/organiser';
+        } else location.hash = '#/';
+      });
+    });
+    var lb = $('#loginBtn'); if (lb) lb.onclick = function () { openAuth('login'); };
+    var ob = $('#logoutBtn'); if (ob) ob.onclick = async function () { try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) { } S.me = null; S.myRsvps = []; S.myMemberships = []; S.saved = []; S.org = null; S.unread = 0; S.friends = null; S.chat = null; S.chatPeer = null; S.people = []; S.peopleQ = ''; toast('Signed out'); if (location.hash === '#/' || !location.hash) render(); else location.hash = '#/'; };
+    /* 私信 / 好友 */
+    var ml2 = $('#msgLogin'); if (ml2) ml2.onclick = function () { openAuth('login'); };
+    var ps = $('#peopleSearch');
+    if (ps) {
+      var pt = null;
+      ps.oninput = function () {
+        var q = ps.value.trim(); S.peopleQ = q; clearTimeout(pt);
+        pt = setTimeout(async function () {
+          if (!q) S.people = [];
+          else { try { S.people = (await api('/api/users/search?q=' + encodeURIComponent(q))).users || []; } catch (e) { S.people = []; } }
+          $('#app').innerHTML = viewMessages(); bind();
+          var n = $('#peopleSearch'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+        }, 220);
+      };
+    }
+    $$('[data-addfriend]').forEach(function (b) {
+      b.onclick = async function () {
+        b.disabled = true;
+        try {
+          var r = await api('/api/friends/request', { method: 'POST', body: { user_id: b.dataset.addfriend } });
+          toast(r.status === 'accepted' ? 'You are now friends' : 'Request sent');
+          await loadSocial();
+          var q = S.peopleQ || '';
+          if (q) { try { S.people = (await api('/api/users/search?q=' + encodeURIComponent(q))).users || []; } catch (e) { S.people = []; } }
+          $('#app').innerHTML = viewMessages(); bind();
+          var n = $('#peopleSearch'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+        } catch (e) { toast(e.message); b.disabled = false; }
+      };
+    });
+    $$('[data-accept],[data-decline]').forEach(function (b) {
+      b.onclick = async function () {
+        var accept = !!b.dataset.accept;
+        var id = accept ? b.dataset.accept : b.dataset.decline;
+        b.disabled = true;
+        try { await api('/api/friends/respond', { method: 'POST', body: { id: id, accept: accept } }); toast(accept ? 'Friend added' : 'Request declined'); S.people = []; S.peopleQ = ''; await loadSocial(); $('#app').innerHTML = viewMessages(); bind(); }
+        catch (e) { toast(e.message); b.disabled = false; }
+      };
+    });
+    $$('[data-openchat]').forEach(function (el) {
+      var go = function () { location.hash = '#/chat/' + el.dataset.openchat; };
+      el.onclick = go;
+      el.onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } };
+    });
+    var uf = $('#unfriendBtn');
+    if (uf) uf.onclick = async function () {
+      var f = ((S.friends && S.friends.friends) || []).filter(function (x) { return x.user.id === uf.dataset.unfriend; })[0];
+      if (!f) { toast('Friendship not found. Refresh and try again.'); return; }
+      if (!confirm('Remove ' + f.user.name + ' from your friends? The conversation will disappear from your inbox.')) return;
+      try { await api('/api/friends/' + encodeURIComponent(f.friendship_id), { method: 'DELETE' }); toast('Friend removed'); location.hash = '#/messages'; }
+      catch (e) { toast(e.message); }
+    };
+    var cf2 = $('#chatForm');
+    if (cf2) cf2.onsubmit = async function (ev) {
+      ev.preventDefault();
+      var inp = $('#chatInput'); var text = (inp.value || '').trim(); if (!text) return;
+      var btn = cf2.querySelector('button[type="submit"]'); if (btn) btn.disabled = true;
+      try {
+        var r = await api('/api/messages/' + encodeURIComponent(cf2.dataset.peer), { method: 'POST', body: { text: text } });
+        inp.value = ''; S.chat.messages.push(r.message);
+        var body = $('#chatBody'); if (body) { body.innerHTML = chatBubbles(S.chat.messages, S.chat.peer.name); body.scrollTop = body.scrollHeight; }
+      } catch (e) { toast(e.message); }
+      if (btn) btn.disabled = false;
+      inp.focus();
+    };
+    var cb2 = $('#chatBody'); if (cb2) cb2.scrollTop = cb2.scrollHeight;
+    /* 卡片整体可点 */
+    $$('[data-open]').forEach(function (card) {
+      var go = function (ev) {
+        if (ev.target.closest('button,a,[data-save],[data-rsvp]')) return;
+        location.hash = '#/event/' + card.dataset.open;
+      };
+      card.addEventListener('click', go);
+      card.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(ev); } });
+    });
+    /* 社团卡整体可点 */
+    $$('[data-soc]').forEach(function (card) {
+      card.addEventListener('click', function (ev) {
+        if (ev.target.closest('a,button')) return;
+        location.hash = '#/society/' + card.dataset.soc;
+      });
+    });
+    /* 收藏 */
+    $$('[data-save]').forEach(function (b) {
+      b.addEventListener('click', async function (ev) {
+        ev.stopPropagation();
+        if (!S.me) return openAuth('login');
+        var id = b.dataset.save, on = b.getAttribute('aria-pressed') === 'true';
+        try {
+          await api('/api/events/' + encodeURIComponent(id) + '/save', { method: on ? 'DELETE' : 'POST' });
+          b.setAttribute('aria-pressed', String(!on));
+          if (on) S.saved = S.saved.filter(function (x) { return x !== id; }); else if (S.saved.indexOf(id) < 0) S.saved.push(id);
+          toast(on ? 'Removed from saved' : 'Saved');
+          if (S.route.name === 'saved') render();
+        } catch (e) { toast(e.message); }
+      });
+    });
+    /* RSVP */
+    $$('[data-rsvp]').forEach(function (b) {
+      b.addEventListener('click', async function (ev) {
+        ev.stopPropagation();
+        if (!S.me) return openAuth('login');
+        var id = b.dataset.rsvp; b.disabled = true;
+        try {
+          await api('/api/events/' + encodeURIComponent(id) + '/rsvp', { method: 'POST', body: {} });
+          toast('You are on the list.'); await loadMe(); render();
+        } catch (err) {
+          b.disabled = false;
+          if (err.status === 402) {
+            var card = await openPay('Confirm and pay', 'Test mode — no real charge.', [{ k: 'Ticket', v: money(err.data.price || 0), hl: true }]);
+            if (!card) return;
+            try { await api('/api/events/' + encodeURIComponent(id) + '/rsvp', { method: 'POST', body: { card: card } }); toast('Paid and added.'); await loadMe(); render(); }
+            catch (e2) { toast(e2.message); }
+          } else toast(err.message);
+        }
+      });
+    });
+    /* 加入社团 */
+    $$('#joinSociety,#joinSoc').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        if (!S.me) return openAuth('login');
+        var price = Number(b.dataset.price) || 0;
+        var card = price > 0 ? await openPay('Join society', 'Test mode — no real charge.', [{ k: 'Membership', v: money(price), hl: true }]) : null;
+        if (price > 0 && !card) return;
+        try { await api('/api/societies/' + encodeURIComponent(b.dataset.society) + '/join', { method: 'POST', body: { card: card || '4242424242424242' } }); toast('Joined — member price applies'); S.societies = []; await loadMe(); render(); }
+        catch (e) { toast(e.message); }
+      });
+    });
+    var cr = $('#cancelRsvp'); if (cr) cr.onclick = async function () { try { await api('/api/events/' + encodeURIComponent(cr.dataset.id) + '/rsvp', { method: 'DELETE' }); toast('RSVP cancelled'); await loadMe(); render(); } catch (e) { toast(e.message); } };
+    /* 筛选 */
+    var fc = $('#fCampus'); if (fc) fc.onchange = async function () { S.filter.campus = fc.value; S.loading = true; $('#app').innerHTML = viewDiscover(); await loadEvents(); S.loading = false; $('#app').innerHTML = viewDiscover(); bind(); };
+    var fw = $('#fWhen'); if (fw) fw.onchange = async function () { S.filter.when = fw.value; S.loading = true; $('#app').innerHTML = viewDiscover(); await loadEvents(); S.loading = false; $('#app').innerHTML = viewDiscover(); bind(); };
+    var ff = $('#fFree'); if (ff) ff.onchange = async function () { S.filter.free = ff.checked; S.loading = true; $('#app').innerHTML = viewDiscover(); await loadEvents(); S.loading = false; $('#app').innerHTML = viewDiscover(); bind(); };
+    var fq = $('#fQ'); if (fq) {
+      var t; fq.oninput = function () { S.filter.q = fq.value; clearTimeout(t); t = setTimeout(async function () { await loadEvents(); var focus = document.activeElement === fq; $('#app').innerHTML = viewDiscover(); bind(); if (focus) { var n = $('#fQ'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }, 280); };
+    }
+    $$('[data-cat]').forEach(function (b) { b.onclick = async function () { S.filter.category = b.dataset.cat; S.loading = true; $('#app').innerHTML = viewDiscover(); await loadEvents(); S.loading = false; $('#app').innerHTML = viewDiscover(); bind(); }; });
+    var cf = $('#clearFilters'); if (cf) cf.onclick = async function () { S.filter = { campus: '', when: 'week', category: 'all', free: false, q: '' }; await loadEvents(); render(); };
+    /* Loop AI */
+    $$('[data-ai-chip]').forEach(function (b) { b.onclick = function () { S.ai.text = b.dataset.aiChip; $('#aiInput').value = S.ai.text; $('#aiForm').dispatchEvent(new Event('submit', { cancelable: true })); }; });
+    var aif = $('#aiForm'); if (aif) aif.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var txt = ($('#aiInput').value || '').trim(); var part = $('#aiWhen').value;
+      if (!txt) { toast('Tell us when you are free'); return; }
+      S.ai.text = txt; S.ai.busy = true; $('#app').innerHTML = viewDiscover(); bind();
+      var base = new Date(); base.setDate(base.getDate() + (/saturday|sat/i.test(txt) ? ((6 - base.getDay() + 7) % 7 || 7) : 1));
+      var from = new Date(base), to = new Date(base);
+      if (part === 'morning') { from.setHours(8, 0, 0, 0); to.setHours(12, 0, 0, 0); }
+      else if (part === 'evening') { from.setHours(17, 0, 0, 0); to.setHours(22, 0, 0, 0); }
+      else { from.setHours(12, 0, 0, 0); to.setHours(17, 0, 0, 0); }
+      var interests = [];
+      ['outdoors', 'social', 'creative', 'sport', 'careers'].forEach(function (k) { if (txt.toLowerCase().indexOf(k) > -1) interests.push(k); });
+      try {
+        var r = await api('/api/recommend', { method: 'POST', body: { origin_campus: S.me ? S.me.campus_id : 'mq_sydney', available_from: from.toISOString(), available_to: to.toISOString(), interests: interests } });
+        S.ai.results = r; S.ai.busy = false;
+        $('#app').innerHTML = viewDiscover(); bind();
+      } catch (err) { S.ai.busy = false; toast(err.message); $('#app').innerHTML = viewDiscover(); bind(); }
+    });
+    /* 社团 tabs / 评价 */
+    $$('[data-soctab]').forEach(function (b) { b.onclick = function () { S.socTab = b.dataset.soctab; $('#app').innerHTML = viewSociety(S.socData); bind(); }; });
+    var rf = $('#reviewForm');
+    if (rf) rf.onsubmit = async function (e) {
+      e.preventDefault();
+      try {
+        await api('/api/societies/' + encodeURIComponent(S.socData.society.id) + '/reviews', { method: 'POST', body: { rating: Number($('#rvRating').value), text: $('#rvText').value } });
+        toast('Review posted'); var rs = await api('/api/societies/' + encodeURIComponent(S.socData.society.id)); S.socData = rs; S.socTab = 'reviews'; $('#app').innerHTML = viewSociety(rs); bind();
+      } catch (err) { toast(err.message); }
+    };
+    /* 主办方 */
+    var oc = $('#openCreate'); if (oc) oc.onclick = openCreate;
+    var ex = $('#exportCsv'); if (ex) ex.onclick = function () {
+      var rows = (S.orgDash && S.orgDash.attendees) || [];
+      var csv = [['name', 'email', 'campus', 'ticket', 'paid', 'rsvp_at']].concat(rows.map(function (a) { return [a.display_name, a.email, a.campus_id, a.ticket_type, a.price_paid, a.created_at]; }))
+        .map(function (r) { return r.map(function (c) { return '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'uniloop-attendees.csv'; a.click(); toast('CSV downloaded');
+    };
+    var ml = $('#myLogin'); if (ml) ml.onclick = function () { openAuth('login'); };
+    var ol = $('#orgLogin'); if (ol) ol.onclick = function () { openAuth('login'); };
+    /* 主办方 5 秒轮询 */
+    if (S.poll) { clearInterval(S.poll); S.poll = null; }
+    if (S.route.name === 'organiser' && S.me && S.me.role === 'exec') {
+      S.poll = setInterval(async function () {
+        if (document.hidden || S.route.name !== 'organiser') return;
+        await loadOrg(S.orgEventId);
+        var app = $('#app'); if (app && S.org && !S.org.error) { app.innerHTML = viewOrganiser(); bind(); }
+      }, 5000);
+    }
+    /* 私信 4 秒轮询（只刷新消息区，不动输入框） */
+    if (S.route.name === 'chat' && S.me && !S.chatErr) {
+      var peerId = S.route.id;
+      S.poll = setInterval(async function () {
+        if (document.hidden || S.route.name !== 'chat') return;
+        try {
+          var t = await api('/api/messages/' + encodeURIComponent(peerId));
+          var oldMsgs = (S.chat && S.chat.messages) || [];
+          var oldLast = (oldMsgs[oldMsgs.length - 1] || {}).id;
+          var newLast = (t.messages[t.messages.length - 1] || {}).id;
+          if (newLast && newLast !== oldLast) {
+            S.chat = t;
+            var body = $('#chatBody');
+            if (body) { var atBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 80; body.innerHTML = chatBubbles(t.messages, t.peer.name); if (atBottom) body.scrollTop = body.scrollHeight; }
+          }
+        } catch (e) { }
+      }, 4000);
+    }
+  }
+
+  window.addEventListener('hashchange', render);
+  (async function boot() {
+    try { S.campuses = (await api('/api/campuses')).campuses; } catch (e) { S.campuses = []; }
+    await loadMe();
+    // embed 模式（竖版预览 iframe）隐藏顶部导航之外的装饰
+    if (new URLSearchParams(location.search).get('embed') === '1') document.documentElement.classList.add('embed');
+    await render();
+  })();
+})();
+</script>
+</body>
+</html>

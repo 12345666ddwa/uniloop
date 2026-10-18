@@ -36,6 +36,7 @@
     me: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>',
     qr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.4"/><path d="M14 14h2.5v2.5H14zM18.5 18.5H21V21h-2.5zM14 20h2"/></svg>',
     people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 6.2a3 3 0 0 1 0 5.6M17.5 19a5 5 0 0 0-2-4"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 12.1c0 3.9-3.8 7.1-8.4 7.1-1 0-2-.2-2.9-.5L4.2 20.4l1.3-3.8a6.6 6.6 0 0 1-1.9-4.5c0-3.9 3.8-7.1 8.4-7.1s8.4 3.2 8.4 7.1Z"/><path d="M8.6 11.4h.01M12 11.4h.01M15.4 11.4h.01"/></svg>',
     org: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></svg>'
   };
 
@@ -43,6 +44,7 @@
     me: null, events: [], campuses: [], societies: [], savedEvents: [], myRsvps: [], myMemberships: [], savedMoney: 0,
     q: '', where: 'any', when: 'any', date: '', what: 'all', free: false, radius: 0,
     showAllTickets: false, showPastTickets: false, flashIds: [], orgTimer: null, unameOk: null,
+    unread: 0, friends: null, chat: null, chatPeer: null, chatErr: null, people: [], peopleQ: '', chatTimer: null,
     pending: {}, step: 1, route: { name: 'home' }, heroIdx: 0, openEventId: null, org: null, orgDash: null, socTab: 'upcoming', socData: null
   };
 
@@ -72,8 +74,8 @@
   async function loadMe() {
     try {
       var r = await api('/api/me'); S.me = r.user; S.myRsvps = r.rsvps || []; S.myMemberships = r.memberships || [];
-      S.savedMoney = r.saved || 0; S.savedEvents = r.saved_events || [];
-    } catch (e) { S.me = null; S.myRsvps = []; S.myMemberships = []; S.savedEvents = []; }
+      S.savedMoney = r.saved || 0; S.savedEvents = r.saved_events || []; S.unread = r.unread_messages || 0;
+    } catch (e) { S.me = null; S.myRsvps = []; S.myMemberships = []; S.savedEvents = []; S.unread = 0; }
   }
   async function loadEvents() {
     try { var r = await api('/api/events?when=all&limit=120'); S.events = r.events || []; } catch (e) { S.events = []; toast(e.message); }
@@ -183,14 +185,14 @@
 
   /* ---------------- 侧栏 / Tab ---------------- */
   function sidebar() {
-    var nav = [['home', '#/', 'Discover', ICON.home], ['societies', '#/societies', 'Societies', ICON.soc], ['saved', '#/saved', 'Saved', ICON.saved], ['my', '#/my', 'My stuff', ICON.me]];
+    var nav = [['home', '#/', 'Discover', ICON.home], ['societies', '#/societies', 'Societies', ICON.soc], ['saved', '#/saved', 'Saved', ICON.saved], ['messages', '#/messages', 'Messages', ICON.chat], ['my', '#/my', 'My stuff', ICON.me]];
     var active = S.route.name;
     if (active === 'event') active = 'home';
     var socs = (S.myMemberships || []).slice(0, 5);
     return '<a class="brand" href="#/">' +
       '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.2c3 2.4 4.6 5.6 4.6 8.8S15 18.4 12 20.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4.2 9.2h15.6M4.2 14.8h15.6" stroke="currentColor" stroke-width="1.4" opacity=".55"/></svg>UniLoop</a>' +
       '<nav class="snav">' + nav.map(function (n) {
-        return '<a href="' + n[1] + '"' + (active === n[0] ? ' aria-current="page"' : '') + '>' + n[3] + n[2] + '</a>';
+        return '<a href="' + n[1] + '"' + (active === n[0] ? ' aria-current="page"' : '') + '>' + n[3] + n[2] + (n[0] === 'messages' && S.unread ? '<span class="chbadge">' + (S.unread > 9 ? '9+' : S.unread) + '</span>' : '') + '</a>';
       }).join('') +
       (S.me && S.me.role === 'exec' && !isStatic() ? '<a href="#/organiser"' + (active === 'organiser' ? ' aria-current="page"' : '') + '>' + ICON.org + 'Organiser</a>' +
         '<a href="#/scan">' + ICON.qr + 'Scan tickets</a><a href="#/members">' + ICON.people + 'Members</a>' : '') +
@@ -207,7 +209,7 @@
         return '<button data-soc-link="' + esc(m.society_id) + '">' + esc(m.society_name) + '</button>';
       }).join('') + '</div></div>' : '') +
       (isStatic() ? '<div style="margin:10px 0 0;font-size:10.5px;font-weight:700;color:#F0B49E;background:rgba(216,88,58,.18);border:1px solid rgba(216,88,58,.35);border-radius:8px;padding:6px 8px;line-height:1.4">Static preview<br><span style="font-weight:500;opacity:.85">RSVPs stay in this browser</span></div>' : '') +
-      '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a></div>' +
+      '<div class="sfoot">' + (S.me ? 'Signed in as<br><b>' + esc(S.me.name) + '</b>' : 'Not signed in') + '<br><br><a href="#/my" style="color:inherit">' + (S.me ? 'My stuff' : 'Log in') + '</a>' + (S.me ? '<br><button class="sfoot-out" id="logoutBtn">Log out</button>' : '') + '</div>' +
       '<div class="themerow">' +
         '<button data-theme-set="light" aria-label="Light mode" aria-pressed="' + (currentTheme() !== 'dark') + '">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>' +
@@ -219,10 +221,87 @@
   function tabs() {
     if (!window.matchMedia('(hover:none) and (pointer:coarse)').matches) return '';
     var act = S.route.name; if (act === 'event') act = 'home';
-    var items = [['home', '#/', 'Home', ICON.home], ['societies', '#/societies', 'Societies', ICON.soc], ['saved', '#/saved', 'Saved', ICON.saved], ['my', '#/my', 'Me', ICON.me]];
+    var items = [['home', '#/', 'Home', ICON.home], ['societies', '#/societies', 'Societies', ICON.soc], ['saved', '#/saved', 'Saved', ICON.saved], ['messages', '#/messages', 'Chat', ICON.chat], ['my', '#/my', 'Me', ICON.me]];
     return items.map(function (i) {
-      return '<a class="tab" href="' + i[1] + '"' + (act === i[0] ? ' aria-current="page"' : '') + '>' + i[3] + i[2] + '</a>';
+      return '<a class="tab" href="' + i[1] + '"' + (act === i[0] ? ' aria-current="page"' : '') + '>' + i[3] + i[2] + (i[0] === 'messages' && S.unread ? '<span class="chbadge">' + (S.unread > 9 ? '9+' : S.unread) + '</span>' : '') + '</a>';
     }).join('');
+  }
+
+  /* ---------------- 好友 / 私信 ---------------- */
+  function ago(iso) {
+    if (!iso) return '';
+    var t = new Date(iso).getTime(); if (isNaN(t)) return '';
+    var s = Math.max(0, (Date.now() - t) / 1000);
+    if (s < 60) return 'now';
+    if (s < 3600) return Math.floor(s / 60) + 'm';
+    if (s < 86400) return Math.floor(s / 3600) + 'h';
+    if (s < 604800) return Math.floor(s / 86400) + 'd';
+    var d = new Date(iso); return d.getDate() + ' ' + MONTHS[d.getMonth()];
+  }
+  function chav(u, cls) { return '<span class="chav ' + (cls || '') + '">' + esc(initials(u && u.name)) + '</span>'; }
+  function handle(u) { return u && u.username ? '@' + esc(u.username) : esc((u && u.campus_name) || ''); }
+  async function loadSocial() {
+    if (!S.me) { S.friends = { friends: [], incoming: [], outgoing: [], unread: 0 }; S.unread = 0; return; }
+    try { var r = await api('/api/friends'); S.friends = r; S.unread = r.unread || 0; }
+    catch (e) { S.friends = { friends: [], incoming: [], outgoing: [], unread: 0 }; }
+  }
+  function threadRow(f) {
+    var u = f.user, last = f.last_message;
+    var prev = last ? (last.from_me ? 'You: ' : '') + last.text : 'Say hello';
+    return '<div class="chrow" data-openchat="' + esc(u.id) + '" role="button" tabindex="0">' + chav(u) +
+      '<div class="who"><div class="nm">' + esc(u.name) + (f.unread ? '<span class="chdot">' + f.unread + '</span>' : '') + '</div>' +
+      '<div class="prev">' + esc(prev) + '</div></div><span class="when">' + ago(last ? last.created_at : f.since) + '</span></div>';
+  }
+  function personRow(u) {
+    var act = u.relation === 'friends' ? '<span class="chbtn-xs">Friends</span>'
+      : u.relation === 'requested_out' ? '<span class="chbtn-xs">Requested</span>'
+        : u.relation === 'requested_in' ? '<span class="chbtn-xs">Wants to connect</span>'
+          : '<button class="chbtn-xs pri" data-addfriend="' + esc(u.id) + '">Add</button>';
+    return '<div class="chrow">' + chav(u) + '<div class="who"><div class="nm">' + esc(u.name) + '</div>' +
+      '<div class="prev">' + handle(u) + ' · ' + esc(u.campus_name || '') + '</div></div>' + act + '</div>';
+  }
+  function viewMessages() {
+    if (!S.me) return '<div class="empty"><b>Sign in to message people</b><div style="margin-top:12px"><button class="filter" id="loginBtn">Log in</button></div></div>';
+    var f = S.friends || { friends: [], incoming: [], outgoing: [], unread: 0 };
+    var rows = '';
+    if (f.incoming.length) rows += '<div class="chsec">Requests · ' + f.incoming.length + '</div>' + f.incoming.map(function (r) {
+      return '<div class="chreq">' + chav(r.user) + '<div class="who"><div class="nm">' + esc(r.user.name) + '</div>' +
+        '<div class="sub">' + handle(r.user) + ' wants to connect</div></div><div class="acts">' +
+        '<button class="chbtn-xs pri" data-accept="' + esc(r.id) + '">Accept</button>' +
+        '<button class="chbtn-xs" data-decline="' + esc(r.id) + '">Decline</button></div></div>';
+    }).join('');
+    if (S.people.length) rows += '<div class="chsec">People</div>' + S.people.map(personRow).join('');
+    if (f.outgoing.length) rows += '<div class="chsec">Sent requests · ' + f.outgoing.length + '</div>' + f.outgoing.map(function (r) {
+      return '<div class="chrow" style="cursor:default">' + chav(r.user) + '<div class="who"><div class="nm">' + esc(r.user.name) + '</div><div class="prev">Waiting for them to accept</div></div></div>';
+    }).join('');
+    rows += '<div class="chsec">Friends · ' + f.friends.length + '</div>';
+    rows += f.friends.length ? f.friends.map(threadRow).join('') : '<div class="empty" style="padding:18px 8px"><b>No friends yet</b>Search a classmate by name or @username above.</div>';
+    return '<div class="sec" style="padding-top:24px"><h2>Messages</h2><span class="sub">' + f.friends.length + ' friends' + (f.unread ? ' · ' + f.unread + ' unread' : '') + '</span></div>' +
+      '<div class="chwrap"><aside class="chside"><div class="chsidehead"><h3>Inbox' + (f.unread ? '<span class="chdot">' + f.unread + '</span>' : '') + '</h3>' +
+      '<label class="chsearch"><input id="peopleSearch" type="search" placeholder="Find people — name or @username" value="' + esc(S.peopleQ || '') + '"></label></div>' +
+      '<div class="chscroll">' + rows + '</div></aside>' +
+      '<div class="ch-main"><div class="ch-empty"><div><b>Pick a conversation</b>Your friends and message requests are on the left.</div></div></div></div>';
+  }
+  function bubbles(msgs, peerName) {
+    if (!msgs || !msgs.length) return '<p class="chhint">No messages yet. Say hi to ' + esc((peerName || 'them').split(' ')[0]) + '.</p>';
+    return msgs.map(function (m) {
+      return '<div class="bub-row' + (m.from_me ? ' me' : '') + '"><div><div class="bub">' + esc(m.text) + '</div>' +
+        '<div class="bub-meta">' + (m.from_me ? 'You' : esc((peerName || '').split(' ')[0])) + ' · ' + ago(m.created_at) + '</div></div></div>';
+    }).join('');
+  }
+  function viewChat() {
+    var back = '<a class="chback" href="#/messages">← All conversations</a>';
+    if (!S.me) return viewMessages();
+    if (S.chatErr) return back + '<div class="empty"><b>' + esc(S.chatErr) + '</b></div>';
+    var t = S.chat; if (!t || !t.peer) return back + '<div class="empty"><b>Conversation not found</b></div>';
+    var u = t.peer;
+    return back + '<div class="chwrap solo"><div class="ch-main">' +
+      '<div class="chead">' + chav(u, 'lg') + '<div style="flex:1;min-width:0"><div class="nm">' + esc(u.name) + '</div>' +
+      '<div class="meta">' + handle(u) + ' · ' + esc(u.campus_name || '') + '</div></div>' +
+      '<button class="chbtn-xs" id="unfriendBtn" data-unfriend="' + esc(u.id) + '">Remove friend</button></div>' +
+      '<div class="chbody" id="chBody">' + bubbles(t.messages, u.name) + '</div>' +
+      '<form class="chform" id="chForm" data-peer="' + esc(u.id) + '"><input id="chInput" maxlength="2000" placeholder="Write a message…" autocomplete="off" aria-label="Message"><button type="submit">Send</button></form>' +
+      '</div></div>';
   }
 
   /* ---------------- 首页 ---------------- */
@@ -371,7 +450,7 @@
   function viewSociety(d) {
     if (!d) return '<div class="empty"><b>Society not found</b></div>';
     var s = d.society;
-    var cover = (d.upcoming[0] || d.past[0] || {}).cover_image_url || '/assets/events/ev1.jpg';
+    var cover = (d.upcoming[0] || d.past[0] || {}).cover_image_url || '../assets/events/ev1.jpg';
     var socials = s.socials || {};
     var ig = socials.instagram || ('https://www.instagram.com/explore/search/keyword/?q=' + encodeURIComponent(s.name));
     var luma = socials.luma || ('https://lu.ma/search?q=' + encodeURIComponent(s.name));
@@ -406,7 +485,7 @@
   function viewMy() {
     if (!S.me) return '<div class="empty"><b>Sign in to see your stuff</b><div style="margin-top:12px"><button class="filter" id="loginBtn">Log in</button></div></div>';
     return '<div class="sec" style="padding-top:28px"><h2>My stuff</h2><span class="sub">' + (S.me.username ? '@' + esc(S.me.username) + ' · ' : '') + esc(S.me.campus_name) + '</span></div>' +
-      '<div style="padding:0 16px 6px"><button class="themebtn" id="themeBtn2" style="margin-top:0">' + (currentTheme() === 'dark' ? '☀ Switch to light' : '☾ Switch to dark') + '</button></div>' +
+      '<div style="padding:0 16px 6px;display:flex;gap:8px;flex-wrap:wrap"><button class="themebtn" id="themeBtn2" style="margin-top:0">' + (currentTheme() === 'dark' ? '☀ Switch to light' : '☾ Switch to dark') + '</button><button class="themebtn" id="logoutBtn2" style="margin-top:0">Log out</button></div>' +
       '<div style="padding:0 16px 8px"><div class="kpis" style="padding:0"><div class="kpi"><div class="k">Tickets</div><div class="v">' + S.myRsvps.length + '</div><div class="n">upcoming</div></div>' +
       '<div class="kpi"><div class="k">Societies</div><div class="v">' + S.myMemberships.length + '</div><div class="n">memberships</div></div>' +
       '<div class="kpi"><div class="k">Saved</div><div class="v">' + money(S.savedMoney) + '</div><div class="n">with member prices</div></div>' +
@@ -439,12 +518,12 @@
   }
   S.socFromMemberships = function () {
     return S.myMemberships.map(function (m) {
-      var s = S.societies.filter(function (x) { return x.id === m.society_id; })[0] || { name: m.society_name, campus_logo: '/assets/schools/mq.png', member_count: 0, rating: null, membership_price: m.price_paid, blurb: '' };
+      var s = S.societies.filter(function (x) { return x.id === m.society_id; })[0] || { name: m.society_name, campus_logo: '../assets/schools/mq.png', member_count: 0, rating: null, membership_price: m.price_paid, blurb: '' };
       return '<button class="soc" data-soc="' + esc(m.society_id) + '"><div class="top"><span class="mark"><img src="' + esc(s.campus_logo) + '" alt=""></span><span><span class="nm">' + esc(m.society_name) + '</span><br><span class="meta">Member · paid ' + money(m.price_paid) + '</span></span></div></button>';
     });
   };
 
-  function ticketUrl(code) { return location.origin + '/#/checkin/' + code; }
+  function ticketUrl(code) { return location.href.split('#')[0] + '#/checkin/' + code; }
   function showTicket(code) {
     if (!code) return toast('No ticket code yet');
     var svg = (window.QR && QR.svg) ? QR.svg(ticketUrl(code), { size: 240, label: 'Ticket QR code' }) : '';
@@ -468,7 +547,7 @@
       '<button class="evcta" id="scanBtn">Check in</button>' +
       '<div id="scanResult" style="margin-top:12px;font-size:13px"></div>' +
       '<button class="evghost" id="scanCam">Scan with camera</button><video id="scanVideo" playsinline style="display:none;width:100%;border-radius:12px;margin-top:10px"></video></div>' +
-      '<p style="font-size:12px;color:var(--muted);margin-top:12px">Tip: the QR contains ' + esc(location.origin) + '/#/checkin/CODE</p></div>';
+      '<p style="font-size:12px;color:var(--muted);margin-top:12px">Tip: the QR contains ' + esc(location.href.split('#')[0]) + '#/checkin/CODE</p></div>';
   }
   async function doScan(code) {
     try {
@@ -666,6 +745,29 @@
     try { S.org = await api('/api/exec/hub'); S.orgDash = await api('/api/exec/dashboard'); } catch (e) { S.org = null; S.orgDash = null; }
   }
   function stopOrgPolling() { if (S.orgTimer) { clearInterval(S.orgTimer); S.orgTimer = null; } }
+  function stopChatPolling() { if (S.chatTimer) { clearInterval(S.chatTimer); S.chatTimer = null; } }
+  function startChatPolling(peerId) {
+    stopChatPolling();
+    S.chatTimer = setInterval(async function () {
+      if (S.route.name !== 'chat' || document.hidden) return;
+      try {
+        var t = await api('/api/messages/' + encodeURIComponent(peerId));
+        var oldMsgs = (S.chat && S.chat.messages) || [];
+        var oldLast = (oldMsgs[oldMsgs.length - 1] || {}).id;
+        var newLast = (t.messages[t.messages.length - 1] || {}).id;
+        if (newLast && newLast !== oldLast) {
+          S.chat = t;
+          var body = $('#chBody');
+          if (body) {
+            var atBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 80;
+            body.innerHTML = bubbles(t.messages, t.peer.name);
+            if (atBottom) body.scrollTop = body.scrollHeight;
+          }
+          if (S.me) { try { var f = await api('/api/friends'); S.friends = f; S.unread = f.unread || 0; $('#sidebar').innerHTML = sidebar(); $('#tabs').innerHTML = tabs(); } catch (e) { } }
+        }
+      } catch (e) { }
+    }, 4000);
+  }
   function startOrgPolling() {
     stopOrgPolling();
     S.orgTimer = setInterval(async function () {
@@ -712,6 +814,16 @@
       S.route = { name: 'saved' }; await loadMe(); $('#view').innerHTML = viewSaved();
     } else if (p[0] === 'my') {
       S.route = { name: 'my' }; await loadMe(); await ensureSocieties(); $('#view').innerHTML = viewMy();
+    } else if (p[0] === 'messages') {
+      S.route = { name: 'messages' }; S.chatPeer = null; S.people = []; S.peopleQ = '';
+      await loadMe(); await loadSocial(); $('#view').innerHTML = viewMessages();
+    } else if (p[0] === 'chat' && p[1]) {
+      S.route = { name: 'chat', id: p[1] }; S.chatPeer = p[1]; S.chat = null; S.chatErr = null;
+      $('#view').innerHTML = '<div class="empty">Loading…</div>';
+      await loadMe();
+      try { S.chat = await api('/api/messages/' + encodeURIComponent(p[1])); } catch (e) { S.chatErr = e.message; }
+      await loadSocial();
+      $('#view').innerHTML = viewChat();
     } else if (p[0] === 'scan') {
       S.route = { name: 'scan' }; await loadMe(); $('#view').innerHTML = viewScan();
     } else if (p[0] === 'members') {
@@ -734,6 +846,7 @@
       S.route = { name: 'home' }; $('#view').innerHTML = viewHome();
     }
     if (S.route.name !== 'organiser') stopOrgPolling();
+    if (S.route.name !== 'chat') stopChatPolling();
     $('#sidebar').innerHTML = sidebar();
     $('#tabs').innerHTML = tabs();
     bind();
@@ -874,6 +987,87 @@
         }, 350);
       };
     }
+    /* 退出登录 */
+    async function doLogout() {
+      try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) { }
+      S.me = null; S.myRsvps = []; S.myMemberships = []; S.savedEvents = []; S.unread = 0;
+      S.friends = null; S.chat = null; S.chatPeer = null; S.people = []; S.peopleQ = '';
+      stopChatPolling();
+      toast('Signed out'); location.hash = '#/'; route();
+    }
+    var lo = $('#logoutBtn'); if (lo) lo.onclick = doLogout;
+    var lo2 = $('#logoutBtn2'); if (lo2) lo2.onclick = doLogout;
+    /* 好友 / 私信 */
+    var psearch = $('#peopleSearch');
+    if (psearch) {
+      var pTimer = null;
+      psearch.oninput = function () {
+        var q = psearch.value.trim(); S.peopleQ = q; clearTimeout(pTimer);
+        pTimer = setTimeout(async function () {
+          if (!q) S.people = [];
+          else { try { S.people = (await api('/api/users/search?q=' + encodeURIComponent(q))).users || []; } catch (e) { S.people = []; } }
+          $('#view').innerHTML = viewMessages(); bind();
+          var n = $('#peopleSearch'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+        }, 220);
+      };
+    }
+    $$('[data-addfriend]').forEach(function (b) {
+      b.onclick = async function () {
+        b.disabled = true;
+        try {
+          var r = await api('/api/friends/request', { method: 'POST', body: { user_id: b.dataset.addfriend } });
+          toast(r.status === 'accepted' ? 'You are now friends' : 'Request sent');
+          await loadSocial();
+          var q = S.peopleQ || '';
+          if (q) { try { S.people = (await api('/api/users/search?q=' + encodeURIComponent(q))).users || []; } catch (e) { S.people = []; } }
+          $('#view').innerHTML = viewMessages(); bind();
+          $('#sidebar').innerHTML = sidebar(); $('#tabs').innerHTML = tabs();
+          var n = $('#peopleSearch'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+        } catch (e) { toast(e.message); b.disabled = false; }
+      };
+    });
+    $$('[data-accept],[data-decline]').forEach(function (b) {
+      b.onclick = async function () {
+        var accept = !!b.dataset.accept;
+        var id = accept ? b.dataset.accept : b.dataset.decline;
+        b.disabled = true;
+        try {
+          await api('/api/friends/respond', { method: 'POST', body: { id: id, accept: accept } });
+          toast(accept ? 'Friend added' : 'Request declined');
+          await loadSocial(); await loadMe();
+          $('#view').innerHTML = viewMessages(); bind();
+          $('#sidebar').innerHTML = sidebar(); $('#tabs').innerHTML = tabs();
+        } catch (e) { toast(e.message); b.disabled = false; }
+      };
+    });
+    $$('[data-openchat]').forEach(function (el) {
+      var go = function () { location.hash = '#/chat/' + el.dataset.openchat; };
+      el.onclick = go;
+      el.onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } };
+    });
+    var ufb = $('#unfriendBtn');
+    if (ufb) ufb.onclick = async function () {
+      var f = ((S.friends && S.friends.friends) || []).filter(function (x) { return x.user.id === ufb.dataset.unfriend; })[0];
+      if (!f) { toast('Friendship not found — refresh and try again.'); return; }
+      if (!confirm('Remove ' + f.user.name + ' from your friends? The conversation disappears from your inbox.')) return;
+      try { await api('/api/friends/' + encodeURIComponent(f.friendship_id), { method: 'DELETE' }); toast('Friend removed'); location.hash = '#/messages'; }
+      catch (e) { toast(e.message); }
+    };
+    var chf = $('#chForm');
+    if (chf) chf.onsubmit = async function (ev) {
+      ev.preventDefault();
+      var inp = $('#chInput'); var text = (inp.value || '').trim(); if (!text) return;
+      var btn = chf.querySelector('button[type="submit"]'); if (btn) btn.disabled = true;
+      try {
+        var r = await api('/api/messages/' + encodeURIComponent(chf.dataset.peer), { method: 'POST', body: { text: text } });
+        inp.value = ''; S.chat.messages.push(r.message);
+        var body = $('#chBody'); if (body) { body.innerHTML = bubbles(S.chat.messages, S.chat.peer.name); body.scrollTop = body.scrollHeight; }
+      } catch (e) { toast(e.message); }
+      if (btn) btn.disabled = false;
+      inp.focus();
+    };
+    var chb = $('#chBody'); if (chb) chb.scrollTop = chb.scrollHeight;
+    if (S.route.name === 'chat' && S.me && !S.chatErr) startChatPolling(S.route.id);
     var as = $('#authSubmit'); if (as) as.onclick = submitAuth;
     var cc = $('#createClose'); if (cc) cc.onclick = closeCreate;
     var cs = $('#createSubmit'); if (cs) cs.onclick = submitCreate;

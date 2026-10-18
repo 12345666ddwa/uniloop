@@ -167,7 +167,7 @@ a{color:inherit}
 /* ---------------- 底部 Tab（移动） ---------------- */
 .tabs{position:absolute;left:0;right:0;bottom:0;height:calc(62px + env(safe-area-inset-bottom,0px));
   padding-bottom:env(safe-area-inset-bottom,0px);background:rgba(255,253,248,.94);backdrop-filter:blur(16px);
-  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);align-items:center;z-index:10}
+  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);align-items:center;z-index:10}
 .tab{background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:center;font-size:10.5px;font-weight:650;text-decoration:none}
 .tab svg{width:21px;height:21px}
 .tab[aria-current="page"]{color:var(--forest)}
@@ -739,3 +739,72 @@ html[data-theme]{scrollbar-color:#C9C3B2 transparent}
   .appframe{overflow:visible !important}
   .main{overflow-y:auto !important;height:100dvh}
 }
+
+/* ---------------- 好友 / 私信 (v3.12) ---------------- */
+.chwrap{display:grid;grid-template-columns:322px minmax(0,1fr);border:1px solid var(--line);border-radius:18px;
+  overflow:hidden;background:var(--surface);box-shadow:var(--sh-2);height:calc(100dvh - 168px);min-height:440px;margin:14px 16px 22px}
+.chside{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--paper)}
+.chsidehead{padding:14px 14px 10px;border-bottom:1px solid var(--line)}
+.chsidehead h3{margin:0;font-size:15px;display:flex;align-items:center;gap:8px}
+.chsearch{display:flex;align-items:center;gap:8px;margin-top:10px;height:38px;padding:0 11px;border:1px solid var(--line2);border-radius:10px;background:var(--surface)}
+.chsearch input{flex:1;border:0;outline:0;background:none;font-size:13px;color:var(--ink)}
+.chscroll{flex:1;min-height:0;overflow:auto;padding:8px}
+.chsec{font-size:10px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:11px 8px 6px}
+.chrow{display:flex;align-items:center;gap:10px;padding:9px;border-radius:12px;cursor:pointer}
+.chrow:hover{background:var(--sage)}
+.chrow .who{flex:1;min-width:0}
+.chrow .nm{font-size:13.5px;font-weight:650;display:flex;align-items:center;gap:6px}
+.chrow .prev{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.chrow .when{font-size:10.5px;color:var(--muted);align-self:flex-start;padding-top:2px;flex:none}
+.chav{width:34px;height:34px;border-radius:50%;background:var(--forest);color:#F2EFE4;display:grid;place-items:center;
+  font-size:11.5px;font-weight:750;flex:none;letter-spacing:.02em}
+.chav.lg{width:42px;height:42px;font-size:14px}
+.chdot{min-width:17px;height:17px;border-radius:999px;background:var(--coral);color:#fff;font-size:10px;font-weight:750;
+  display:inline-grid;place-items:center;padding:0 5px;line-height:1}
+.chreq{display:flex;align-items:center;gap:9px;padding:9px;border-radius:12px;background:var(--coral-soft);margin-bottom:5px}
+.chreq .who{flex:1;min-width:0}
+.chreq .nm{font-size:13px;font-weight:700}
+.chreq .sub{font-size:11.5px;color:var(--muted)}
+.chreq .acts{display:flex;gap:5px}
+.chbtn-xs{border:1px solid var(--line2);background:var(--surface);border-radius:9px;padding:6px 9px;font-size:11.5px;font-weight:700;color:var(--ink)}
+.chbtn-xs.pri{background:var(--coral);border-color:var(--coral);color:#fff}
+.ch-main{display:flex;flex-direction:column;min-height:0}
+.ch-empty{flex:1;display:grid;place-items:center;text-align:center;padding:32px;color:var(--muted);font-size:13px}
+.ch-empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}
+.chead{display:flex;align-items:center;gap:11px;padding:12px 16px;border-bottom:1px solid var(--line);flex:none}
+.chead .nm{font-weight:700;font-size:14px}
+.chead .meta{font-size:11.5px;color:var(--muted)}
+.chbody{flex:1;min-height:0;overflow:auto;padding:16px;background:var(--paper)}
+.chhint{text-align:center;font-size:11.5px;color:var(--muted);margin:6px 0 14px}
+.bub-row{display:flex;margin-bottom:9px}
+.bub-row.me{justify-content:flex-end}
+.bub{max-width:min(76%,460px);padding:9px 13px;border-radius:14px 14px 14px 5px;background:var(--surface);
+  border:1px solid var(--line);font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.bub-row.me .bub{background:var(--forest);color:#F4F1E7;border-color:var(--forest);border-radius:14px 14px 5px 14px}
+.bub-meta{font-size:10.5px;color:var(--muted);margin:3px 6px 0}
+.bub-row.me .bub-meta{text-align:right}
+.chform{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--surface);flex:none}
+.chform input{flex:1;height:42px;padding:0 13px;border:1px solid var(--line2);border-radius:11px;background:var(--surface);color:var(--ink);outline:0;font-size:13.5px}
+.chform input:focus{border-color:var(--forest)}
+.chform button{background:var(--coral);color:#fff;border:0;border-radius:11px;padding:0 18px;font-weight:700;font-size:13.5px}
+.chwrap.solo{grid-template-columns:minmax(0,1fr);max-width:840px;margin-left:auto;margin-right:auto}
+.chwrap.solo .chside{display:none}
+.chback{display:inline-flex;align-items:center;gap:6px;margin:14px 16px 0;font-size:12.5px;font-weight:700;color:var(--forest)}
+.sfoot-out{margin-top:8px;border:1px solid var(--line2);background:none;border-radius:9px;padding:6px 10px;font-size:11.5px;font-weight:700;color:var(--ink2)}
+.sfoot-out:hover{border-color:var(--coral);color:var(--coral)}
+.myhead{display:flex;align-items:center;gap:10px;padding:0 16px 6px}
+.chbadge{display:inline-grid;place-items:center;min-width:16px;height:16px;padding:0 5px;border-radius:999px;
+  background:var(--coral);color:#fff;font-size:9.5px;font-weight:750;margin-left:5px;vertical-align:1px}
+@media (max-width:899px){
+  .chwrap{grid-template-columns:1fr;height:auto;min-height:0;margin:10px 12px 18px}
+  .ch-main{display:none}
+  .chwrap.solo{height:calc(100dvh - 128px);margin-top:8px}
+  .chwrap.solo .ch-main{display:flex}
+  .chwrap.solo .chside{display:none}
+  .chback{margin:10px 14px 0}
+}
+html[data-theme="dark"] .chwrap,html[data-theme="dark"] .chsearch,html[data-theme="dark"] .bub,
+html[data-theme="dark"] .chform,html[data-theme="dark"] .chbtn-xs{background:var(--surface);border-color:var(--line)}
+html[data-theme="dark"] .chside,html[data-theme="dark"] .chbody{background:var(--paper)}
+html[data-theme="dark"] .chreq{background:var(--coral-soft)}
+html[data-theme="dark"] .chrow:hover{background:var(--sage)}
